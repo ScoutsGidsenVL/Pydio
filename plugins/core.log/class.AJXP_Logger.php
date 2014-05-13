@@ -86,7 +86,7 @@ class AJXP_Logger extends AJXP_Plugin
                 $res .= print_r($value, true);
             }
         }
-        $res = str_replace(array("\r\n", "\n", "\r"), ' ', $res);
+        //$res = str_replace(array("\r\n", "\n", "\r"), ' ', $res);
         $ip = self::getClientAdress();
         $user = self::getLoggedUser();
         $logger = self::getInstance();
