@@ -22,12 +22,18 @@ table.sort-table tr:nth-child(even)
     background: linear-gradient(top, rgba(255,255,255,1) 0%,rgba(229,229,229,1) 100%); /* W3C */
 }
 
-.grey_gradient_emboss,.selected, div.selected-webfx-tree-item-inactive{
-    background: rgb(221,221,221) !important; /* Old browsers */ /* FF3.6+ */ /* Chrome,Safari4+ */ /* Chrome10+,Safari5.1+ */ /* Opera11.10+ */ /* IE10+ */ /* IE6-9 */ /* W3C */
+.blue_gradient,
+.grey_gradient_emboss,
+.selected,
+.selected-focus,
+div.selected-webfx-tree-item,
+div.selected-webfx-tree-item-inactive {
+    background: rgb(37, 111, 145) !important;
 }
 
-.blue_gradient,div.selected-webfx-tree-item, .selected-focus{
-    background: #5599ff !important; /* Old browsers */ /* FF3.6+ */ /* Chrome,Safari4+ */ /* Chrome10+,Safari5.1+ */ /* Opera11.10+ */ /* IE10+ */ /* IE6-9 */ /* W3C */
+div.selected-webfx-tree-item a,
+div.selected-webfx-tree-item-inactive a {
+    color: white;
 }
 
 .grey_gradient_light_inputs, .dialogContent input, .dialogContent input[type="text"], .dialogContent input[type="password"], .dialogContent select, #search_txt, #location_form,#treeCopy
@@ -203,7 +209,7 @@ kbd {
     width: 100%;
     display: block;;
     height: auto;
-    
+
 border-radius: 0;
 padding: 6px 4px;
 }
@@ -227,10 +233,10 @@ padding: 6px 4px;
 
     font-size: 15px;
     text-align: left;
-    
+
 
     padding-top: 9px;
-    
+
 
     padding-bottom: 0px;
     white-space: nowrap;
@@ -275,15 +281,15 @@ div.thumbnail_cell_metadata span.metadata_chunk{
 
 .selectable_div div.selected{
     /*
-	-webkit-box-shadow : 1px 2px 3px rgba(50, 50, 50, 0.8);
-	-moz-box-shadow : 1px 2px 3px rgba(50, 50, 50, 0.8);
-	box-shadow : 1px 2px 3px rgba(50, 50, 50, 0.8);*/
+  -webkit-box-shadow : 1px 2px 3px rgba(50, 50, 50, 0.8);
+  -moz-box-shadow : 1px 2px 3px rgba(50, 50, 50, 0.8);
+  box-shadow : 1px 2px 3px rgba(50, 50, 50, 0.8);*/
 }
 .selectable_div div.selected-focus{
     /*
-	-webkit-box-shadow : 1px 2px 3px rgba(50, 50, 50, 0.8);
-	-moz-box-shadow : 1px 2px 3px rgba(50, 50, 50, 0.8);
-	box-shadow : 1px 2px 3px rgba(50, 50, 50, 0.8);*/
+  -webkit-box-shadow : 1px 2px 3px rgba(50, 50, 50, 0.8);
+  -moz-box-shadow : 1px 2px 3px rgba(50, 50, 50, 0.8);
+  box-shadow : 1px 2px 3px rgba(50, 50, 50, 0.8);*/
 }
 
 .thumbLabel
@@ -809,7 +815,7 @@ html.boxshadow div.errorMessage{
 
 .top_arrow_tip:after {
     border-color: rgba(111, 123, 136, 0);
-    border-bottom-color:  rgb(111, 123, 136);
+    border-bottom-color:  rgb(106, 111, 52);
     border-width: 5px;
     left: 50%;
     margin-left: -5px;
@@ -1206,9 +1212,13 @@ input.SF_input.SF_number{
 }
 
 #workspace_toolbar{
+    background-image: url('https://www.scoutsengidsenvlaanderen.be/sites/all/themes/zen_ninesixty_sgv_d6/images/background.png');
+    background-position: 0px -44px;
+    background-repeat: no-repeat;
+    background-color: #BDD732;
     padding-top: 11px;
     height: 53px;
-    overflow: hidden;
+    width: 100%
 }
 
 #simple_repository_label{
@@ -1259,16 +1269,16 @@ input.SF_input.SF_number{
     padding: 5px 2px 5px 9px;
     color: rgb(255, 255, 255);
     vertical-align: middle;
-    background-color: rgb(138, 149, 160);
+    background-color: rgb(116, 141, 38);
     letter-spacing: 1px; /* Old browsers */   /* FF3.6+ */   /* Chrome,Safari4+ */   /* Chrome10+,Safari5.1+ */   /* Opera 11.10+ */   /* IE10+ */   /* W3C */   /* IE6-9 */; /* Old browsers */   /* FF3.6+ */   /* Chrome,Safari4+ */   /* Chrome10+,Safari5.1+ */   /* Opera 11.10+ */   /* IE10+ */   /* W3C */   /* IE6-9 */;
-    border-bottom: 2px solid rgb(111, 123, 136);
+    border-bottom: 2px solid rgb(106, 111, 52);
 }
 
 
 .dialogTitle{
     border-radius: 2px 2px 0 0;
-    background-color: #4dc5c3;
-    border-bottom: 1px solid rgb(67, 156, 155);
+    background-color: rgb(116, 141, 38);
+    border-bottom: 1px solid rgb(116, 141, 38);
 }
 
 #sidebar_splitter div.panelHeader,
@@ -1342,7 +1352,7 @@ padding: 3px 5px !important;
 }
 
 div.editor_header > span.header_label{
-    color: rgb(111, 123, 136);
+    color: rgb(106, 111, 52);
     font-size: 24px;
     width: 100%;
     padding: 15px 0 0 62px;
@@ -1433,7 +1443,7 @@ div.action_bar.text_only  span.actionbar_button_label{
     outline: none;
     border-radius: 2px;
     margin: 5px 2px 0 1px;
-    background: #4dc5c3; /* Old browsers */   /* FF3.6+ */   /* Chrome,Safari4+ */   /* Chrome10+,Safari5.1+ */   /* Opera 11.10+ */   /* IE10+ */   /* W3C */   /* IE6-9 */;
+    background: rgb(116, 141, 38);
     letter-spacing: 1px;
     float: left;
 }
@@ -2012,18 +2022,18 @@ div.fl-displayMode-list.fl-showFilterPane div.scroller_track {
 
 /*
 div.header_resizer div.descending {
-	background-color: #daddd7;
-	background-image: url("../images/arrow_up_margin.png");
-	background-repeat : no-repeat;
-	background-position : right center;
+  background-color: #daddd7;
+  background-image: url("../images/arrow_up_margin.png");
+  background-repeat : no-repeat;
+  background-position : right center;
 }
 */
 /*
 div.header_resizer div.ascending {
-	background-color: #daddd7;
-	background-image: url("../images/arrow_down_margin.png");
-	background-repeat : no-repeat;
-	background-position : right center;
+  background-color: #daddd7;
+  background-image: url("../images/arrow_down_margin.png");
+  background-repeat : no-repeat;
+  background-position : right center;
 }
 */
 
@@ -2037,7 +2047,7 @@ div.header_resizer div.ascending {
 }
 
 .sort-table thead {
-    background-color:	#aaa;
+    background-color: #aaa;
 }
 
 .sort-table td {
@@ -2056,9 +2066,9 @@ div.header_resizer div.ascending {
      height: 23px;
      */
     background-color: #ddd;
-    border-bottom:	none;
-    cursor:			pointer;
-    border-right: 	1px solid buttonhighlight;
+    border-bottom:  none;
+    cursor:     pointer;
+    border-right:   1px solid buttonhighlight;
     font-size:12px;
     color: #676965;
     padding: 0;
@@ -2089,7 +2099,7 @@ div.header_resizer div.ascending {
 }
 
 #last_header{
-    border-right: 	0px solid #ddd;
+    border-right:   0px solid #ddd;
     widht: auto !important;
 }
 
@@ -2286,10 +2296,10 @@ div.bm_hover
     -moz-opacity:1;
     text-decoration: none;
     /*
-	border-top: 1px solid #fff;
-	border-left: 1px solid #fff;
-	border-right: 1px solid buttonshadow;
-	border-bottom: 1px solid buttonshadow;
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid buttonshadow;
+  border-bottom: 1px solid buttonshadow;
     background-color: #ddd;
     */
 }
@@ -2478,7 +2488,7 @@ div#upload_files_list span.item_relative_path{
     filter:alpha(opacity:0); opacity:0; moz-opacity:0;
     position: absolute;
     font-size: 60px; /* causes it to fill the containing div */
-    top: 0; 
+    top: 0;
     left: 0;
     z-index: 10000;
     height: 56px;
@@ -2489,7 +2499,7 @@ div#upload_files_list span.item_relative_path{
     height: 60px;
     width: 180px;
     position: absolute;
-    top: 0; 
+    top: 0;
     overflow: hidden;
     z-index: 9999; /* this was needed to work in IE */
 ;
@@ -2554,7 +2564,7 @@ div#upload_files_list span.item_relative_path{
 
 #uploadBrowseButton {
     position: absolute;
-    top: 0; 
+    top: 0;
     left: 0;
     margin:0;
 }
@@ -2566,7 +2576,7 @@ div#upload_files_list span.item_relative_path{
     padding: 2px 7px;
 }
 
-#uploadSendButton { 
+#uploadSendButton {
 }
 
 #uploaderTextActions span.disabled{
@@ -2635,7 +2645,7 @@ div.tabulatorContainer{
 #cpane_tabs > div.tabulatorContainer{
     border-left-width: 1px;
     border-left-style: solid;
-    border-left-color: rgb(111, 123, 136);
+    border-left-color: rgb(106, 111, 52);
 }
 
 div.tabulatorContainer div#display_toolbar{
@@ -2663,7 +2673,7 @@ span.toggleHeader{
     white-space: nowrap;
     text-overflow: ellipsis;
     padding: 6px 6px;
-    background-color: rgb(111, 123, 136);
+    background-color: rgb(106, 111, 52);
     transition: background-color 0.3s ease;
 }
 
@@ -2719,7 +2729,7 @@ div.tabulatorContainer span.tab_close_button {
 }
 
 div.tabulatorContainer span.toggleInactive span.tab_close_button {
-    color: rgb(111, 123, 136);
+    color: rgb(106, 111, 52);
 }
 
 div.tabulatorContainer span.toggleInactive span.tab_close_button:hover {
@@ -3084,8 +3094,8 @@ div.class-FetchedResultPane div.thumbnail_selectable_cell.detailed span.text_lab
     background-color: #5599FF !important;
     border-bottom: 2px solid rgb(65, 117, 194);
     */
-    background-color: #4dc5c3;
-    border-bottom: 2px solid #399997;
+    background-color: rgb(106, 111, 52);
+    border-bottom: 2px solid #6F7B88;
 
     -webkit-transition-property: height;
     -webkit-transition-duration: 0.2s;
@@ -3255,7 +3265,7 @@ div.infoPanelValue{
 
     font-size: 12px;
     padding: 6px 7px;
-    background-color: rgba(138, 149, 160, 0.65) !important;
+    background-color: rgb(116, 141, 38) !important;
     border-bottom: 0 !important;
     clear: left;
 }
@@ -4649,7 +4659,7 @@ div.menuActions img{
 }
 
 /********************************************/
-/* NEW HTML5 / CSS3 STYLES  	            */
+/* NEW HTML5 / CSS3 STYLES                */
 /* Generally applied after a Modernizr test */
 /********************************************/
 .css_boxshadow,div.menu{
@@ -4713,8 +4723,10 @@ div.overlay.form-login_form_dynamic,
 div.overlay.form-switch_language_form
 {
     opacity: 1 !important;
-    background-image: url('../images/grid_t.png');
-    background-color: white !important;
+    background-image: url('https://www.scoutsengidsenvlaanderen.be/sites/all/themes/zen_ninesixty_sgv_d6/images/background.png') !important;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center center;
 }
 
 /****************************************/
@@ -4906,7 +4918,7 @@ TABULATOR IN A TABULATOR
     letter-spacing: 1px;
     background-color: #FFFFFF;
     border-bottom: 1px solid rgb(187, 187, 187);
-    color: rgb(111, 123, 136);
+    color: rgb(106, 111, 52);
     border-left: 1px solid rgb(187, 187, 187);
     border-right: 0;
 }
@@ -4919,9 +4931,9 @@ TABULATOR IN A TABULATOR
 
 .innerTabulator span.toggleHeader{
     padding: 4px 7px 4px 7px;
-    border-right: 1px dotted rgb(111, 123, 136);
+    border-right: 1px dotted rgb(106, 111, 52);
     background-color: #ebedf0;
-    color: rgb(111, 123, 136);
+    color: rgb(106, 111, 52);
     font-size: 11px;
 }
 
@@ -4934,7 +4946,7 @@ TABULATOR IN A TABULATOR
 div.innerTabulator > div.tabulatorContainer > #display_toolbar a:hover,
 div.innerTabulator > div.tabulatorContainer > #display_toolbar a
 {
-    color: rgb(111, 123, 136) !important;
+    color: rgb(106, 111, 52) !important;
 }
 
 #cpane_tabs span.toggleHeader{
@@ -4942,7 +4954,7 @@ div.innerTabulator > div.tabulatorContainer > #display_toolbar a
 }
 
 #cpane_tabs span.toggleInactive{
-    border-right: 1px dotted rgb(111, 123, 136);
+    border-right: 1px dotted rgb(106, 111, 52);
 }
 
 #cpane_tabs span.toggleInactiveBeforeActive{
@@ -4955,14 +4967,14 @@ DASHBOARD TABULATOR
 */
 .flat_tabulator  div.panelHeader.tabulatorContainer
 {
-    padding: 0 0 0 0;
-    height: 34px;
+    padding: 0 0 0 0 !important;
+    height: 25px;
     background-color: transparent;
     border-bottom: 0;
 }
 
 .flat_tabulator span.toggleHeader{
-    padding: 8px 10px 8px;
+    padding: 6px 10px;
     font-size: 13px;
     border-bottom: 0 solid #399C9B;
     color: #ffffff;
@@ -4994,7 +5006,7 @@ DASHBOARD TABULATOR
 div.flat_tabulator > div.tabulatorContainer > #display_toolbar a:hover,
 div.flat_tabulator > div.tabulatorContainer > #display_toolbar a
 {
-    color: rgb(111, 123, 136) !important;
+    color: rgb(106, 111, 52) !important;
 }
 
 
@@ -5038,7 +5050,7 @@ div.flat_tabulator > div:not(.tabulatorContainer){
     width: 200px;
     border-width: 0 !important;
     background-color: transparent !important;
-    color: rgb(111, 123, 136) !important;
+    color: rgb(106, 111, 52) !important;
     text-shadow: none;
     padding-bottom: 33px !important;
 }
@@ -5173,7 +5185,9 @@ div.horizontal_tabulator > div:not(.tabulatorContainer){
 }
 
 .custom_top_title{
-    color: white;
+    color: #ACCBD9;
+    top: auto !important;
+    font: bold 13px/1.5 "Tahoma","Kalimati","Arial","Helvetica","Bitstream Vera Sans",sans-serif;
 }
 
 span.letter_badge {
