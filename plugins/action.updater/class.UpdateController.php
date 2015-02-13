@@ -77,14 +77,6 @@ class UpdateController extends AJXP_Plugin
 
         switch ($action) {
 
-
-            case "import_from_324":
-
-                $dryRun = !isSet($httpVars["real_run"]);
-                AjaXplorerUpgrader::upgradeFrom324($httpVars["previous_location"], $dryRun);
-
-            break;
-
             case "migrate_metaserial":
 
                 $dryRun = !isSet($httpVars["real_run"]);
@@ -96,6 +88,18 @@ class UpdateController extends AJXP_Plugin
 
                 header("Content-type: application/json");
                 print AjaXplorerUpgrader::getUpgradePath($this->pluginConf["UPDATE_SITE"], "json", $this->pluginConf["UPDATE_CHANNEL"]);
+
+            break;
+
+            case "test_upgrade_scripts":
+
+                if(!AJXP_SERVER_DEBUG
+                    || AuthService::getLoggedUser() == null
+                    || !AuthService::getLoggedUser()->isAdmin()){
+                    break;
+                }
+                $upgrader = new AjaXplorerUpgrader("", "", "");
+                $upgrader->testUpgradeScripts();
 
             break;
 

@@ -26,14 +26,13 @@ defined('AJXP_EXEC') or die( 'Access not allowed');
  * @package AjaXplorer_Plugins
  * @subpackage Metastore
  */
-class SerialMetaStore extends AJXP_Plugin implements MetaStoreProvider
+class SerialMetaStore extends AJXP_AbstractMetaSource implements MetaStoreProvider
 {
     private static $currentMetaName;
     private static $metaCache;
     private static $fullMetaCache;
 
     protected $globalMetaFile;
-    protected $accessDriver;
 
 
     public function init($options)
@@ -41,11 +40,6 @@ class SerialMetaStore extends AJXP_Plugin implements MetaStoreProvider
         $this->options = $options;
         $this->loadRegistryContributions();
         $this->globalMetaFile = AJXP_DATA_PATH."/plugins/metastore.serial/ajxp_meta";
-    }
-
-    public function initMeta($accessDriver)
-    {
-        $this->accessDriver = $accessDriver;
     }
 
     /**
@@ -58,8 +52,13 @@ class SerialMetaStore extends AJXP_Plugin implements MetaStoreProvider
     }
 
 
-    protected function getUserId()
+    /**
+     * @param AJXP_Node $node
+     * @return string
+     */
+    protected function getUserId($node)
     {
+        if($node->hasUser()) return $node->getUser();
         if(AuthService::usersEnabled()) return AuthService::getLoggedUser()->getId();
         return "shared";
     }
@@ -69,7 +68,7 @@ class SerialMetaStore extends AJXP_Plugin implements MetaStoreProvider
         $this->loadMetaFileData(
             $ajxpNode,
             $scope,
-            ($private?$this->getUserId():AJXP_METADATA_SHAREDUSER)
+            ($private?$this->getUserId($ajxpNode):AJXP_METADATA_SHAREDUSER)
         );
         if (!isSet(self::$metaCache[$nameSpace])) {
             self::$metaCache[$nameSpace] = array();
@@ -78,7 +77,7 @@ class SerialMetaStore extends AJXP_Plugin implements MetaStoreProvider
         $this->saveMetaFileData(
             $ajxpNode,
             $scope,
-            ($private?$this->getUserId():AJXP_METADATA_SHAREDUSER)
+            ($private?$this->getUserId($ajxpNode):AJXP_METADATA_SHAREDUSER)
         );
     }
 
@@ -87,14 +86,14 @@ class SerialMetaStore extends AJXP_Plugin implements MetaStoreProvider
         $this->loadMetaFileData(
             $ajxpNode,
             $scope,
-            ($private?$this->getUserId():AJXP_METADATA_SHAREDUSER)
+            ($private?$this->getUserId($ajxpNode):AJXP_METADATA_SHAREDUSER)
         );
         if(!isSet(self::$metaCache[$nameSpace])) return;
         unset(self::$metaCache[$nameSpace]);
         $this->saveMetaFileData(
             $ajxpNode,
             $scope,
-            ($private?$this->getUserId():AJXP_METADATA_SHAREDUSER)
+            ($private?$this->getUserId($ajxpNode):AJXP_METADATA_SHAREDUSER)
         );
     }
 
@@ -103,7 +102,7 @@ class SerialMetaStore extends AJXP_Plugin implements MetaStoreProvider
         $this->loadMetaFileData(
             $ajxpNode,
             $scope,
-            ($private?$this->getUserId():AJXP_METADATA_SHAREDUSER)
+            ($private?$this->getUserId($ajxpNode):AJXP_METADATA_SHAREDUSER)
         );
         if(!isSet(self::$metaCache[$nameSpace])) return array();
         else return self::$metaCache[$nameSpace];
@@ -121,11 +120,11 @@ class SerialMetaStore extends AJXP_Plugin implements MetaStoreProvider
         $all = array();
         $this->loadMetaFileData($ajxpNode, AJXP_METADATA_SCOPE_GLOBAL, AJXP_METADATA_SHAREDUSER);
         $all[] = self::$metaCache;
-        $this->loadMetaFileData($ajxpNode, AJXP_METADATA_SCOPE_GLOBAL, $this->getUserId());
+        $this->loadMetaFileData($ajxpNode, AJXP_METADATA_SCOPE_GLOBAL, $this->getUserId($ajxpNode));
         $all[] = self::$metaCache;
         $this->loadMetaFileData($ajxpNode, AJXP_METADATA_SCOPE_REPOSITORY, AJXP_METADATA_SHAREDUSER);
         $all[] = self::$metaCache;
-        $this->loadMetaFileData($ajxpNode, AJXP_METADATA_SCOPE_REPOSITORY, $this->getUserId());
+        $this->loadMetaFileData($ajxpNode, AJXP_METADATA_SCOPE_REPOSITORY, $this->getUserId($ajxpNode));
         $all[] = self::$metaCache;
         $allMeta = array();
         foreach ($all as $metadata) {
@@ -264,10 +263,12 @@ class SerialMetaStore extends AJXP_Plugin implements MetaStoreProvider
                     unset(self::$fullMetaCache[$metaFile][$fileKey]);
                 }
             }
-            $fp = fopen($metaFile, "w");
+            $fp = @fopen($metaFile, "w");
             if ($fp !== false) {
                 @fwrite($fp, serialize(self::$fullMetaCache[$metaFile]), strlen(serialize(self::$fullMetaCache[$metaFile])));
                 @fclose($fp);
+            }else{
+                $this->logError(__FUNCTION__, "Error while trying to open the meta file, maybe a permission problem?");
             }
             if ($scope == AJXP_METADATA_SCOPE_GLOBAL) {
                  AJXP_Controller::applyHook("version.commit_file", array($metaFile, $ajxpNode));

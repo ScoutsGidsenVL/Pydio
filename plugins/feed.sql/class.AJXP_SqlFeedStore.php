@@ -59,7 +59,6 @@ class AJXP_SqlFeedStore extends AJXP_Plugin implements AJXP_FeedStore
     public function persistEvent($hookName, $data, $repositoryId, $repositoryScope, $repositoryOwner, $userId, $userGroup)
     {
         if($this->sqlDriver["password"] == "XXXX") return;
-        require_once(AJXP_BIN_FOLDER."/dibi.compact.php");
         dibi::connect($this->sqlDriver);
         try {
             $node = null;
@@ -84,17 +83,21 @@ class AJXP_SqlFeedStore extends AJXP_Plugin implements AJXP_FeedStore
 
     /**
      * @param array $filterByRepositories
-     * @param string $userId
+     * @param $filterByPath
      * @param string $userGroup
      * @param integer $offset
      * @param integer $limit
+     * @param bool $enlargeToOwned
+     * @param string $userId
      * @return An array of stdClass objects with keys hookname, arguments, author, date, repository
      */
-    public function loadEvents($filterByRepositories, $userId, $userGroup, $offset = 0, $limit = 10, $enlargeToOwned = true)
+    public function loadEvents($filterByRepositories, $filterByPath, $userGroup, $offset = 0, $limit = 10, $enlargeToOwned = true, $userId)
     {
         if($this->sqlDriver["password"] == "XXXX") return array();
-        require_once(AJXP_BIN_FOLDER."/dibi.compact.php");
         dibi::connect($this->sqlDriver);
+        if($this->sqlDriver["driver"] == "postgre"){
+            dibi::query("SET bytea_output=escape");
+        }
         if ($enlargeToOwned) {
             $res = dibi::query("SELECT * FROM [ajxp_feed] WHERE [etype] = %s AND
             ( [repository_id] IN (%s) OR [repository_owner] = %s )
@@ -105,14 +108,33 @@ class AJXP_SqlFeedStore extends AJXP_Plugin implements AJXP_FeedStore
             )
             ORDER BY [edate] DESC %lmt %ofs", "event", $filterByRepositories, $userId, $userId, $userGroup, $limit, $offset);
         } else {
-            $res = dibi::query("SELECT * FROM [ajxp_feed] WHERE [etype] = %s AND
-            ( [repository_id] IN (%s))
-            AND (
-                [repository_scope] = 'ALL'
-                OR  ([repository_scope] = 'USER' AND [user_id] = %s  )
-                OR  ([repository_scope] = 'GROUP' AND [user_group] = %s  )
-            )
-            ORDER BY [edate] DESC %lmt %ofs", "event", $filterByRepositories, $userId, $userGroup, $limit, $offset);
+            if(!empty($filterByPath)){
+                $groupByClause = "";
+                if($filterByPath[strlen($filterByPath)-1]=='/'){
+                    //$groupByClause = " GROUP BY [index_path] ";
+                }
+                $index_path = "ajxp.fs://".$filterByRepositories[0].$filterByPath."%";
+                $res = dibi::query("SELECT * FROM [ajxp_feed] WHERE [etype] = %s
+                AND
+                  ( [repository_id] IN (%s))
+                AND
+                  ([index_path] LIKE %s)
+                AND (
+                    [repository_scope] = 'ALL'
+                    OR  ([repository_scope] = 'USER' AND [user_id] = %s  )
+                    OR  ([repository_scope] = 'GROUP' AND [user_group] = %s  )
+                )
+                $groupByClause ORDER BY [edate] DESC %lmt %ofs", "event", $filterByRepositories, $index_path, $userId, $userGroup, $limit, $offset);
+            }else{
+                    $res = dibi::query("SELECT * FROM [ajxp_feed] WHERE [etype] = %s AND
+                ( [repository_id] IN (%s))
+                AND (
+                    [repository_scope] = 'ALL'
+                    OR  ([repository_scope] = 'USER' AND [user_id] = %s  )
+                    OR  ([repository_scope] = 'GROUP' AND [user_group] = %s  )
+                )
+                ORDER BY [edate] DESC %lmt %ofs", "event", $filterByRepositories, $userId, $userGroup, $limit, $offset);
+            }
         }
         $data = array();
         foreach ($res as $n => $row) {
@@ -139,7 +161,6 @@ class AJXP_SqlFeedStore extends AJXP_Plugin implements AJXP_FeedStore
         $repositoryId = $notif->getNode()->getRepositoryId();
         $userId = $notif->getTarget();
         if($this->sqlDriver["password"] == "XXXX") return;
-        require_once(AJXP_BIN_FOLDER."/dibi.compact.php");
         dibi::connect($this->sqlDriver);
         try {
             dibi::query("INSERT INTO [ajxp_feed] ([edate],[etype],[htype],[user_id],[repository_id],[content], [index_path]) VALUES (%i,%s,%s,%s,%s,%bin,%s)",
@@ -165,10 +186,12 @@ class AJXP_SqlFeedStore extends AJXP_Plugin implements AJXP_FeedStore
     public function loadAlerts($userId, $repositoryIdFilter = null)
     {
         if($this->sqlDriver["password"] == "XXXX") return array();
-        require_once(AJXP_BIN_FOLDER."/dibi.compact.php");
         dibi::connect($this->sqlDriver);
         if ($repositoryIdFilter != null) {
-            $res = dibi::query("SELECT * FROM [ajxp_feed] WHERE [etype] = %s AND [repository_id] = %s AND [user_id] = %s ORDER BY [edate] DESC %lmt", "alert", $repositoryIdFilter, $userId, 100);
+            $res = dibi::query("SELECT * FROM [ajxp_feed] WHERE [etype] = %s
+            AND ([repository_id] = %s OR [repository_id] IN  (SELECT [uuid] FROM [ajxp_repo] WHERE [parent_uuid]=%s))
+            AND [user_id] = %s ORDER BY [edate] DESC %lmt", "alert", $repositoryIdFilter, $repositoryIdFilter, $userId, 100);
+            //$res = dibi::query("SELECT * FROM [ajxp_feed] WHERE [etype] = %s AND [repository_id] = %s AND [user_id] = %s ORDER BY [edate] DESC %lmt", "alert", $repositoryIdFilter, $userId, 100);
         } else {
             $res = dibi::query("SELECT * FROM [ajxp_feed] WHERE [etype] = %s AND [user_id] = %s ORDER BY [edate] DESC %lmt", "alert", $userId, 100);
         }
@@ -189,7 +212,6 @@ class AJXP_SqlFeedStore extends AJXP_Plugin implements AJXP_FeedStore
      */
     public function dismissAlertById($alertId, $occurrences = 1)
     {
-        require_once(AJXP_BIN_FOLDER."/dibi.compact.php");
         dibi::connect($this->sqlDriver);
         $userId = AuthService::getLoggedUser()->getId();
         if ($occurrences == 1) {
@@ -245,7 +267,6 @@ class AJXP_SqlFeedStore extends AJXP_Plugin implements AJXP_FeedStore
     public function persistMetaObject($indexPath, $data, $repositoryId, $repositoryScope, $repositoryOwner, $userId, $userGroup)
     {
         if($this->sqlDriver["password"] == "XXXX") return;
-        require_once(AJXP_BIN_FOLDER."/dibi.compact.php");
         dibi::connect($this->sqlDriver);
         try {
             dibi::query("INSERT INTO [ajxp_feed] ([edate],[etype],[htype],[index_path],[user_id],[repository_id],[repository_owner],[user_group],[repository_scope],[content]) VALUES (%i,%s,%s,%s,%s,%s,%s,%s,%s,%bin)", time(), "meta", "comment", $indexPath, $userId, $repositoryId, $repositoryOwner, $userGroup, ($repositoryScope !== false ? $repositoryScope : "ALL"), serialize($data));
@@ -254,15 +275,21 @@ class AJXP_SqlFeedStore extends AJXP_Plugin implements AJXP_FeedStore
         }
     }
 
-    public function findMetaObjectsByIndexPath($repositoryId, $indexPath, $userId, $userGroup, $offset = 0, $limit = 20, $orderBy = "date", $orderDir = "desc")
+    public function findMetaObjectsByIndexPath($repositoryId, $indexPath, $userId, $userGroup, $offset = 0, $limit = 20, $orderBy = "date", $orderDir = "desc", $recurring = true)
     {
         if($this->sqlDriver["password"] == "XXXX") return array();
-        require_once(AJXP_BIN_FOLDER."/dibi.compact.php");
         dibi::connect($this->sqlDriver);
-        $res = dibi::query("SELECT * FROM [ajxp_feed]
-            WHERE [etype] = %s AND [repository_id] = %s AND [index_path] LIKE %like~
-            ORDER BY %by %lmt %ofs
-        ", "meta", $repositoryId, $indexPath, array('edate' => $orderDir), $limit, $offset);
+        if($recurring){
+            $res = dibi::query("SELECT * FROM [ajxp_feed]
+                WHERE [etype] = %s AND [repository_id] = %s AND [index_path] LIKE %like~
+                ORDER BY %by %lmt %ofs
+            ", "meta", $repositoryId, $indexPath, array('edate' => $orderDir), $limit, $offset);
+        }else{
+            $res = dibi::query("SELECT * FROM [ajxp_feed]
+                WHERE [etype] = %s AND [repository_id] = %s AND [index_path] = %s
+                ORDER BY %by %lmt %ofs
+            ", "meta", $repositoryId, $indexPath, array('edate' => $orderDir), $limit, $offset);
+        }
 
         $data = array();
         foreach ($res as $n => $row) {
@@ -281,7 +308,6 @@ class AJXP_SqlFeedStore extends AJXP_Plugin implements AJXP_FeedStore
     public function updateMetaObject($repositoryId, $oldPath, $newPath = null, $copy = false)
     {
         if($this->sqlDriver["password"] == "XXXX") return array();
-        require_once(AJXP_BIN_FOLDER."/dibi.compact.php");
         dibi::connect($this->sqlDriver);
         if ($oldPath != null && $newPath == null) {// DELETE
 

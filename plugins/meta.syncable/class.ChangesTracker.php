@@ -26,9 +26,8 @@ defined('AJXP_EXEC') or die('Access not allowed');
  * @package AjaXplorer_Plugins
  * @subpackage Meta
  */
-class ChangesTracker extends AJXP_Plugin
+class ChangesTracker extends AJXP_AbstractMetaSource
 {
-    protected $accessDriver;
     private $sqlDriver;
 
     public function init($options)
@@ -37,67 +36,256 @@ class ChangesTracker extends AJXP_Plugin
         parent::init($options);
     }
 
-    public function initMeta($accessDriver)
-    {
-        $this->accessDriver = $accessDriver;
+    protected function indexIsSync(){
+        // Grab all folders mtime and compare them
+        $repoIdentifier = $this->computeIdentifier($this->accessDriver->repository);
+        $res = dibi::query("SELECT [node_path],[mtime] FROM [ajxp_index] WHERE [md5] = %s AND [repository_identifier] = %s", 'directory', $repoIdentifier);
+        $modified = array();
+
+        // REGISTER ROOT ANYWAY: WE PROBABLY CAN'T GET A "FILEMTIME" ON IT.
+        $mod = array(
+            "url"   => $this->accessDriver->getResourceUrl(""),
+            "path"  => "/",
+            "children" => array()
+        );
+        $children = dibi::query("SELECT [node_path],[mtime] FROM [ajxp_index] WHERE [repository_identifier] = %s AND [node_path] LIKE %s AND [node_path] NOT LIKE %s",
+             $repoIdentifier, "/%", "/%/%");
+        foreach($children as $cRow){
+            $mod["children"][substr($cRow->node_path, 1)] = $cRow->mtime;
+        }
+        $modified[] = $mod;
+
+        clearstatcache();
+        // CHECK ALL FOLDERS
+        foreach($res as $row){
+            $path = $row->node_path;
+            $mtime = intval($row->mtime);
+            $url = $this->accessDriver->getResourceUrl($path);
+            $currentTime = @filemtime($url);
+            if($currentTime === false && !file_exists($url)) {
+                // Deleted folder!
+                $this->logDebug(__FUNCTION__, "Folder deleted directly on storage: ".$url);
+                $node = new AJXP_Node($url);
+                AJXP_Controller::applyHook("node.change", array(&$node, null, false));
+                continue;
+            }
+            if($currentTime > $mtime){
+                $mod = array(
+                    "url" => $url,
+                    "path" => $path,
+                    "children" => array(),
+                    "current_time" => $currentTime
+                );
+                $children = dibi::query("SELECT [node_path],[mtime],[md5] FROM [ajxp_index] WHERE [md5] != %s AND [repository_identifier] = %s AND [node_path] LIKE %s AND [node_path] NOT LIKE %s",
+                    'directory', $repoIdentifier, "$path/%", "$path/%/%");
+                foreach($children as $cRow){
+                    $mod["children"][substr($cRow->node_path, strlen($path)+1)] = $cRow->mtime;
+                }
+                $modified[] = $mod;
+            }
+        }
+
+        // NOW COMPUTE DIFFS
+        foreach($modified as $mod_data){
+            $url = $mod_data["url"];
+            $current_time = $mod_data["current_time"];
+            $currentChildren = $mod_data["children"];
+            $files = scandir($url);
+            foreach($files as $f){
+                if($f[0] == ".") continue;
+                $nodeUrl = $url."/".$f;
+                $node = new AJXP_Node($nodeUrl);
+                // Ignore dirs modified time
+                // if(is_dir($nodeUrl) && $mod_data["path"] != "/") continue;
+                if(!isSet($currentChildren[$f])){
+                    // New items detected
+                    $this->logDebug(__FUNCTION__, "New item detected on storage: ".$nodeUrl);
+                    AJXP_Controller::applyHook("node.change", array(null, &$node, false, true));
+                    continue;
+                }else {
+                    if(is_dir($nodeUrl)) continue; // Make sure to not trigger a recursive indexation here.
+                    if(filemtime($nodeUrl) > $currentChildren[$f]){
+                        // Changed!
+                        $this->logDebug(__FUNCTION__, "Item modified directly on storage: ".$nodeUrl);
+                        AJXP_Controller::applyHook("node.change", array(&$node, &$node, false));
+                    }
+                }
+            }
+            foreach($currentChildren as $cPath => $mtime){
+                if(!in_array($cPath, $files)){
+                    // Deleted
+                    $this->logDebug(__FUNCTION__, "File deleted directly on storage: ".$url."/".$cPath);
+                    $node = new AJXP_Node($url."/".$cPath);
+                    AJXP_Controller::applyHook("node.change", array(&$node, null, false));
+                }
+            }
+            // Now "touch" parent directory
+            if(isSet($current_time)){
+                dibi::query("UPDATE [ajxp_index] SET ", array("mtime" => $current_time), " WHERE [repository_identifier] = %s AND [node_path] = %s", $repoIdentifier, $mod_data["path"]);
+            }
+        }
     }
 
     public function switchActions($actionName, $httpVars, $fileVars)
     {
         if($actionName != "changes" || !isSet($httpVars["seq_id"])) return false;
+        if(!dibi::isConnected()) {
+            dibi::connect($this->sqlDriver);
+        }
+        $filter = null;
+        $currentRepo = $this->accessDriver->repository;
+        $recycle = $currentRepo->getOption("RECYCLE_BIN");
+        $recycle = (!empty($recycle)?$recycle:false);
 
-        require_once(AJXP_BIN_FOLDER."/dibi.compact.php");
-        dibi::connect($this->sqlDriver);
+        if($this->options["OBSERVE_STORAGE_CHANGES"]){
+            $this->indexIsSync();
+        }
 
         HTMLWriter::charsetHeader('application/json', 'UTF-8');
-
-        $res = dibi::query("SELECT
+        if(isSet($httpVars["filter"])){
+            $filter = AJXP_Utils::decodeSecureMagic($httpVars["filter"]);
+            $res = dibi::query("SELECT
+                [seq] , [ajxp_changes].[repository_identifier] , [ajxp_changes].[node_id] , [type] , [source] ,  [target] , [ajxp_index].[bytesize], [ajxp_index].[md5], [ajxp_index].[mtime], [ajxp_index].[node_path]
+                FROM [ajxp_changes]
+                LEFT JOIN [ajxp_index]
+                    ON [ajxp_changes].[node_id] = [ajxp_index].[node_id]
+                WHERE [ajxp_changes].[repository_identifier] = %s AND ([source] LIKE %like~ OR [target] LIKE %like~ ) AND [seq] > %i
+                ORDER BY [ajxp_changes].[node_id], [seq] ASC",
+                $this->computeIdentifier($currentRepo), rtrim($filter, "/")."/", rtrim($filter, "/")."/", AJXP_Utils::sanitize($httpVars["seq_id"], AJXP_SANITIZE_ALPHANUM));
+        }else{
+            $res = dibi::query("SELECT
                 [seq] , [ajxp_changes].[repository_identifier] , [ajxp_changes].[node_id] , [type] , [source] ,  [target] , [ajxp_index].[bytesize], [ajxp_index].[md5], [ajxp_index].[mtime], [ajxp_index].[node_path]
                 FROM [ajxp_changes]
                 LEFT JOIN [ajxp_index]
                     ON [ajxp_changes].[node_id] = [ajxp_index].[node_id]
                 WHERE [ajxp_changes].[repository_identifier] = %s AND [seq] > %i
                 ORDER BY [ajxp_changes].[node_id], [seq] ASC",
-            $this->computeIdentifier(ConfService::getRepository()), AJXP_Utils::sanitize($httpVars["seq_id"], AJXP_SANITIZE_ALPHANUM));
+                $this->computeIdentifier($currentRepo), AJXP_Utils::sanitize($httpVars["seq_id"], AJXP_SANITIZE_ALPHANUM));
+        }
 
-        echo '{"changes":[';
+        $stream = isSet($httpVars["stream"]);
+        $separator = $stream ? "\n" : ",";
+        if(!$stream) echo '{"changes":[';
         $previousNodeId = -1;
         $previousRow = null;
         $order = array("path"=>0, "content"=>1, "create"=>2, "delete"=>3);
         $relocateAttrs = array("bytesize", "md5", "mtime", "node_path", "repository_identifier");
+        $valuesSent = false;
         foreach ($res as $row) {
             $row->node = array();
             foreach ($relocateAttrs as $att) {
                 $row->node[$att] = $row->$att;
                 unset($row->$att);
             }
-            if ($row->node_id == $previousNodeId) {
-                $previousRow->target = $row->target;
-                $previousRow->seq = $row->seq;
-                if ($order[$row->type] > $order[$previousRow->type]) {
-                    $previousRow->type = $row->type;
+            if(!empty($recycle)) $this->cancelRecycleNodes($row, $recycle);
+            if(!isSet($httpVars["flatten"]) || $httpVars["flatten"] == "false"){
+
+                if(!$this->filterRow($row, $filter)){
+                    if ($valuesSent) {
+                        echo $separator;
+                    }
+                    echo json_encode($row);
+                    $valuesSent = true;
                 }
-            } else {
-                if (isSet($previousRow) && ($previousRow->source != $previousRow->target || $previousRow->type == "content")) {
-                    echo json_encode($previousRow) . ",";
+
+            }else{
+
+                if ($row->node_id == $previousNodeId) {
+                    $previousRow->target = $row->target;
+                    $previousRow->seq = $row->seq;
+                    if ($order[$row->type] > $order[$previousRow->type]) {
+                        $previousRow->type = $row->type;
+                    }
+                } else {
+                    if (isSet($previousRow) && ($previousRow->source != $previousRow->target || $previousRow->type == "content")) {
+                        if($this->filterRow($previousRow, $filter)){
+                            $previousRow = $row;
+                            $previousNodeId = $row->node_id;
+                            $lastSeq = $row->seq;
+                            continue;
+                        }
+                        if($valuesSent) echo $separator;
+                        echo json_encode($previousRow);
+                        $valuesSent = true;
+                    }
+                    $previousRow = $row;
+                    $previousNodeId = $row->node_id;
                 }
-                $previousRow = $row;
-                $previousNodeId = $row->node_id;
+                $lastSeq = $row->seq;
+                flush();
             }
-            $lastSeq = $row->seq;
-            flush();
+	    //CODES HERE HAVE BEEN MOVE OUT OF THE LOOP
         }
-        if (isSet($previousRow) && ($previousRow->source != $previousRow->target || $previousRow->type == "content")) {
+
+        /**********RETURN TO SENDER************/
+        // is 'not NULL' included in isSet()?
+        if ($previousRow && isSet($previousRow) && ($previousRow->source != $previousRow->target || $previousRow->type == "content") && !$this->filterRow($previousRow, $filter)) {
+            if($valuesSent) echo $separator;
             echo json_encode($previousRow);
+            if ($previousRow->seq > $lastSeq){
+                $lastSeq = $previousRow->seq;
+            }
+            $valuesSent = true;
         }
+        /*************************************/
+
         if (isSet($lastSeq)) {
-            echo '], "last_seq":'.$lastSeq.'}';
+            if($stream){
+                echo("\nLAST_SEQ:".$lastSeq);
+            }else{
+                echo '], "last_seq":'.$lastSeq.'}';
+            }
         } else {
             $lastSeq = dibi::query("SELECT MAX([seq]) FROM [ajxp_changes]")->fetchSingle();
             if(empty($lastSeq)) $lastSeq = 1;
-            echo '], "last_seq":'.$lastSeq.'}';
+            if($stream){
+                echo("\nLAST_SEQ:".$lastSeq);
+            }else{
+                echo '], "last_seq":'.$lastSeq.'}';
+            }
         }
 
+    }
+
+    protected function cancelRecycleNodes(&$row, $recycle){
+        if($row->type != 'path') return;
+        if(strpos($row->source, '/'.$recycle) === 0){
+            $row->source = 'NULL';
+            $row->type  = 'create';
+        }else if(strpos($row->target, '/'.$recycle) === 0){
+            $row->target = 'NULL';
+            $row->type   = 'delete';
+        }
+    }
+
+    protected function filterRow(&$previousRow, $filter = null){
+        if($filter == null) return false;
+        $srcInFilter = strpos($previousRow->source, $filter) === 0;
+        $targetInFilter = strpos($previousRow->target, $filter) === 0;
+        if(!$srcInFilter && !$targetInFilter){
+            return true;
+        }
+        if($previousRow->type == 'path'){
+            if(!$srcInFilter){
+                $previousRow->type = 'create';
+                $previousRow->source = 'NULL';
+            }else if(!$targetInFilter){
+                $previousRow->type = 'delete';
+                $previousRow->target = 'NULL';
+            }
+        }
+        if($srcInFilter){
+            $previousRow->source = substr($previousRow->source, strlen($filter));
+        }
+        if($targetInFilter){
+            $previousRow->target = substr($previousRow->target, strlen($filter));
+        }
+        if($previousRow->type != 'delete'){
+            $previousRow->node['node_path'] = substr($previousRow->node['node_path'], strlen($filter));
+        }else if(strpos($previousRow->node['node_path'], $filter) !== 0){
+            $previousRow->node['node_path'] = false;
+        }
+        return false;
     }
 
     /**
@@ -116,20 +304,41 @@ class ChangesTracker extends AJXP_Plugin
     }
 
     /**
+     * @param Repository $repository
+     * @return float
+     */
+    public function getRepositorySpaceUsage($repository){
+        $id = $this->computeIdentifier($repository);
+        $res = dibi::query("SELECT SUM([bytesize]) FROM [ajxp_index] WHERE [repository_identifier] = %s", $id);
+        return floatval($res->fetchSingle());
+    }
+
+    /**
      * @param AJXP_Node $oldNode
      * @param AJXP_Node $newNode
      * @param bool $copy
      */
     public function updateNodesIndex($oldNode = null, $newNode = null, $copy = false)
     {
-
-        require_once(AJXP_BIN_FOLDER."/dibi.compact.php");
+        if(!dibi::isConnected()) {
+            dibi::connect($this->sqlDriver);
+        }
         try {
+            if ($newNode != null && $this->excludeNode($newNode)) {
+                // CREATE
+                if($oldNode == null) {
+                    AJXP_Logger::debug("Ignoring ".$newNode->getUrl()." for indexation");
+                    return;
+                }else{
+                    AJXP_Logger::debug("Target node is excluded, see it as a deletion: ".$newNode->getUrl());
+                    $newNode = null;
+                }
+            }
             if ($newNode == null) {
                 $repoId = $this->computeIdentifier($oldNode->getRepository());
                 // DELETE
                 dibi::query("DELETE FROM [ajxp_index] WHERE [node_path] LIKE %like~ AND [repository_identifier] = %s", $oldNode->getPath(), $repoId);
-            } else if ($oldNode == null) {
+            } else if ($oldNode == null || $copy) {
                 // CREATE
                 $stat = stat($newNode->getUrl());
                 $res = dibi::query("INSERT INTO [ajxp_index]", array(
@@ -171,6 +380,36 @@ class ChangesTracker extends AJXP_Plugin
             AJXP_Logger::error("[meta.syncable]", "Indexation", $e->getMessage());
         }
 
+    }
+
+    /**
+     * @param AJXP_Node $node
+     * @return bool
+     */
+    protected function excludeNode($node){
+        // DO NOT EXCLUDE RECYCLE INDEXATION, OTHERWISE RESTORED DATA IS NOT DETECTED!
+        //$repo = $node->getRepository();
+        //$recycle = $repo->getOption("RECYCLE_BIN");
+        //if(!empty($recycle) && strpos($node->getPath(), "/".trim($recycle, "/")) === 0) return true;
+
+        // Other exclusions conditions here?
+        return false;
+    }
+
+    /**
+     * @param AJXP_Node $node
+     */
+    public function indexNode($node){
+        // Create
+        $this->updateNodesIndex(null, $node, false);
+    }
+
+    /**
+     * @param AJXP_Node $node
+     */
+    public function clearIndexForNode($node){
+        // Delete
+        $this->updateNodesIndex($node, null, false);
     }
 
     public function installSQLTables($param)

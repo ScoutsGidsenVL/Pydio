@@ -24,6 +24,7 @@ Class.create("WebDAVprefsEditor", AjxpPane, {
         $super(element, options);
 
         if(!ajaxplorer.user) return;
+        attachMobileScroll(element.down('.fit_me_to_bottom'));
         var cont = element.down('#webdav_repo_list');
         cont.update('');
         var activator = element.down("#webdav_activator");
@@ -58,7 +59,7 @@ Class.create("WebDAVprefsEditor", AjxpPane, {
                 var open = span.hasClassName("icon-caret-right");
                 span.removeClassName(open ? "icon-caret-right" : "icon-caret-down");
                 span.addClassName(!open ? "icon-caret-right" : "icon-caret-down");
-            });
+            }.bind(this));
 
             //element.down('input[name="ok"]').observe("click", hideLightBox);
             if(!activator.hasObserver){
@@ -73,7 +74,7 @@ Class.create("WebDAVprefsEditor", AjxpPane, {
                         ajaxplorer.webdavCurrentPreferences = transport.responseJSON;
                         if(ajaxplorer.webdavCurrentPreferences.webdav_active){
                             if(!ajaxplorer.webdavCurrentPreferences.digest_set
-                                || ajaxplorer.webdavCurrentPreferences.webdav_force_basic) {
+                                && ajaxplorer.webdavCurrentPreferences.webdav_force_basic) {
                                 element.down('#webdav_password_form').show();
                             }
                             ajaxplorer.displayMessage("SUCCESS", MessageHash[408]);
@@ -104,6 +105,11 @@ Class.create("WebDAVprefsEditor", AjxpPane, {
         conn.sendAsync();
 
 
+    },
+
+    resize: function($super){
+        $super();
+        fitHeightToBottom(this.htmlElement.down('.fit_me_to_bottom'));
     }
 
 

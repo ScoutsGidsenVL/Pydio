@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<uploader id="uploader.plupload" enabled="false" description="CONF_MESSAGE[PlUpload uploader support. Requires downloading and installing the PLupload sources.]" label="CONF_MESSAGE[PlUpload Support]" text="51" title="162" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:../core.ajaxplorer/ajxp_registry.xsd">
+<uploader id="uploader.plupload" order="1" enabled="false" description="CONF_MESSAGE[PlUpload uploader support. Requires downloading and installing the PLupload sources.]" label="CONF_MESSAGE[PLUploader]" text="51" title="162" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:../core.ajaxplorer/ajxp_registry.xsd">
     <plugin_info>
         <core_relation packaged="true" tested_version="4.3"/>
         <plugin_author>lmanders</plugin_author>
         <plugin_version>1.0</plugin_version>
     </plugin_info>
 	<class_definition filename="plugins/uploader.plupload/class.PluploadProcessor.php" classname="PluploadProcessor"/>
+    <server_settings>
+        <global_param expose="true" name="RUNTIMES" group="CONF_MESSAGE[Upload Options]" type="string" label="CONF_MESSAGE[Runtimes]" description="CONF_MESSAGE[Defines which runtimes are to be used and in what order, separated by comma. Currently html5,silverlight,flash,html4 are supported.]" mandatory="true" default="html5,silverlight,flash,html4"/>
+        <global_param expose="true" name="MAX_FILE_SIZE" group="CONF_MESSAGE[Upload Options]" type="string" label="CONF_MESSAGE[Maximum File Size]" description="CONF_MESSAGE[Defines maximum size of files to be transferred, such as 4096mb.]" mandatory="true" default="4096mb"/>
+        <global_param expose="true" name="CHUNK_SIZE" group="CONF_MESSAGE[Upload Options]" type="string" label="CONF_MESSAGE[Chunk Size]" description="CONF_MESSAGE[Defines chunk size to be used, such as 512k, 2mb. If empty then maximum system settings are used.]" mandatory="false" default=""/>
+    </server_settings>
     <registry_contributions>
         <actions>
-            <action name="upload_chunks_unify">
+            <action name="upload_chunks_unify_plupload">
                 <processing>
                     <serverCallback methodName="unifyChunks"/>
                 </processing>

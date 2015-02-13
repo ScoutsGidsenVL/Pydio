@@ -105,7 +105,7 @@ class smb
                 }
             }
         }
-        AJXP_Logger::debug($str, $array);
+        AJXP_Logger::debug(__CLASS__,__FUNCTION__,$str, $array);
     }
 
 
@@ -187,7 +187,7 @@ class smb
         $descriptorspec = array(
             0 => array("pipe", "r"),  	// stdin is a pipe that the child will read from
             1 => array("pipe", "w"),  	// stdout is a pipe that the child will write to
-            2 => array("pipe", "w") 	// stderr is a pipe to write to
+            2 => array("pipe", "rw") 	// stderr is a pipe to write to
         );
         $env = null;
         if (defined('AJXP_LOCALE') && stripos(PHP_OS, "win") === false) {
@@ -216,6 +216,11 @@ class smb
         if (isset($output) && is_resource($output)) {
 
             while ($line = fgets ($output, 4096)) {
+			
+                if (PHP_OS == "WIN32" || PHP_OS == "WINNT" || PHP_OS == "Windows") {
+                    $line = SystemTextEncoding::fromUTF8($line);
+                    }
+
                 list ($tag, $regs, $i) = array ('skip', array (), array ());
                 reset ($regexp);
                 foreach ($regexp as $r => $t) if (preg_match ('/'.$r.'/', $line, $regs)) {
@@ -244,7 +249,7 @@ class smb
                         $i = ($mode == 'servers') ? array ($name, "server") : array ($name, "workgroup", $master);
                         break;
                     case 'files':
-                        list ($attr, $name) = preg_match ("/^(.*)[ ]+([D|A|H|S|R]+)$/", trim ($regs[1]), $regs2)
+                        list ($attr, $name) = preg_match ("/^(.*)[ ]+([D|A|H|S|R|N]+)$/", trim ($regs[1]), $regs2)
                             ? array (trim ($regs2[2]), trim ($regs2[1]))
                             : array ('', trim ($regs[1]));
                         list ($his, $im) = array (
@@ -354,7 +359,7 @@ class smb
                         return null;
                     }
                     $p = explode ("\\", $pu['path']);
-                    $name = SystemTextEncoding::toUTF8($p[count($p)-1]);
+                    $name = $p[count($p)-1];
                     if (isset ($o['info'][$name])) {
                        $stat = smb::addstatcache ($url, $o['info'][$name]);
                     } else {
@@ -445,7 +450,10 @@ class smb
             trigger_error('rename(): error in URL', E_USER_ERROR);
         }
         smb::clearstatcache ($url_from);
-        return smb::execute ('rename "'.$from['path'].'" "'.$to['path'].'"', $to);
+        $res = smb::execute ('rename "'.$from['path'].'" "'.$to['path'].'"', $to);
+        if(empty($res)) return true;
+        AJXP_Logger::info(__CLASS__, "SmbClient rename error: ".$res);
+        return false;
     }
 
     public function mkdir ($url, $mode, $options)
@@ -637,6 +645,7 @@ class smb_stream_wrapper extends smb
             case 'r+':
             case 'rb':
             case 'a':
+            case 'ab':
             case 'a+':
                 // REFERENCE STREAM BUT DO NOT OPEN IT UNTIL READING IS REALLY NECESSARY!
                 /*

@@ -41,7 +41,7 @@ Class.create("WebodfEditor", AbstractEditor, {
 
         if(options.context.__className == "Modal"){
             this.actions.get("downloadFileButton").observe('click', function(){
-                if(!this.currentFile) return;
+                if(!this.currentFile) return false;
                 ajaxplorer.triggerDownload(ajxpBootstrap.parameters.get('ajxpServerAccess')+'&action=download&file='+this.currentFile);
                 return false;
             }.bind(this));
@@ -54,30 +54,15 @@ Class.create("WebodfEditor", AbstractEditor, {
 		$super(nodeOrNodes);
         this.node = nodeOrNodes;
 		var fileName = nodeOrNodes.getPath();
-        var fileContent = ajxpBootstrap.parameters.get('ajxpServerAccess')+'&get_action=download&file='+fileName;
 
         this.contentMainContainer = this.element.down('#webodf_container');
         this.contentMainContainer.src = 'plugins/editor.webodf/frame.php?token='+Connexion.SECURE_TOKEN+'&file='+fileName;
 
         this.resize();
+        this.element.fire("editor:updateTitle", getBaseName(this.node.getPath()));
         this.element.observe('editor:close', function(){
             this.contentMainContainer.src = '';
         }.bind(this));
-        /*
-        var conn = new Connexion();
-        conn.addParameter("get_action", "get_content");
-        conn.addParameter("file", fileName);
-
-        conn.onComplete = function(transport){
-            var data = transport.responseJSON;
-            this.padID = data.padID;
-            this.sessionID = data.sessionID;
-            $("ether_box").down("#ether_box_frame").src = data.url;
-            fitHeightToBottom($("ether_box").down("#ether_box_frame"));
-        }.bind(this);
-        conn.sendAsync();
-        */
-
 		if(window.ajxpMobile){
 			this.setFullScreen();
 			attachMobileScroll(this.textarea, "vertical");

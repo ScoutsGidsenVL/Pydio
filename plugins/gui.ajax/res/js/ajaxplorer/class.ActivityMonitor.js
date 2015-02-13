@@ -47,7 +47,7 @@ Class.create("ActivityMonitor", {
         }
 		if(clientSessionTime == -1){
 			this._renewTime = serverSessionTime - this._renewMinutes*60;
-			this.serverInterval = window.setInterval(this.serverObserver.bind(this), this._renewTime*1000);
+			this.serverInterval = window.setInterval(this.serverObserver.bind(this), Math.min((Math.pow(2,31)-1), this._renewTime*1000));
 			return;
 		}
 		this._serverSessionTime = serverSessionTime;
@@ -78,7 +78,7 @@ Class.create("ActivityMonitor", {
 				$(document.body).observe("mousemove", activityObserver );
 				document.observe("ajaxplorer:server_answer", activityObserver );
 				this.interval = window.setInterval(this.idleObserver.bind(this), 5000);
-				this.serverInterval = window.setInterval(this.serverObserver.bind(this), this._renewTime*1000);
+				this.serverInterval = window.setInterval(this.serverObserver.bind(this), Math.min((Math.pow(2,31)-1), this._renewTime*1000));
 			}
 		}.bind(this));
         document.observe("ajaxplorer:longtask_starting", function(){
@@ -174,17 +174,12 @@ Class.create("ActivityMonitor", {
 			mess = mess.replace("__LOGOUT__", "<span class=\"warning_timer\"></span>");
 			this.warningPane = new Element('div', {id:"activity_monitor_warning", className:'dialogBox', style:'padding:3px'}).update('<div class="dialogContent">'+mess+'<br><span class="click_anywhere">'+MessageHash[376]+'</span></div>');
 			$(document.body).insert(this.warningPane);			
+            displayLightBoxById("activity_monitor_warning");
+            $('overlay').setStyle({cursor:'pointer'});
+            $('overlay').observeOnce("click", this.exitIdleState.bind(this));
+            $('activity_monitor_warning').observeOnce("click", this.exitIdleState.bind(this));
+            new Effect.Shake(this.warningPane);
 		}
-		displayLightBoxById("activity_monitor_warning");
-		$('overlay').setStyle({cursor:'pointer'});
-		$('overlay').observeOnce("click", this.exitIdleState.bind(this));
-		$('activity_monitor_warning').observeOnce("click", this.exitIdleState.bind(this));
-		new Effect.Shake(this.warningPane);
-		this.opaFx = new Effect.Opacity($('overlay'), {
-			from:0.4, 
-			to : 0.7,
-			duration: this._warningMinutes*60
-		});
 	},
 	
 	/**

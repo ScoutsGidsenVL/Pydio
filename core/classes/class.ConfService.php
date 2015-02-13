@@ -164,6 +164,26 @@ class ConfService
     {
         return php_sapi_name() === "cli";
     }
+
+    protected static $restAPIContext;
+
+    /**
+     * Set or get if we are currently running REST
+     * @static
+     * @param null $set
+     * @param string $baseUrl
+     * @return bool
+     */
+    public static function currentContextIsRestAPI($restBase = '')
+    {
+        if(!empty($restBase)){
+            self::$restAPIContext = $restBase;
+            return $restBase;
+        }else{
+            return self::$restAPIContext;
+        }
+    }
+
     /**
      * Check the presence of mcrypt and option CMDLINE_ACTIVE
      * @static
@@ -215,6 +235,11 @@ class ConfService
         return AJXP_PluginsService::getInstance()->getPluginById("core.auth")->getAuthImpl();
     }
 
+    /**
+     * @param AbstractAjxpUser $loggedUser
+     * @param String|int $parameterId
+     * @return bool
+     */
     public static function switchUserToActiveRepository($loggedUser, $parameterId = -1)
     {
         if (isSet($_SESSION["PENDING_REPOSITORY_ID"]) && isSet($_SESSION["PENDING_FOLDER"])) {
@@ -263,10 +288,17 @@ class ConfService
     public function switchRootDirInst($rootDirIndex=-1, $temporary=false)
     {
         if ($rootDirIndex == -1) {
-            $currentRepos = $this->getLoadedRepositories();
-            if (isSet($_SESSION['REPO_ID']) && array_key_exists($_SESSION['REPO_ID'], $currentRepos)) {
-                $this->configs["REPOSITORY"] = $currentRepos[$_SESSION['REPO_ID']];
-            } else {
+            $ok = false;
+            if (isSet($_SESSION['REPO_ID'])) {
+                $sessionId = $_SESSION['REPO_ID'];
+                $object = self::getRepositoryById($sessionId);
+                if($object != null && self::repositoryIsAccessible($sessionId, $object)){
+                    $this->configs["REPOSITORY"] = $object;
+                    $ok = true;
+                }
+            }
+            if(!$ok) {
+                $currentRepos = $this->getLoadedRepositories();
                 $keys = array_keys($currentRepos);
                 $this->configs["REPOSITORY"] = $currentRepos[$keys[0]];
                 $_SESSION['REPO_ID'] = $keys[0];
@@ -320,12 +352,12 @@ class ConfService
      * @param String $scope "user" or "all"
      * @return Repository[]
      */
-    public static function getRepositoriesList($scope = "user")
+    public static function getRepositoriesList($scope = "user", $includeShared = true)
     {
         if ($scope == "user") {
             return self::getInstance()->getLoadedRepositories();
         } else {
-            return self::getInstance()->initRepositoriesListInst("all");
+            return self::getInstance()->initRepositoriesListInst("all", $includeShared);
         }
     }
 
@@ -354,12 +386,12 @@ class ConfService
      * @param bool $skipShared
      * @return Repository[]
      */
-    public static function getAccessibleRepositories($userObject=null, $details=false, $labelOnly = false, $skipShared = false)
+    public static function getAccessibleRepositories($userObject=null, $details=false, $labelOnly = false, $includeShared = true)
     {
         $result = array();
-        $allReps = ConfService::getRepositoriesList("all");
+        $allReps = ConfService::getRepositoriesList("user");
         foreach ($allReps as $repositoryId => $repositoryObject) {
-            if (!ConfService::repositoryIsAccessible($repositoryId, $repositoryObject, $userObject, $details, $skipShared)) {
+            if (!ConfService::repositoryIsAccessible($repositoryId, $repositoryObject, $userObject, $details, $includeShared)) {
                 continue;
             }
 
@@ -378,11 +410,11 @@ class ConfService
      * @param Repository $repositoryObject
      * @param AbstractAjxpUser $userObject
      * @param bool $details
-     * @param bool $skipShared
+     * @param bool $includeShared
      *
      * @return bool
      */
-    public static function repositoryIsAccessible($repositoryId, $repositoryObject, $userObject = null, $details=false, $skipShared=false)
+    public static function repositoryIsAccessible($repositoryId, $repositoryObject, $userObject = null, $details=false, $includeShared=true)
     {
         if($userObject == null) $userObject = AuthService::getLoggedUser();
         if ($userObject == null && AuthService::usersEnabled()) {
@@ -399,6 +431,9 @@ class ConfService
                 return false;
             }
         }
+        if ($repositoryObject->getAccessType()=="ajxp_user" && $userObject != null) {
+            return ($userObject->canRead($repositoryId) || $userObject->canWrite($repositoryId)) ;
+        }
         if ($repositoryObject->getAccessType() == "ajxp_shared" && !AuthService::usersEnabled()) {
             return false;
         }
@@ -414,7 +449,7 @@ class ConfService
                 return false;
             }
             // Do not display shared repositories otherwise.
-            if ($repositoryObject->hasOwner() && $skipShared) {
+            if ($repositoryObject->hasOwner() && !$includeShared && ($userObject == null || $userObject->getParent() != $repositoryObject->getOwner())) {
                 return false;
             }
             if ($userObject != null && $repositoryObject->hasOwner() && !$userObject->hasParent()) {
@@ -459,10 +494,13 @@ class ConfService
      */
     public function getCurrentRepositoryIdInst()
     {
-        $currentRepos = $this->getLoadedRepositories();
-        if (isSet($_SESSION['REPO_ID']) &&  isSet($currentRepos[$_SESSION['REPO_ID']])) {
-            return $_SESSION['REPO_ID'];
+        if(isSet($_SESSION['REPO_ID'])){
+            $object = self::getRepositoryById($_SESSION['REPO_ID']);
+            if($object != null && self::repositoryIsAccessible($_SESSION['REPO_ID'], $object)){
+                return $_SESSION['REPO_ID'];
+            }
         }
+        $currentRepos = $this->getLoadedRepositories();
         return array_shift(array_keys($currentRepos));
     }
     /**
@@ -488,22 +526,119 @@ class ConfService
     }
 
     /**
+     * @param Repository[] $repoList
+     * @param array $criteria
+     * @return Repository[] array
+     */
+    public static function filterRepositoryListWithCriteria($repoList, $criteria){
+        $repositories = array();
+        $searchableKeys = array("uuid", "parent_uuid", "owner_user_id", "display", "accessType", "isTemplate", "slug", "groupPath");
+        foreach ($repoList as $repoId => $repoObject) {
+            $failOneCriteria = false;
+            foreach($criteria as $key => $value){
+                if(!in_array($key, $searchableKeys)) continue;
+                $criteriumOk = false;
+                if($key == "uuid") $comp = $repoObject->getUniqueId();
+                else if($key == "parent_uuid") $comp = $repoObject->getParentId();
+                else if($key == "owner_user_id") $comp = $repoObject->getUniqueUser();
+                else if($key == "display") $comp = $repoObject->getDisplay();
+                else if($key == "accessType") $comp = $repoObject->getAccessType();
+                else if($key == "isTemplate") $comp = $repoObject->isTemplate;
+                else if($key == "slug") $comp = $repoObject->getSlug();
+                else if($key == "groupPath") $comp = $repoObject->getGroupPath();
+                if(is_array($value) && in_array($comp, $value)){
+                    //$repositories[$repoId] = $repoObject;
+                    $criteriumOk = true;
+                }else if($value == AJXP_FILTER_EMPTY && empty($comp)){
+                    //$repositories[$repoId] = $repoObject;
+                    $criteriumOk = true;
+                }else if($value == AJXP_FILTER_NOT_EMPTY && !empty($comp)){
+                    //$repositories[$repoId] = $repoObject;
+                    $criteriumOk = true;
+                }else if(is_string($value) && strpos($value, "regexp:")===0 && preg_match(str_replace("regexp:", "", $value), $comp)){
+                    //$repositories[$repoId] = $repoObject;
+                    $criteriumOk = true;
+                }else if($value == $comp){
+                    //$repositories[$repoId] = $repoObject;
+                    $criteriumOk = true;
+                }
+                if(!$criteriumOk) {
+                    $failOneCriteria = true;
+                    break;
+                }
+            }
+            if(!$failOneCriteria){
+                $repositories[$repoId] = $repoObject;
+            }
+        }
+        return $repositories;
+    }
+
+    /**
+     * @param array $criteria
+     * @param $count
+     * @return Repository[]
+     */
+    public static function listRepositoriesWithCriteria($criteria, &$count){
+
+        $statics = array();
+        foreach (self::getInstance()->configs["DEFAULT_REPOSITORIES"] as $index=>$repository) {
+            $repo = self::createRepositoryFromArray($index, $repository);
+            $repo->setWriteable(false);
+            $statics[$repo->getId()] = $repo;
+        }
+        $statics = self::filterRepositoryListWithCriteria($statics, $criteria);
+        $dyna = self::getInstance()->getConfStorageImpl()->listRepositoriesWithCriteria($criteria, $count);
+        $count += count($statics);
+        return array_merge($statics, $dyna);
+
+    }
+
+    /**
      * @param $scope String "user", "all"
      * @return array
      */
-    protected function initRepositoriesListInst($scope = "user")
+    protected function initRepositoriesListInst($scope = "user", $includeShared = true)
     {
         // APPEND CONF FILE REPOSITORIES
-
+        $loggedUser = AuthService::getLoggedUser();
         $objList = array();
+        if($loggedUser != null){
+            $l = $loggedUser->getLock();
+            if( !empty($l)) return $objList;
+        }
         foreach ($this->configs["DEFAULT_REPOSITORIES"] as $index=>$repository) {
             $repo = self::createRepositoryFromArray($index, $repository);
+            if($scope == "user" && $loggedUser != null && !self::repositoryIsAccessible($index, $repo, $loggedUser)){
+                continue;
+            }
             $repo->setWriteable(false);
-            $objList[$repo->getId()] = $repo;
+            $objList["".$repo->getId()] = $repo;
         }
         // LOAD FROM DRIVER
         $confDriver = self::getConfStorageImpl();
-        $drvList = $confDriver->listRepositories($scope == "user" ? AuthService::getLoggedUser() : null);
+        if($scope == "user"){
+            $acls = array();
+            if(AuthService::getLoggedUser() != null){
+                $acls = AuthService::getLoggedUser()->mergedRole->listAcls();
+            }
+            if(!count($acls)) {
+                $drvList = array();
+            }else{
+                $criteria = array(
+                    "uuid" => array_keys($acls)
+                );
+                $drvList = $confDriver->listRepositoriesWithCriteria($criteria);
+            }
+        }else{
+            if($includeShared){
+                $drvList = $confDriver->listRepositories();
+            }else{
+                $drvList = $confDriver->listRepositoriesWithCriteria(array(
+                    "owner_user_id" => AJXP_FILTER_EMPTY
+                ));
+            }
+        }
         if (is_array($drvList)) {
             foreach ($drvList as $repoId=>$repoObject) {
                 $driver = AJXP_PluginsService::getInstance()->getPluginByTypeName("access", $repoObject->getAccessType());
@@ -514,7 +649,9 @@ class ConfService
                     $drvList[$repoId] = $repoObject;
                 }
             }
-            $objList = array_merge($objList, $drvList);
+            foreach($drvList as $key => $value){
+                $objList[$key] = $value;
+            }
         }
         return $objList;
     }
@@ -594,7 +731,7 @@ class ConfService
      * Add dynamically created repository
      *
      * @param Repository $oRepository
-     * @return void|-1 if error
+     * @return -1|null if error
      */
     public static function addRepository($oRepository)
     {
@@ -602,7 +739,7 @@ class ConfService
     }
     /**
      * @param $oRepository
-     * @return void|-1 on error
+     * @return -1|null on error
      */
     public function addRepositoryInst($oRepository)
     {
@@ -613,8 +750,13 @@ class ConfService
         }
         AJXP_Logger::info(__CLASS__,"Create Repository", array("repo_name"=>$oRepository->getDisplay()));
         $this->invalidateLoadedRepositories();
+        return null;
     }
 
+    /**
+     * @param $idOrAlias
+     * @return null|Repository
+     */
     public static function findRepositoryByIdOrAlias($idOrAlias)
     {
         $repository = ConfService::getRepositoryById($idOrAlias);
@@ -771,7 +913,7 @@ class ConfService
     public static function zipEnabled()
     {
         if(ConfService::getCoreConf("DISABLE_ZIP_BROWSING") === true) return false;
-        return (function_exists("gzopen")?true:false);
+        return ((function_exists("gzopen") || function_exists("gzopen64"))?true:false);
     }
     /**
      * Get the list of all "conf" messages
@@ -832,7 +974,7 @@ class ConfService
             $nodes = AJXP_PluginsService::getInstance()->searchAllManifests("//i18n", "nodes");
             foreach ($nodes as $node) {
                 $nameSpace = $node->getAttribute("namespace");
-                $path = $node->getAttribute("path");
+                $path = AJXP_INSTALL_PATH."/".$node->getAttribute("path");
                 $lang = $crtLang;
                 if (!is_file($path."/".$crtLang.".php")) {
                     $lang = "en"; // Default language, minimum required.
@@ -855,6 +997,8 @@ class ConfService
                 }
             }
             if(!is_dir($messageCacheDir)) mkdir($messageCacheDir);
+            AJXP_VarsFilter::filterI18nStrings($this->configs["MESSAGES"]);
+            AJXP_VarsFilter::filterI18nStrings($this->configs["CONF_MESSAGES"]);
             @file_put_contents($messageFile, "<?php \$MESSAGES = ".var_export($this->configs["MESSAGES"], true) ." ; \$CONF_MESSAGES = ".var_export($this->configs["CONF_MESSAGES"], true) ." ; ");
         }
 
@@ -981,7 +1125,7 @@ class ConfService
             return $this->configs[$varName];
         }
         if (defined("AJXP_".$varName)) {
-            return eval("return AJXP_".$varName.";");
+            return constant("AJXP_".$varName);
         }
         return null;
     }
@@ -1087,6 +1231,9 @@ class ConfService
         }
         $this->switchRootDirInst();
         $crtRepository = $this->getRepositoryInst();
+        if($crtRepository == null){
+            throw new Exception("No active repository found for user!");
+        }
         $accessType = $crtRepository->getAccessType();
         $pServ = AJXP_PluginsService::getInstance();
         $plugInstance = $pServ->getPluginByTypeName("access", $accessType);
@@ -1107,7 +1254,7 @@ class ConfService
                 }
                 try {
                     $instance->init(AuthService::filterPluginParameters($plugId, $metaSources[$plugId], $crtRepository->getId()));
-                    $instance->beforeInitMeta($plugInstance);
+                    $instance->beforeInitMeta($plugInstance, $crtRepository);
                 } catch (Exception $e) {
                     AJXP_Logger::error(__CLASS__, 'Meta plugin', 'Cannot instanciate Meta plugin, reason : '.$e->getMessage());
                     $this->errors[] = $e->getMessage();
@@ -1212,7 +1359,7 @@ class ConfService
                 }
                 try {
                     $instance->init(AuthService::filterPluginParameters($plugId, $metaSources[$plugId], $repository->getId()));
-                    $instance->beforeInitMeta($plugInstance);
+                    $instance->beforeInitMeta($plugInstance, $repository);
                 } catch (Exception $e) {
                     AJXP_Logger::error(__CLASS__, 'Meta plugin', 'Cannot instanciate Meta plugin, reason : '.$e->getMessage());
                     $this->errors[] = $e->getMessage();

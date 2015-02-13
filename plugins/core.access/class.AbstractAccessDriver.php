@@ -105,6 +105,15 @@ class AbstractAccessDriver extends AJXP_Plugin
      */
     public function makeSharedRepositoryOptions($httpVars, $repository){}
 
+    /**
+     * @param $directoryPath string
+     * @param $repositoryResolvedOptions array
+     * @return integer
+     * @throw Exception
+     */
+    public function directoryUsage($directoryPath, $repositoryResolvedOptions){
+        throw new Exception("Current driver does not support recursive directory usage!");
+    }
 
     public function crossRepositoryCopy($httpVars)
     {
@@ -124,6 +133,7 @@ class AbstractAccessDriver extends AJXP_Plugin
         $destRepoObject = ConfService::getRepositoryById($destRepoId);
         $destRepoAccess = $destRepoObject->getAccessType();
         $plugin = AJXP_PluginsService::findPlugin("access", $destRepoAccess);
+        $plugin->repository = $destRepoObject;
         $destWrapperData = $plugin->detectStreamWrapper(true);
         $destStreamURL = $destWrapperData["protocol"]."://$destRepoId";
         // Check rights
@@ -247,7 +257,11 @@ class AbstractAccessDriver extends AJXP_Plugin
             if ($move) {
                 AJXP_Controller::applyHook("node.before_path_change", array(new AJXP_Node($realSrcFile)));
                 if(file_exists($destFile)) unlink($destFile);
-                $res = rename($realSrcFile, $destFile);
+                if(strcmp($srcWrapperName,$destWrapperName) === 0){
+                    $res = rename($realSrcFile, $destFile);
+                }else{
+                    $res = copy($realSrcFile, $destFile);
+                }
                 AJXP_Controller::applyHook("node.change", array(new AJXP_Node($realSrcFile), new AJXP_Node($destFile), false));
             } else {
                 try {
@@ -496,11 +510,11 @@ class AbstractAccessDriver extends AJXP_Plugin
             $actualPerms = $otherPerms;
 
             if ( ( isSet($uid) && $stat["uid"] == $uid ) || $fixPermPolicy == "user"  ) {
-                AJXP_Logger::debug("upgrading abit to ubit");
+                AJXP_Logger::debug(__CLASS__,__FUNCTION__,"upgrading abit to ubit");
                 $userPerms = decbin(intval($p[$lastInd - 2]));
                 $actualPerms |= $userPerms;
             } else if ( ( isSet($gid) && $stat["gid"] == $gid ) || $fixPermPolicy == "group"  ) {
-                AJXP_Logger::debug("upgrading abit to gbit");
+                AJXP_Logger::debug(__CLASS__,__FUNCTION__,"upgrading abit to gbit");
                 $groupPerms = decbin(intval($p[$lastInd - 1]));
                 $actualPerms |= $groupPerms;
             }
@@ -508,7 +522,7 @@ class AbstractAccessDriver extends AJXP_Plugin
             $p[$lastInd] = $test;
 
             $stat["mode"] = $stat[2] = octdec($p);
-            //AJXP_Logger::debug("FIXED PERM DATA ($fixPermPolicy)",sprintf("%o", ($p & 000777)));
+            //AJXP_Logger::debug(__CLASS__,__FUNCTION__,"FIXED PERM DATA ($fixPermPolicy)",sprintf("%o", ($p & 000777)));
         }
     }
 
