@@ -627,7 +627,7 @@ class sqlConfDriver extends AbstractConfDriver implements SqlTableProvider
                 return "ERROR!, DB driver ". $this->sqlDriver["driver"] ." not supported yet in __FUNCTION__";
         }
         if($details){
-            if($this->sqlDriver["driver"] == "sqlite" || $this->sqlDriver["driver"] == "sqlite3"){
+            if($this->sqlDriver["driver"] == "sqlite" || $this->sqlDriver["driver"] == "sqlite3" || $this->sqlDriver["driver"] == "postgre"){
                 $internalClause = " AND NOT EXISTS (SELECT * FROM [ajxp_user_rights] WHERE [ajxp_roles].[role_id]='AJXP_USR_/'||[ajxp_user_rights].[login] AND [ajxp_user_rights].[repo_uuid] = 'ajxp.parent_user')";
                 $externalClause = " AND EXISTS (SELECT * FROM [ajxp_user_rights] WHERE [ajxp_roles].[role_id]='AJXP_USR_/'||[ajxp_user_rights].[login] AND [ajxp_user_rights].[repo_uuid] = 'ajxp.parent_user')";
             }else{
