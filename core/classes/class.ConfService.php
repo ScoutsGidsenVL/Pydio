@@ -743,11 +743,13 @@ class ConfService
      */
     public function addRepositoryInst($oRepository)
     {
+        AJXP_Controller::applyHook("workspace.before_create", array($oRepository));
         $confStorage = self::getConfStorageImpl();
         $res = $confStorage->saveRepository($oRepository);
         if ($res == -1) {
             return $res;
         }
+        AJXP_Controller::applyHook("workspace.after_create", array($oRepository));
         AJXP_Logger::info(__CLASS__,"Create Repository", array("repo_name"=>$oRepository->getDisplay()));
         $this->invalidateLoadedRepositories();
         return null;
@@ -764,6 +766,23 @@ class ConfService
         $repository = ConfService::getRepositoryByAlias($idOrAlias);
         if($repository != null) return $repository;
         return null;
+    }
+
+    /**
+     * Get the reserved slugs used for config defined repositories
+     * @return array
+     */
+    public static function reservedSlugsFromConfig(){
+        $inst = self::getInstance();
+        $slugs = array();
+        if(isSet($inst->configs["DEFAULT_REPOSITORIES"])){
+            foreach($inst->configs["DEFAULT_REPOSITORIES"] as $repo){
+                if(isSet($repo["AJXP_SLUG"])){
+                    $slugs[] = $repo["AJXP_SLUG"];
+                }
+            }
+        }
+        return $slugs;
     }
 
     /**
@@ -858,11 +877,13 @@ class ConfService
      */
     public function replaceRepositoryInst($oldId, $oRepositoryObject)
     {
+        AJXP_Controller::applyHook("workspace.before_update", array($oRepositoryObject));
         $confStorage = self::getConfStorageImpl();
         $res = $confStorage->saveRepository($oRepositoryObject, true);
         if ($res == -1) {
             return $res;
         }
+        AJXP_Controller::applyHook("workspace.after_update", array($oRepositoryObject));
         AJXP_Logger::info(__CLASS__,"Edit Repository", array("repo_name"=>$oRepositoryObject->getDisplay()));
         $this->invalidateLoadedRepositories();
     }
@@ -896,11 +917,13 @@ class ConfService
      */
     public function deleteRepositoryInst($repoId)
     {
+        AJXP_Controller::applyHook("workspace.before_delete", array($repoId));
         $confStorage = self::getConfStorageImpl();
         $res = $confStorage->deleteRepository($repoId);
         if ($res == -1) {
             return $res;
         }
+        AJXP_Controller::applyHook("workspace.after_delete", array($repoId));
         AJXP_Logger::info(__CLASS__,"Delete Repository", array("repo_id"=>$repoId));
         $this->invalidateLoadedRepositories();
     }

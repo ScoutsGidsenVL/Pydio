@@ -581,7 +581,7 @@ class ShareCenter extends AJXP_Plugin
         $result = array();
         if($direction !== "UP"){
             $upmetas = array();
-            $node->collectMetadataInParents("ajxp_shared", true, AJXP_METADATA_SCOPE_REPOSITORY, false, $upmetas);
+            $node->collectMetadataInParents("ajxp_shared", AJXP_METADATA_ALLUSERS, AJXP_METADATA_SCOPE_REPOSITORY, false, $upmetas);
             foreach($upmetas as $metadata){
                 if (is_array($metadata) && !empty($metadata["shares"])) {
                     foreach($metadata["shares"] as $sId => $sData){
@@ -596,6 +596,7 @@ class ShareCenter extends AJXP_Plugin
                         $sharedPath = substr($node->getPath(), strlen($sharedNode->getPath()));
                         $sharedNodeUrl = $node->getScheme() . "://".$wsId.$sharedPath;
                         $result[$wsId] = array(new AJXP_Node($sharedNodeUrl), "DOWN");
+                        $this->logDebug('MIRROR NODES', 'Found shared in parent - register node '.$sharedNodeUrl);
                     }
                 }
             }
@@ -604,11 +605,18 @@ class ShareCenter extends AJXP_Plugin
             if($node->getRepository()->hasParent()){
                 $parentRepoId = $node->getRepository()->getParentId();
                 $currentRoot = $node->getRepository()->getOption("PATH");
-                $parentRoot = ConfService::getRepositoryById($parentRepoId)->getOption("PATH");
+                $owner = $node->getRepository()->getOwner();
+                $resolveUser = null;
+                if($owner != null){
+                    $resolveUser = ConfService::getConfStorageImpl()->createUserObject($owner);
+                }
+                $parentRoot = ConfService::getRepositoryById($parentRepoId)->getOption("PATH", false, $resolveUser);
                 $relative = substr($currentRoot, strlen($parentRoot));
                 $parentNodeURL = $node->getScheme()."://".$parentRepoId.$relative.$node->getPath();
                 $this->logDebug("action.share", "Should trigger on ".$parentNodeURL);
-                $result[$parentRepoId] = array(new AJXP_Node($parentNodeURL), "UP");
+                $parentNode = new AJXP_Node($parentNodeURL);
+                if($owner != null) $parentNode->setUser($owner);
+                $result[$parentRepoId] = array($parentNode, "UP");
             }
         }
         return $result;
@@ -1834,9 +1842,12 @@ class ShareCenter extends AJXP_Plugin
         } else {
             if ($repository->getOption("META_SOURCES")) {
                 $options["META_SOURCES"] = $repository->getOption("META_SOURCES");
-                foreach ($options["META_SOURCES"] as $index => $data) {
+                foreach ($options["META_SOURCES"] as $index => &$data) {
                     if (isSet($data["USE_SESSION_CREDENTIALS"]) && $data["USE_SESSION_CREDENTIALS"] === true) {
                         $options["META_SOURCES"][$index]["ENCODED_CREDENTIALS"] = AJXP_Safe::getEncodedCredentialString();
+                    }
+                    if($index == "meta.syncable" && $data["REPO_SYNCABLE"] === true ){
+                        $data["REQUIRES_INDEXATION"] = true;
                     }
                 }
             }

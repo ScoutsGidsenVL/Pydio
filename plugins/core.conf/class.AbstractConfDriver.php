@@ -1057,6 +1057,11 @@ abstract class AbstractConfDriver extends AJXP_Plugin
                 $existingOnly = isSet($httpVars["existing_only"]) && $httpVars["existing_only"] == "true";
                 if(!empty($crtValue)) $regexp = '^'.$crtValue;
                 else $regexp = null;
+                $skipDisplayWithoutRegexp = ConfService::getCoreConf("USERS_LIST_REGEXP_MANDATORY", "conf");
+                if($skipDisplayWithoutRegexp && $regexp == null){
+                    print("<ul></ul>");
+                    break;
+                }
                 $limit = intval(ConfService::getCoreConf("USERS_LIST_COMPLETE_LIMIT", "conf"));
                 $searchAll = ConfService::getCoreConf("CROSSUSERS_ALLGROUPS", "conf");
                 $displayAll = ConfService::getCoreConf("CROSSUSERS_ALLGROUPS_DISPLAY", "conf");
@@ -1303,7 +1308,8 @@ abstract class AbstractConfDriver extends AJXP_Plugin
                     if (isSet($valueFiltersExclude) && in_array(strtolower(substr($roleId, strlen($rolePrefix))), $valueFiltersExclude)) continue;
                     if (isSet($matchFilterInclude) && !preg_match($matchFilterInclude, substr($roleId, strlen($rolePrefix)))) continue;
                     if (isSet($valueFiltersInclude) && !in_array(strtolower(substr($roleId, strlen($rolePrefix))), $valueFiltersInclude)) continue;
-                    $roleObject = AuthService::getRole($roleId);
+                    if(is_a($role, "AJXP_Role")) $roleObject = $role;
+                    else $roleObject = AuthService::getRole($roleId);
                     $label = $roleObject->getLabel();
                     $label = !empty($label) ? $label : substr($roleId, strlen($rolePrefix));
                     $allRoles[$roleId] = $label;

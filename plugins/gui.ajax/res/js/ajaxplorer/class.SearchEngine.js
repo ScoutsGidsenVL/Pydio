@@ -408,10 +408,15 @@ Class.create("SearchEngine", AjxpPane, {
             }
 		}.bind(this));
 		
-		$(this._searchButtonName).onclick = function(){
-			this.search();
+		$(this._searchButtonName).observe("click", function(e){
+            Event.stop(e);
+            if(this._ajxpOptions.openSearchInput && !this.searchInputIsOpen()){
+                this._inputBox.focus();
+            }else{
+    			this.search();
+            }
 			return false;
-		}.bind(this);
+		}.bind(this));
 		
 		$('stop_'+this._searchButtonName).onclick = function(){
 			this.interrupt();
@@ -429,8 +434,20 @@ Class.create("SearchEngine", AjxpPane, {
 
         document.observe("ajaxplorer:repository_list_refreshed", this.refreshObserver );
 
+        if($(this.options.toggleResultsVisibility)){
+            this.ctxChangeObserver = function(){
+                this.showToggleResult(false);
+                this.closeSearchInput();
+            }.bind(this);
+            document.observe("ajaxplorer:context_changed", this.ctxChangeObserver);
+        }
+
         this.resize();
 	},
+
+    searchInputIsOpen: function(){
+        return this.htmlElement.hasClassName("search_active");
+    },
 
     openSearchInput: function(){
         var container = this.htmlElement;
@@ -454,6 +471,9 @@ Class.create("SearchEngine", AjxpPane, {
         this.showToggleResult(false);
         this._inputBox.blur();
         window.setTimeout(function(){
+            if(container.hasClassName("search_active")) {
+                return;
+            }
             if(this.htmlElement.down('#search_meta')){
                 this.htmlElement.down('#search_meta').removeClassName("toggle_open");
             }
@@ -536,6 +556,9 @@ Class.create("SearchEngine", AjxpPane, {
         }
         document.stopObserving("ajaxplorer:repository_list_refreshed", this.refreshObserver);
         document.stopObserving("ajaxplorer:registry_loaded", this.searchModeObserver);
+        if(this.ctxChangeObserver){
+            document.stopObserving("ajaxplorer:context_changed", this.ctxChangeObserver);
+        }
         if(this.boundSizeEvents){
             this.boundSizeEvents.each(function(pair){
                 document.stopObserving(pair.key, pair.value);
