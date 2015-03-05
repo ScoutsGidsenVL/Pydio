@@ -395,6 +395,9 @@ abstract class AbstractConfDriver extends AJXP_Plugin
             return $test;
         }
         $userId = AuthService::filterUserSensitivity($userId);
+
+        $userId = ConfService::getAuthDriverImpl()->getGroepsadminId($userId);
+
         $abstractUser = $this->instantiateAbstractUserImpl($userId);
         if (!$abstractUser->storageExists()) {
             AuthService::updateDefaultRights($abstractUser);
@@ -576,7 +579,7 @@ abstract class AbstractConfDriver extends AJXP_Plugin
 
         switch ($action) {
             //------------------------------------
-            //	SWITCH THE ROOT REPOSITORY
+            //  SWITCH THE ROOT REPOSITORY
             //------------------------------------
             case "switch_repository":
 
@@ -605,7 +608,7 @@ abstract class AbstractConfDriver extends AJXP_Plugin
             break;
 
             //------------------------------------
-            //	SEND XML REGISTRY
+            //  SEND XML REGISTRY
             //------------------------------------
             case "get_xml_registry" :
             case "state" :
@@ -657,7 +660,7 @@ abstract class AbstractConfDriver extends AJXP_Plugin
             break;
 
             //------------------------------------
-            //	BOOKMARK BAR
+            //  BOOKMARK BAR
             //------------------------------------
             case "get_bookmarks":
 
@@ -719,7 +722,7 @@ abstract class AbstractConfDriver extends AJXP_Plugin
             break;
 
             //------------------------------------
-            //	SAVE USER PREFERENCE
+            //  SAVE USER PREFERENCE
             //------------------------------------
             case "save_user_pref":
 
@@ -745,7 +748,7 @@ abstract class AbstractConfDriver extends AJXP_Plugin
             break;
 
             //------------------------------------
-            //	SAVE USER PREFERENCE
+            //  SAVE USER PREFERENCE
             //------------------------------------
             case "custom_data_edit":
             case "user_create_user":

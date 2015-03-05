@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<authdriver name="sgv" label="SGV"
+            description="Authenticatie via de groepsadministratie"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="file:../core.ajaxplorer/ajxp_registry.xsd"
+            mixins="dibidriver_consumer,dibidriver_provider,authdriver_commons"
+        >
+    <client_settings>
+        <resources>
+            <i18n namespace="sgv_auth" path="plugins/auth.sgv/i18n"/>
+        </resources>
+    </client_settings>
+  <server_settings>
+  </server_settings>
+  <class_definition filename="plugins/auth.sgv/class.sgvAuthDriver.php" classname="sgvAuthDriver"/>
+  <registry_contributions>
+    <external_file filename="plugins/core.auth/standard_auth_actions.xml" include="actions/*" exclude=""/>
+  </registry_contributions>
+</authdriver>

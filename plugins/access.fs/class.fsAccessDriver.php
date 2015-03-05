@@ -258,7 +258,7 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
 
         switch ($action) {
             //------------------------------------
-            //	DOWNLOAD
+            //  DOWNLOAD
             //------------------------------------
             case "download":
                 $this->logInfo("Download", array("files"=>$this->addSlugToPath($selection)));
@@ -320,11 +320,11 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
                 $chunkSize = intval ( $totalSize / $chunkCount );
                 $realFile  = AJXP_MetaStreamWrapper::getRealFSReference($fileId, true);
                 $chunkData = array(
-                    "localname"	  => basename($fileId),
+                    "localname"   => basename($fileId),
                     "chunk_count" => $chunkCount,
                     "chunk_size"  => $chunkSize,
                     "total_size"  => $totalSize,
-                    "file_id"	  => $sessionKey
+                    "file_id"   => $sessionKey
                 );
 
                 $_SESSION[$sessionKey] = array_merge($chunkData, array("file"=>$realFile));
@@ -413,7 +413,7 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
 
 
             //------------------------------------
-            //	ONLINE EDIT
+            //  ONLINE EDIT
             //------------------------------------
             case "get_content":
 
@@ -467,7 +467,7 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
             break;
 
             //------------------------------------
-            //	COPY / MOVE
+            //  COPY / MOVE
             //------------------------------------
             case "copy":
             case "move":
@@ -523,7 +523,7 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
             break;
 
             //------------------------------------
-            //	DELETE
+            //  DELETE
             //------------------------------------
             case "delete":
 
@@ -560,7 +560,7 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
             break;
 
             //------------------------------------
-            //	RENAME
+            //  RENAME
             //------------------------------------
             case "rename":
 
@@ -584,7 +584,7 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
             break;
 
             //------------------------------------
-            //	CREER UN REPERTOIRE / CREATE DIR
+            //  CREER UN REPERTOIRE / CREATE DIR
             //------------------------------------
             case "mkdir":
 
@@ -634,7 +634,7 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
             break;
 
             //------------------------------------
-            //	CREER UN FICHIER / CREATE FILE
+            //  CREER UN FICHIER / CREATE FILE
             //------------------------------------
             case "mkfile":
 
@@ -671,7 +671,7 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
             break;
 
             //------------------------------------
-            //	CHANGE FILE PERMISSION
+            //  CHANGE FILE PERMISSION
             //------------------------------------
             case "chmod":
 
@@ -691,7 +691,7 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
             break;
 
             //------------------------------------
-            //	UPLOAD
+            //  UPLOAD
             //------------------------------------
             case "upload":
 
@@ -727,6 +727,12 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
                         if (isSet($httpVars["urlencoded_filename"])) {
                             $userfile_name = AJXP_Utils::sanitize(SystemTextEncoding::fromUTF8(urldecode($httpVars["urlencoded_filename"])), AJXP_SANITIZE_FILENAME);
                         }
+
+
+                        // hack - http://tools.scoutsengidsenvlaanderen.net/flyspray/index.php?do=details&task_id=2555
+                        $date = date('Y.m.d');
+                        $userfile_name = preg_replace('/^ *([0-9 \.\-]{3,})?/', $date . ' ', $userfile_name);
+
                         $userfile_name = substr($userfile_name, 0, ConfService::getCoreConf("NODENAME_MAX_LENGTH"));
                         if (isSet($httpVars["auto_rename"])) {
                             $userfile_name = self::autoRenameForDest($destination, $userfile_name);
@@ -844,7 +850,7 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
             break;
 
             //------------------------------------
-            //	XML LISTING
+            //  XML LISTING
             //------------------------------------
             case "ls":
 
@@ -1138,7 +1144,6 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
 
             break;
         }
-
 
         $xmlBuffer = "";
         if (isset($logMessage) || isset($errorMessage)) {

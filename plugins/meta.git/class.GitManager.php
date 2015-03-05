@@ -276,15 +276,15 @@ class GitManager extends AJXP_AbstractMetaSource
         $command->addArgument(".");
         try {
             $cmd = $command->createCommandString();
-            $this->logDebug("Git command ".$cmd);
+            $this->logInfo("git", "Git command ".$cmd);
             $res = $command->execute();
         } catch (Exception $e) {
-            $this->logDebug("Error ".$e->getMessage());
+            $this->logInfo("git", "Error ".$e->getMessage());
         }
-        $this->logDebug("GIT RESULT ADD : ".$res);
+        $this->logInfo("git", "GIT RESULT ADD : ".$res);
 
         $command = $git->getCommand("commit");
-        $command->setOption("a", true);
+        //$command->setOption("a", true);
         $userId = "no user";
         $mail = "mail@mail.com";
         if (AuthService::getLoggedUser()!=null) {
@@ -293,16 +293,15 @@ class GitManager extends AJXP_AbstractMetaSource
         }
         $command->setOption("m", $userId);
         $command->setOption("author", "$userId <$mail>");
-        //$command->addArgument($path);
 
         try {
             $cmd = $command->createCommandString();
-            $this->logDebug("Git command ".$cmd);
+            $this->logInfo("git", "Git command ".$cmd);
             $res = $command->execute();
         } catch (Exception $e) {
-            $this->logDebug("Error ".$e->getMessage());
+            $this->logInfo("git", "Error " . print_r($e, true));
         }
-        $this->logDebug("GIT RESULT COMMIT : ".$res);
+        $this->logInfo("git", "GIT RESULT COMMIT : ".$res);
     }
 
 }

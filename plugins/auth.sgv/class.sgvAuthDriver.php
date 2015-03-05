@@ -1,10 +1,12 @@
 <?php
 
-defined('AJXP_EXEC') or die( 'Access not allowed');
+defined('AJXP_EXEC') or die('Access not allowed');
 
 require('SoapGroepsadmin.php');
 
-define('WSDL', 'https://groepsadmin.scoutsengidsenvlaanderen.be/groepsadmin/webservice?wsdl');
+/* Dit lijkt enkel te werken op domeinnaam, niet op IP-adres! */
+define('WSDL', 'http://pc2013-215.vvksm.local:8080/groepsadmin/webservice?wsdl');
+/* define('WSDL', 'https://groepsadmin.scoutsengidsenvlaanderen.be/groepsadmin/webservice?wsdl'); */
 
 /**
  * @package AjaXplorer_Plugins
@@ -19,19 +21,14 @@ class sgvAuthDriver extends AbstractAuthDriver
 
         parent::init($options);
 
+        //error_log("WSDL: " . WSDL);
         $this->ga = new SoapGroepsadmin(WSDL, 'test-plain', true);
     }
 
     public function userExists($login) {
 
+        // A message like 'This user does not exist.' should not be shown for security reasons.
         return true;
-    }
-
-    public function checkPassword($login, $pass, $seed) {
-
-        $id = $this->ga->login($login, $pass);
-
-        return (gettype($id) === 'string') or (sha1($pass) === $_SERVER["ADMIN_PW_SHA1"]);
     }
 
     public function usersEditable() {
@@ -44,51 +41,81 @@ class sgvAuthDriver extends AbstractAuthDriver
         return false;
     }
 
-    
-    /* Using $this->logInfo(...) inside this method causes the logged in user to change! */
+    public function checkPassword($login, $pass, $seed) {
+
+        $this->logInfo(__FUNCTION__, 'Login: ' . $login);
+
+        if ($login === 'admin') {
+            return sha1($pass) === $_SERVER["ADMIN_PW_SHA1"];
+        } else {
+            $id = $this->ga->login($login, $pass);
+            return gettype($id) === 'string';
+        }
+    }
+
+    public function getGroepsadminId($login) {
+
+        $this->logInfo(__FUNCTION__, 'Login: ' . $login);
+
+        if ($login === 'admin') {
+            return $login;
+        } else {
+            return $this->ga->lidGegevensV3($login, null, null, null, null)->id;
+        }
+    }
+
     public function updateUserObject(&$userObject){
+
+        $this->logInfo(__FUNCTION__, 'User id: ' . $userObject->id);
+
+        //error_log('Roles before: ' . print_r($userObject->rights["ajxp.roles"], true));
 
         parent::updateUserObject($userObject);
 
-        $groepen = $this->ga->lidGegevensV2($userObject->id, null, true, null)->groepen->groep;
-        if ($groepen !== null) {
+        if ($userObject->id === 'admin') {
+            $userObject->personalRole->setParameterValue("core.conf", "USER_DISPLAY_NAME", 'Admin');
+            $userObject->personalRole->setParameterValue("core.conf", "email", 'informatica@scoutsengidenvlaanderen.be');
+            AuthService::updateRole($userObject->personalRole);
 
-            // De gebruikersgroepen worden gegenereerd op basis van de groepen van de gebruiker.
-            // Dit is goed genoeg voor demo's, maar na de demo's moet dit via de gebruikersgroepen.
-            $gebruikersgroepen = array();
-            foreach ($groepen as $groep) {
-                $groepsnummer = $groep->groepsnummer;
-                $groepsnaam = $groep->naam;
-                if ($groepsnaam === strtoupper($groepsnaam)) {
-                    $groepsnaam = str_replace('/', '-', ucwords(strtolower($groepsnaam)));
-                }
-
-                $district = preg_match('/^..000D$/', $groepsnummer);
-                $gouw = preg_match('/^..000P$/', $groepsnummer);
-                $xgroep = preg_match('/^X.....$/', $groepsnummer);
-
-                if ($district or $gouw or $xgroep) {
-                    $gebruikersgroepen[$groepsnummer] = $groepsnaam;
-                }
-
-                if ($gouw) {
-                    $gebruikersgroepen[$groepsnummer . '-BU'] = str_replace('Gouw', 'Gouwbureau', $groepsnaam);
-                    $gebruikersgroepen[$groepsnummer . '-RA'] = str_replace('Gouw', 'Gouwraad', $groepsnaam);
-                }
-            }
-
-            $gebruikersgroepen['X4002G'] = 'Verbondsraad';
-
-            foreach ($gebruikersgroepen as $workspace_id => $workspace_titel) {
-                $this->createWorkspace($workspace_id, $workspace_titel);
-
-                $role = $this->getRole($workspace_id);
-                $userObject->addRole($role);
-            }
-
-            $userObject->save("superuser");
-            AuthService::updateUser($userObject);
+            return;
         }
+
+        $lidGegevens = $this->ga->lidGegevensV3($userObject->id, true, null, null, true);
+
+        $name = $lidGegevens->voornaam . ' ' . $lidGegevens->naam;
+        $email = $lidGegevens->emailadres;
+
+        $userObject->personalRole->setParameterValue("core.conf", "USER_DISPLAY_NAME", $name);
+        $userObject->personalRole->setParameterValue("core.conf", "email", $email);
+        $userObject->personalRole->clearAcls();
+        AuthService::updateRole($userObject->personalRole);
+
+        foreach (array_keys($userObject->getRoles()) as $roleId) {
+            if (preg_match('/^[A-Z][0-9]{4}[A-Z]/', $roleId)) {
+                $userObject->removeRole($roleId);
+            }
+        }
+
+        $gebruikersgroepen = $lidGegevens->gebruikersgroepen->gebruikersgroep;
+        if ($gebruikersgroepen !== null) {
+            foreach ($gebruikersgroepen as $gebruikersgroep) {
+                if (preg_match('/^[A-Z][0-9]{4}[A-Z]/', $gebruikersgroep->id)) {
+                    $naam = $gebruikersgroep->naam;
+                    if ($naam === strtoupper($naam) || $naam === strtolower($naam)) {
+                        $naam = ucwords(strtolower(str_replace('_', ' ', $naam)));
+                    }
+                    $this->createWorkspace($gebruikersgroep->id, $naam);
+
+                    $role = $this->getRole($gebruikersgroep->id, isset($gebruikersgroep->beheersrecht) ? 'r': 'rw');
+                    $userObject->addRole($role);
+                }
+            }
+        }
+
+        //error_log('Roles after: ' . print_r($userObject->rights["ajxp.roles"], true));
+        //error_log('user after: ' . print_r($userObject, true));
+
+        $userObject->save("superuser"); // update the database
     }
 
     private function createWorkspace($workspace_id, $workspace_titel) {
@@ -117,14 +144,14 @@ class sgvAuthDriver extends AbstractAuthDriver
         }
     }
 
-    private function getRole($workspace_id) {
+    private function getRole($workspace_id, $beheersrecht) {
 
-        $roleId = $workspace_id . ' role';
+        $roleId = $workspace_id . ' ' . $beheersrecht . ' role';
         $role = AuthService::getRole($roleId, true);
 
         $acl = $role->getAcl($workspace_id);
         if (empty($acl)) {
-            $role->setAcl($workspace_id, 'rw');
+            $role->setAcl($workspace_id, $beheersrecht);
             AuthService::updateRole($role); // inserts a new role or replaces an existing roles
         }
 

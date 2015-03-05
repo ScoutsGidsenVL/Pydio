@@ -132,7 +132,6 @@ class AJXP_Role implements AjxpGroupPathProvider
         return false;
     }
 
-
     /**
      * @param string $repositoryId
      * @param string $rightString
@@ -147,6 +146,7 @@ class AJXP_Role implements AjxpGroupPathProvider
         }
         return;
     }
+
     /**
      * @param string $repositoryId
      * @return string

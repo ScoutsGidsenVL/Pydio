@@ -36,19 +36,19 @@ class sqlConfDriver extends AbstractConfDriver implements SqlTableProvider
      * Expects options containing a key 'SQL_DRIVER' with constructor values from dibi::connect()
      *
      * Example:
-     * 		"SQL_DRIVER" => Array(
-     *		'driver' => 'sqlite',
-     *			'file' => "./server/ajxp.db"
-     *		)
+     *    "SQL_DRIVER" => Array(
+     *    'driver' => 'sqlite',
+     *      'file' => "./server/ajxp.db"
+     *    )
      *
      * Example 2:
-     * 		"SQL_DRIVER" => Array(
-     * 		'driver' => 'mysql',
-     * 		'host' => 'localhost',
-     * 		'username' => 'root',
-     * 		'password' => '***',
-     * 		'database' => 'dbname'
-     * 		)
+     *    "SQL_DRIVER" => Array(
+     *    'driver' => 'mysql',
+     *    'host' => 'localhost',
+     *    'username' => 'root',
+     *    'password' => '***',
+     *    'database' => 'dbname'
+     *    )
      *
      * @see AbstractConfDriver#init($options)
      */
@@ -193,7 +193,7 @@ class sqlConfDriver extends AbstractConfDriver implements SqlTableProvider
                 'enabled'                   => $repository->isEnabled(),
                 'options'                   => $repository->options,
                 'groupPath'                 => $repository->getGroupPath(),
-                'slug'		                => $repository->getSlug(),
+                'slug'                    => $repository->getSlug(),
                 'isTemplate'                => (bool) $repository->isTemplate,
                 'inferOptionsFromParent'    => $repository->getInferOptionsFromParent()
         );

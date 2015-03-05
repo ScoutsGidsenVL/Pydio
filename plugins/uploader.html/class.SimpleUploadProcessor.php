@@ -66,8 +66,8 @@ class SimpleUploadProcessor extends AJXP_Plugin
             // create the object and assign property
             $fileVars["userfile_0"] = array(
                 "input_upload" => true,
-                "name"		   => SystemTextEncoding::fromUTF8(basename($fileNameH)),
-                "size"		   => $fileSizeH
+                "name"       => SystemTextEncoding::fromUTF8(basename($fileNameH)),
+                "size"       => $fileSizeH
             );
         } else {
             exit("Warning, missing headers!");
@@ -140,7 +140,7 @@ class SimpleUploadProcessor extends AJXP_Plugin
             $index++;
         }
 
-        $newDest = fopen($destStreamURL.$filename, "w");
+        $newDest = fopen($destStreamURL . $filename, "w");
         for ($i = 0; $i < count($chunks) ; $i++) {
             $part = fopen($destStreamURL.$chunks[$i], "r");
             if(is_resource($part)){

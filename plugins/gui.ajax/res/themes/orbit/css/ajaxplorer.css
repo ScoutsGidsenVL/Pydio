@@ -2209,7 +2209,6 @@ div.class-FetchedResultPane > div.panelHeader
 
 #topPane h3 small{
     cursor: pointer;
-    display: none;
     float: right;
     color: #aaa;
     background-color: #555;
@@ -2643,18 +2642,18 @@ div.fl-displayMode-list.fl-showFilterPane div.scroller_track {
 
 /*
 div.header_resizer div.descending {
-	background-color: #daddd7;
-	background-image: url("../images/arrow_up_margin.png");
-	background-repeat : no-repeat;
-	background-position : right center;
+  background-color: #daddd7;
+  background-image: url("../images/arrow_up_margin.png");
+  background-repeat : no-repeat;
+  background-position : right center;
 }
 */
 /*
 div.header_resizer div.ascending {
-	background-color: #daddd7;
-	background-image: url("../images/arrow_down_margin.png");
-	background-repeat : no-repeat;
-	background-position : right center;
+  background-color: #daddd7;
+  background-image: url("../images/arrow_down_margin.png");
+  background-repeat : no-repeat;
+  background-position : right center;
 }
 */
 
@@ -2668,7 +2667,7 @@ div.header_resizer div.ascending {
 }
 
 .sort-table thead {
-    background-color:	#aaa;
+    background-color: #aaa;
 }
 
 .sort-table td {
@@ -2687,9 +2686,9 @@ div.header_resizer div.ascending {
      height: 23px;
      */
     background-color: #ddd;
-    border-bottom:	none;
-    cursor:			pointer;
-    border-right: 	1px solid buttonhighlight;
+    border-bottom:  none;
+    cursor:     pointer;
+    border-right:   1px solid buttonhighlight;
     font-size:12px;
     color: #676965;
     padding: 0;
@@ -2720,7 +2719,7 @@ div.header_resizer div.ascending {
 }
 
 #last_header{
-    border-right: 	0px solid #ddd;
+    border-right:   0px solid #ddd;
     widht: auto !important;
 }
 
@@ -2917,10 +2916,10 @@ div.bm_hover
     -moz-opacity:1;
     text-decoration: none;
     /*
-	border-top: 1px solid #fff;
-	border-left: 1px solid #fff;
-	border-right: 1px solid buttonshadow;
-	border-bottom: 1px solid buttonshadow;
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid buttonshadow;
+  border-bottom: 1px solid buttonshadow;
     background-color: #ddd;
     */
 }
@@ -5917,7 +5916,7 @@ div.menuActions img{
 }
 
 /********************************************/
-/* NEW HTML5 / CSS3 STYLES  	            */
+/* NEW HTML5 / CSS3 STYLES                */
 /* Generally applied after a Modernizr test */
 /********************************************/
 .css_boxshadow,div.menu{

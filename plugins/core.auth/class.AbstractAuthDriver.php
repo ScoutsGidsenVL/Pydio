@@ -35,6 +35,11 @@ class AbstractAuthDriver extends AJXP_Plugin
     public $driverName = "abstract";
     public $driverType = "auth";
 
+    public function getGroepsadminId($login) {
+
+        return $login;
+    }
+
     public function switchAction($action, $httpVars, $fileVars)
     {
         switch ($action) {
@@ -46,7 +51,7 @@ class AbstractAuthDriver extends AJXP_Plugin
                 break;
 
             //------------------------------------
-            //	CHANGE USER PASSWORD
+            //  CHANGE USER PASSWORD
             //------------------------------------
             case "pass_change":
 
