@@ -1,0 +1,6 @@
+#!/bin/sh
+
+cd $(dirname $(realpath "$0"))
+
+chown -R root * .*
+chown -R www data
