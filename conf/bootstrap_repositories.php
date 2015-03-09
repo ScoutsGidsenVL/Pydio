@@ -37,7 +37,7 @@ $REPOSITORIES[0] = array(
         "CREATE"		=>	true,
         "RECYCLE_BIN" 	=> 	'recycle_bin',
         "CHMOD_VALUE"   =>  '0600',
-        "DEFAULT_RIGHTS"=>  "",
+        "DEFAULT_RIGHTS"=>  "r",
         "PAGINATION_THRESHOLD" => 500,
         "PAGINATION_NUMBER" => 200,
         "META_SOURCES"		=> array(
@@ -60,46 +60,6 @@ $REPOSITORIES[0] = array(
             "index.lucene" => array(
                 "index_meta_fields" => "tags"
             ),
-        )
-    ),
-
-);
-
-$REPOSITORIES[1] = array(
-    "DISPLAY"		=>	"My Files",
-    "DISPLAY_ID"    =>  432,
-    "DESCRIPTION_ID"=>  476,
-    "AJXP_SLUG"		=>  "my-files",
-    "DRIVER"		=>	"fs",
-    "DRIVER_OPTIONS"=> array(
-        "PATH"			=>	"AJXP_DATA_PATH/personal/AJXP_USER",
-        "CREATE"		=>	true,
-        "RECYCLE_BIN" 	=> 	'recycle_bin',
-        "CHMOD_VALUE"   =>  '0600',
-        "DEFAULT_RIGHTS"=>  "rw",
-        "PAGINATION_THRESHOLD" => 500,
-        "PAGINATION_NUMBER" => 200,
-        "META_SOURCES"		=> array(
-            "metastore.serial"=> array(
-                "METADATA_FILE"	=> ".ajxp_meta",
-                "METADATA_FILE_LOCATION" => "infolders"
-            ),
-            "meta.user"     => array(
-                "meta_fields"		=> "tags",
-                "meta_labels"		=> "Tags",
-                "meta_visibility"   => "hidden"
-            ),
-            "meta.filehasher"   => array(),
-            "meta.watch"        => array(),
-            "meta.syncable"     => array(),
-            "meta.exif"   => array(
-                "meta_fields" => "COMPUTED_GPS.GPS_Latitude,COMPUTED_GPS.GPS_Longitude",
-                "meta_labels" => "Latitude,Longitude"
-            ),
-            "index.lucene" => array(
-                "index_meta_fields" => "tags",
-                "repository_specific_keywords" => "AJXP_USER",
-            )
         )
     ),
 
