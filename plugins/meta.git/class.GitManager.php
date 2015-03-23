@@ -285,14 +285,14 @@ class GitManager extends AJXP_AbstractMetaSource
 
         $command = $git->getCommand("commit");
         //$command->setOption("a", true);
-        $userId = "no user";
+        $username = "no user";
         $mail = "mail@mail.com";
         if (AuthService::getLoggedUser()!=null) {
-            $userId = AuthService::getLoggedUser()->getId();
+            $username = AuthService::getLoggedUser()->personalRole->getParameterValue("core.conf", "USER_DISPLAY_NAME");
             $mail = AuthService::getLoggedUser()->personalRole->filterParameterValue("core.conf", "email", AJXP_REPO_SCOPE_ALL, "mail@mail.com");
         }
-        $command->setOption("m", $userId);
-        $command->setOption("author", "$userId <$mail>");
+        $command->setOption("m", $username);
+        $command->setOption("author", "$username <$mail>");
 
         try {
             $cmd = $command->createCommandString();
