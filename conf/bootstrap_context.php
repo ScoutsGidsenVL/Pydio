@@ -75,9 +75,9 @@ define("AJXP_KVCACHE_PREFIX", "pydio-unique-id");
 define("AJXP_KVCACHE_IGNORE", true);
 
 // DEBUG OPTIONS
-define("AJXP_CLIENT_DEBUG"  ,	true);
-define("AJXP_SERVER_DEBUG"  ,	true);
-define("AJXP_SKIP_CACHE"    ,   true);
+define("AJXP_CLIENT_DEBUG"  , false);
+define("AJXP_SERVER_DEBUG"  , false);
+define("AJXP_SKIP_CACHE"    , false);
 
 // PBKDF2 CONSTANTS FOR A SECURE STORAGE OF PASSWORDS
 // These constants may be changed without breaking existing hashes.

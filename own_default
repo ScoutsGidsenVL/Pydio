@@ -4,3 +4,6 @@ cd $(dirname $(realpath "$0"))
 
 chown -R root * .*
 chown -R www data
+
+chgrp -R wheel * .*
+chmod -R g+w * .*

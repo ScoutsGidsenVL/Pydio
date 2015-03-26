@@ -1,0 +1,87 @@
+
+
+/* Globale menubalk */
+#menubalk {
+    width: 100%;
+    height: auto;
+    min-height: 25px;
+    z-index: 997;
+    vertical-align: middle;
+    background-color: #572600;
+}
+
+#menubalk_content {
+    position: relative;
+    width: 1140px;
+    margin: 0 auto;
+}
+
+#menubalk ul {
+    width: 100%;
+    padding: 1px calc(7 * 6.25%) 0 0;
+    margin: 0;
+    overflow: hidden;
+    float: none;
+}
+
+#menubalk li {
+    float: left;
+    list-style-type: none;
+    margin: 2px 12px 0 0;
+    line-height: 17px;
+    font-size: calc(12 * 6.25%);
+}
+
+#item_sgv {
+    display: inline-block;
+    height: 15px;
+    width: 15px;
+    text-indent: -99999px;
+    background-image: url("https://www.scoutsengidsenvlaanderen.be/files/algemeen/menubalk/balk_sprites_sgv.png");
+    background-repeat: no-repeat;
+}
+
+#menubalk a:link,
+#menubalk a:visited,
+#menubalk a:hover,
+#menubalk a:active,
+#menubalk a:focus {
+    display: inline-block;
+    color: #FFF;
+    text-decoration: none;
+    transition: color 0.25s linear 0s;
+}
+
+#menubalk a:hover,
+#menubalk a:active,
+#menubalk a:focus {
+    color: #BDD732;
+}
+
+#item_sgv {
+    display: inline-block;
+    height: 15px;
+    width: 15px;
+    text-indent: -99999px;
+    background-image: url("https://www.scoutsengidsenvlaanderen.be/files/algemeen/menubalk/balk_sprites_sgv.png");
+    background-repeat: no-repeat;
+}
+
+a.org {
+  font-weight: bold;
+}
+
+#item_facebook,
+#item_twitter {
+    text-indent: 0px;
+    margin: 0px;
+    width: 15px;
+    height: auto;
+    font-size: calc(15 * 6.25%);
+    background-position: 0px -15px;
+    background-repeat: no-repeat;
+}
+
+img.custom_logo_image.linked {
+  display: none;
+}

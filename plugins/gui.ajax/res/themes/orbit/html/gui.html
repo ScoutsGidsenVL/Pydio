@@ -1,30 +1,114 @@
 <!DOCTYPE html>
 <html xmlns:ajxp>
-	<head>
-		<title>AJXP_APPLICATION_TITLE</title>
-        AJXP_REBASE
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-        <link rel="stylesheet" type="text/css" href="AJXP_THEME_FOLDER/css/allz.css?v=AJXP_CURRENT_VERSION">
-		<!--[if IE 8]>
-		<script src="AJXP_CLIENT_RESOURCES_FOLDER/js/vendor/es6/es5-shim.min.js"></script>
-		<script src="AJXP_CLIENT_RESOURCES_FOLDER/js/vendor/es6/es5-sham.min.js"></script>
-		<![endif]-->
-        <!--[if IE 7]>
-        <script src="AJXP_CLIENT_RESOURCES_FOLDER/js/vendor/es6/json3.min.js"></script>
-        <![endif]-->
-        AJXP_ADDITIONAL_JS_FRAMEWORKS
-        <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer_boot.js?v=AJXP_CURRENT_VERSION"></script>
-        <link rel="icon" type="image/x-png" href="AJXP_THEME_FOLDER/images/html-folder.png">
-    </head>
-	<body style="overflow: hidden;">
-		<script type="text/javascript">
+  <head>
+    <title>AJXP_APPLICATION_TITLE</title>
+    AJXP_REBASE
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+
+    <!--link rel="stylesheet" type="text/css" href="AJXP_THEME_FOLDER/css/allz.css?v=AJXP_CURRENT_VERSION"-->
+    <link rel="stylesheet" type="text/css" href="AJXP_THEME_FOLDER/css/xtree.css">
+    <link rel="stylesheet" type="text/css" href="AJXP_THEME_FOLDER/css/screen.css">
+    <link rel="stylesheet" type="text/css" href="AJXP_THEME_FOLDER/css/ajaxplorer.css">
+    <link rel="stylesheet" type="text/css" href="AJXP_THEME_FOLDER/css/animate-custom.css">
+    <link rel="stylesheet" type="text/css" href="AJXP_THEME_FOLDER/css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="AJXP_THEME_FOLDER/css/fontfaces.css">
+    <link rel="stylesheet" type="text/css" href="AJXP_THEME_FOLDER/css/chosen.css#NO_MINI">
+    <link rel="stylesheet" type="text/css" href="AJXP_THEME_FOLDER/css/media.css#NO_MINI">
+    <link rel="stylesheet" type="text/css" href="AJXP_THEME_FOLDER/css/menubalk.css">
+
+    AJXP_ADDITIONAL_JS_FRAMEWORKS
+
+    <!--script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer_boot.js?v=AJXP_CURRENT_VERSION"></script-->
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/prototype.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/prototype.livepipe.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/prototype.oo.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/modernizr/modernizr.min.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/jsProgressBarHandler.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.Connexion.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/md5/md5.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/ajxp_utils.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.AjxpBootstrap.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/interfaces/class.IAjxpWidget.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/interfaces/class.IAjxpNodeProvider.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/interfaces/class.IActionProvider.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/interfaces/class.IFocusable.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/interfaces/class.IContextMenuable.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.AjxpPane.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.AjxpNode.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/webfx.selectable.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/webfx.sortable.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/proto.menu.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/splitter.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/cookiejar.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/protopass.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/resizable.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/leightbox/lightbox.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/scriptaculous/src/builder.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/scriptaculous/src/effects.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/scriptaculous/src/dragdrop.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/scriptaculous/src/controls.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/scriptaculous/src/slider.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/cssfx.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/proto.scroller.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/carousel.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/prototype/accordion.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/webfx/xtree.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/webfx/ajxptree.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/chosen/event.simulate.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/lib/chosen/chosen.proto.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.User.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.ResourcesManager.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.RemoteNodeProvider.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.EmptyNodeProvider.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.Repository.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.AjxpDraggable.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.AjxpSortable.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.AjxpTabulator.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.VisibilityToggler.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.AjxpSimpleTabs.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.RepositorySelect.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.RepositorySimpleLabel.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.Breadcrumb.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.LocationBar.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.UserWidget.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.LogoWidget.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.AjxpAutoCompleter.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.AjxpUsersCompleter.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.TreeSelector.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.SliderInput.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.Action.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.ActionsManager.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.ActionsToolbar.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.BackgroundManager.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.AjxpDataModel.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.HeaderResizer.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.PreviewFactory.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.FilesList.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.FoldersTree.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.SearchEngine.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.FetchedResultPane.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.InfoPanel.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.PropertyPanel.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.AbstractEditor.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.Modal.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.BookmarksBar.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.FormManager.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.DataModelProperty.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.MultiDownloader.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.ActivityMonitor.js"></script>
+    <script language="javascript" type="text/javascript" src="AJXP_CLIENT_RESOURCES_FOLDER/js/ajaxplorer/class.Ajaxplorer.js"></script>
+
+    <link rel="icon" type="image/x-png" href="AJXP_THEME_FOLDER/images/html-folder.png">
+  </head>
+  <body style="overflow: hidden;">
+    <script type="text/javascript">
         window.ajxpNoNotifLoader = true;
         window.ajxpThemeSkipLoaderProgress = true;
-		// Initialize booter. Do not remove the commented line AJXP_JSON_START_PARAMETERS, as it is 
-		// dynamically replaced by the application!
-		var ajaxplorer, startParameters = {}, MessageHash={};
-		//AJXP_JSON_START_PARAMETERS
+    // Initialize booter. Do not remove the commented line AJXP_JSON_START_PARAMETERS, as it is
+    // dynamically replaced by the application!
+    var ajaxplorer, startParameters = {}, MessageHash={};
+    //AJXP_JSON_START_PARAMETERS
         document.observe("ajaxplorer:before_gui_load", function(e){
 			if(window.React){
                 React.initializeTouchEvents(true);
@@ -35,14 +119,15 @@
         });
         window.ajxpBootstrap = new AjxpBootstrap(startParameters);
         //window.onbeforeunload = function(){return "Do you want to quit?";};
-		</script>
-		<div id="ajxp_desktop" ajxpClass="AjxpPane" ajxpOptions='{"fit":"height","fitParent":"window","fitMarginBottom":"$(\"optional_bottom_div\").getHeight()"}'></div>
-		<div id="all_forms">
-			<div id="generic_dialog_box" class="dialogBox form-login_form"><div class="dialogTitle"></div><div class="dialogContent"></div></div>
-			<div id="hidden_frames" style="display:none;"></div>
-			<div id="hidden_forms" style="position:absolute;left:-1000px;"></div>	
-			
-			<!-- LOGIN SCREEN MUST BE ALREADY IN PAGE TO ENABLE PASSWORD REMEMBERING -->
+    </script>
+    MENUBALK
+    <div id="ajxp_desktop" ajxpClass="AjxpPane" ajxpOptions='{"fit":"height","fitParent":"window","fitMarginBottom":"$(\"optional_bottom_div\").getHeight()"}'></div>
+    <div id="all_forms">
+      <div id="generic_dialog_box" class="dialogBox form-login_form"><div class="dialogTitle"></div><div class="dialogContent"></div></div>
+      <div id="hidden_frames" style="display:none;"></div>
+      <div id="hidden_forms" style="position:absolute;left:-1000px;"></div>
+
+      <!-- LOGIN SCREEN MUST BE ALREADY IN PAGE TO ENABLE PASSWORD REMEMBERING -->
             <form id="login_form" style="display:none;" box_width="320" box_padding="0" overlayStyle='{"backgroundColor":"white","opacity":10,"backgroundImage":"url(\"AJXP_THEME_FOLDER/images/grid_t.png\")"}'>
 				<input type="hidden" name="get_action" value="login">
 				<input type="hidden" name="login_seed" id="login_seed" value="">

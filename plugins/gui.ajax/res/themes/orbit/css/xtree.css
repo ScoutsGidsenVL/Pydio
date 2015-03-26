@@ -28,6 +28,7 @@
 
 .webfx-tree-item:hover{
 	background-color: #666;
+    color: #48454B;
 }
 
 .selected-webfx-tree-item {

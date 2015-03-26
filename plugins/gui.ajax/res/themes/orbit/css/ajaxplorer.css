@@ -1,19 +1,42 @@
-table.sort-table tr:nth-child(even)
-{
+/*
+ * Font Open Sans
+ * Open Sans is licensed under the Apache License version 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+ */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: normal;
+  src:
+    local('Open Sans'),
+    local('OpenSans'),
+    url('https://www.scoutsengidsenvlaanderen.be/sites/all/themes/theme2014/assets/fonts/webfonts/OpenSans.woff2') format('woff2'),
+    url('https://www.scoutsengidsenvlaanderen.be/sites/all/themes/theme2014/assets/fonts/webfonts/OpenSans.woff') format('woff'),
+    url('https://www.scoutsengidsenvlaanderen.be/sites/all/themes/theme2014/assets/fonts/webfonts/OpenSans.ttf') format('truetype');
+}
+
+body {
+    font-family: "Open Sans", sans-serif;
+}
+
+/* Drop shadow for SGV Logo on images */
+#logo_div {
+    -webkit-filter: drop-shadow(12px 12px 25px rgba(0,0,0,0.5));
+    filter: url(#drop-shadow);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Dropshadow(OffX=12, OffY=12, Color='#444')";
+    filter: "progid:DXImageTransform.Microsoft.Dropshadow(OffX=12, OffY=12, Color='#444')";
+}
+
+div.dialogBox.form-login_form,
+#overlay {
+  top: 25px !important;
+}
+
+a.icon-flag {
+  display: none;
+}
+
+table.sort-table tr:nth-child(even) {
     background-color: #f9f9f9;
-}
-
-/* FONTS */
-
-*{
-    font-family: "Open Sans Light", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-}
-
-#content_pane div.thumbnail_selectable_cell.detailed div.thumbLabel,
-div.infoPanelBasenameTitle,
-.table_rows_container span#ajxp_label
-{
-    font-family: "Open Sans Regular", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;;
 }
 
 *:focus{
@@ -31,16 +54,19 @@ div.infoPanelBasenameTitle,
     background: linear-gradient(top, rgba(255,255,255,1) 0%,rgba(229,229,229,1) 100%); /* W3C */
 }
 
-.grey_gradient_emboss,.selected{
+.grey_gradient_emboss,
+.selected {
     background: #CCC !important;
 }
 
-div.selected-webfx-tree-item-inactive{
+div.selected-webfx-tree-item-inactive,
+div.selected-webfx-tree-item {
     background: #666 !important; /* Old browsers */ /* FF3.6+ */ /* Chrome,Safari4+ */ /* Chrome10+,Safari5.1+ */ /* Opera11.10+ */ /* IE10+ */ /* IE6-9 */ /* W3C */
 }
 
-.blue_gradient,div.selected-webfx-tree-item, .selected-focus{
-    background: #fb725c !important; /* Old browsers */ /* FF3.6+ */ /* Chrome,Safari4+ */ /* Chrome10+,Safari5.1+ */ /* Opera11.10+ */ /* IE10+ */ /* IE6-9 */ /* W3C */
+.blue_gradient,
+.selected-focus {
+    background: #E7E0DE !important; /* Old browsers */ /* FF3.6+ */ /* Chrome,Safari4+ */ /* Chrome10+,Safari5.1+ */ /* Opera11.10+ */ /* IE10+ */ /* IE6-9 */ /* W3C */
 }
 
 .settings_main_pane div.selected-webfx-tree-item,
@@ -63,7 +89,7 @@ span.overlay-class-span.icon-eye-open
 .colorcode-shared,
 span.overlay-class-span.icon-share-sign
 {
-    color: #4Aceb0;
+    color: #BDD732;
 }
 
 .colorcode-bookmark,
@@ -73,7 +99,7 @@ span.overlay-class-span.icon-bookmark
 }
 
 .colorcode-folder{
-    color: #fb725c;
+    color: #FFF;
 }
 
 /*
@@ -120,7 +146,6 @@ kbd {
     padding: .1em .6em;
     border: 1px solid #ccc;
     font-size: 11px;
-    font-family: Arial,Helvetica,sans-serif;
     background-color: #f7f7f7;
     -moz-box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px #fff inset;
     -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px #fff inset;
@@ -361,7 +386,6 @@ div.thumbnail_cell_metadata span.metadata_chunk{
     padding-left: 27px !important;
     background-position: 5px 4px;
     color: #444;
-    letter-spacing: 1px;
 }
 
 .overlay_icon_div{
@@ -483,10 +507,6 @@ div.shadow_class
     font-size: 17px;
     margin-top: 0;
     color: #AFAFAF;
-}
-
-.dialogTitle span.string-only-title {
-    font-family: "Open Sans Regular", Helvetica, sans-serif;
 }
 
 .dialogContent
@@ -763,7 +783,6 @@ textarea#myCode
     outline: none;
     margin-left: 12px;
     background: rgba(107, 107, 107, 0.87);
-    letter-spacing: 1px;
     float: left;
     cursor: pointer;
     border-radius: 5px;
@@ -822,7 +841,6 @@ div#meta_source_button_add{
     margin: 10px 7px;
     overflow-y: auto;
     max-height: 120px;
-    letter-spacing: 0;
 }
 
 .errorMessage
@@ -890,7 +908,6 @@ html.boxshadow div.errorMessage{
     width: 150px;
     z-index: 10000;
     font-size: 13px;
-    letter-spacing: 1px;
     padding: 5px 10px;
 }
 
@@ -1179,7 +1196,6 @@ div.SF_label{
     text-transform: uppercase;
     width: 100% !important;
     line-height: 22px !important;
-    letter-spacing: 1px;
     margin-top: 3px;
 }
 
@@ -1378,7 +1394,6 @@ select.SF_input {
 div.tabbed_editor div.innerTitle{
     margin: 10px !important;
     padding: 8px !important;
-    letter-spacing: 1px !important;
 }
 
 /**********************************************
@@ -1506,13 +1521,8 @@ div.dialogBox.form-reset-password-ask,
 div.dialogBox.form-login_form,
 div.dialogBox.form-login_form_dynamic
 {
-    /*
-    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.23);
-    -webkit-box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.23);
-    -moz-box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.23);
-    */
     box-shadow: none;
-    top: 0 !important;
+    top: 25px !important;
     left: 0 !important;
     bottom: 0 !important;
     background-color: rgba(34,34,34,0.4);
@@ -1623,8 +1633,8 @@ div.dialogBox.form-diaporama_box div.dialogContent{
 }
 
 #global_toolbar{
-    height: 47px;
     padding: 0 15px 0 5px;
+    padding-top: 0 !important;
     background-repeat: no-repeat;
     background-position: 7px;
     display: none;
@@ -1651,8 +1661,7 @@ div.dialogBox.form-diaporama_box div.dialogContent{
 
 #topPane{
     width:280px;
-    background-color: rgba(50,50,50,0.93);
-    background-color: rgb(50,50,50)\9;
+    background-color: #48454B;
 }
 
 .no-flexbox div#topPane{
@@ -1715,7 +1724,6 @@ div#navigation_toolbar {
     border: none;
     vertical-align: middle;
     background-color: transparent;
-    letter-spacing: 1px; /* Old browsers */   /* FF3.6+ */   /* Chrome,Safari4+ */   /* Chrome10+,Safari5.1+ */   /* Opera 11.10+ */   /* IE10+ */   /* W3C */   /* IE6-9 */; /* Old browsers */   /* FF3.6+ */   /* Chrome,Safari4+ */   /* Chrome10+,Safari5.1+ */   /* Opera 11.10+ */   /* IE10+ */   /* W3C */   /* IE6-9 */;
 }
 
 
@@ -1743,7 +1751,6 @@ div#navigation_toolbar {
 
 .action_bar
 {
-    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-size: 12px;
     padding: 0;
     line-height: 15px;
@@ -1773,7 +1780,6 @@ div#navigation_toolbar {
 }
 
 .create_file_alt_link{
-    font-family: "Open Sans Regular", Helvetica, sans-serif;
     font-style: italic;
     cursor: pointer;
 }
@@ -1921,7 +1927,6 @@ div.action_bar.text_only  span.actionbar_button_label{
     border-radius: 17px;
     margin: 5px 2px 0 1px;
     background: #fff; /* Old browsers */   /* FF3.6+ */   /* Chrome,Safari4+ */   /* Chrome10+,Safari5.1+ */   /* Opera 11.10+ */   /* IE10+ */   /* W3C */   /* IE6-9 */;
-    letter-spacing: 1px;
     float: left;
 }
 
@@ -2178,7 +2183,6 @@ div.class-FetchedResultPane > div.panelHeader
     font-size: 16px;
     padding: 16px 8px 15px 17px;
     margin: 0;
-    letter-spacing: 1px;
     display: block;
     clear: left;
     font-weight: lighter;
@@ -2306,25 +2310,23 @@ div.class-FetchedResultPane > div.panelHeader
     width: 90px;
     margin-left: 3px;
     color: #fff;
-    letter-spacing: 1px;
 }
 
 #repo_chooser{
-    background-color: #222;
+    background-color: #BDD732;
     float:left;
     font-size: 15px;
     color: #ffffff;
     font-weight: normal;
-    letter-spacing: 1px;
     margin-top:0px;
     cursor: pointer;
     padding: 21px 15px 21px 15px;
-    border-right: 2px solid #333;
+    border-right: 2px solid #BDD732;
     height: 20px;
 }
 
 #repo_chooser:hover{
-    background-color: #fb725c;
+    background-color: #748D26;
     color: white;
 }
 
@@ -2415,7 +2417,7 @@ img.simple_button_arrow{
     color:#fff;
     font-size:11px;
     float: right;
-    margin-top: 12px;
+    margin-top: -22px;
 }
 
 #logging_string.disabled{
@@ -2430,7 +2432,6 @@ img.simple_button_arrow{
 {
     font-style: normal;
     font-weight: normal;
-    letter-spacing: 1px;
 }
 #logging_string i img
 {
@@ -2443,10 +2444,9 @@ img.simple_button_arrow{
 }
 .user_widget_label{
     float: left;
-    padding: 3px 10px 7px 7px;
+    padding: 3px 10px 3px 7px;
     cursor: pointer;
     font-size: 12px;
-    letter-spacing: 1px;
 }
 
 .user_widget_label.withImage{
@@ -2557,7 +2557,6 @@ div.header_resizer div.header_label{
     padding: 5px 5px 4px;
     background-color: rgb(255, 255, 255);
     color: rgb(86, 101, 117);
-    letter-spacing: 1px;
     border-bottom: 0;
     height: 18px;
     overflow: hidden;
@@ -2662,7 +2661,6 @@ div.header_resizer div.ascending {
 /* FILE LIST SKINNING
 /********************************/
 .sort-table {
-    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-size: 10px;
 }
 
@@ -2800,7 +2798,6 @@ div.multiple_selection_draggable
     background-color: #fff;
     padding: 5px;
     border: 1px solid #c3d9ff;
-    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif , sans-serif;
     font-size: 12px;
     cursor:default;
     overflow:hidden;
@@ -2905,7 +2902,6 @@ div.bm, div.bm_hover
     padding: 3px;
     margin-right: 5px;
     /*background-color: #ddd;*/
-    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif , sans-serif;
     color: #333;
 }
 
@@ -3210,7 +3206,6 @@ div#upload_files_list span.item_relative_path{
 {
     vertical-align:top;
     font-size: 11px;
-    letter-spacing: 1px;
 }
 
 /***** SCROLLER ******/
@@ -3527,7 +3522,6 @@ div.tabulatorContainer span.toggleInactive span.tab_close_button:hover {
     text-align: left;
     padding-right: 0;
     font-size: 40px;
-    font-family: "Open Sans Regular", sans-serif;
 }
 
 #search_container span.search_advanced_direct_access{
@@ -4034,7 +4028,7 @@ div.class-FetchedResultPane div.thumbnail_selectable_cell.detailed span.text_lab
 #info_panel div.panelContent
 {
     overflow: hidden;
-    background-color: #f3f3f3;
+    background-color: #E7E0DE;
     padding-bottom: 15px;
     -webkit-font-smoothing: antialiased;
 }
@@ -4119,11 +4113,9 @@ div.foldedPanel_tooltip td{
     margin-right: 1px;
     margin-bottom: 6px;
     font-size: 13px;
-    letter-spacing: 1px;
     background-color: rgba(107, 107, 107, 0.87);
     background-color: rgb(107, 107, 107)\9;
     color: #fff;
-    font-family: "Open Sans Regular", Helvetica, sans-serif;
     -webkit-font-smoothing:auto;
 }
 
@@ -4396,7 +4388,6 @@ div.infoPanelAllMetadata span.meta_user_tag_block {
 }
 
 div.selectable_div, .table_rows_container, #tree_container, #bottomSplitPane, .ajxp_simple_container{
-    font-family:    "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-size: 12px;
 }
 
@@ -4994,7 +4985,6 @@ input.share_info_panel_link_expired{
     width: 95%;
     text-align: center;
     font-size: 16px !important;
-    font-family: "Open Sans Regular", sans-serif;
     padding: 5px !important;
     border-radius: 5px;
     background-color: #fafafa;
@@ -5292,7 +5282,6 @@ textarea.editor
 
 #diaporamaMetadataContainer{
     background-color: #757575;
-    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 
 #diaporamaMetadataContainer div.panelContent{
@@ -5387,7 +5376,6 @@ div.menu {
     position: absolute;
     top: 0;
     left: 0;
-    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     -moz-border-radius:5px;
     border-radius: 2px;
     opacity: 0.97;
@@ -5421,7 +5409,6 @@ div.menu a {
     padding: 0;
     padding-top: 0;
     padding-bottom: 1px;
-    letter-spacing: 1px;
     background-color: #ffffff;
 }
 
@@ -5480,7 +5467,6 @@ div.menu a {
     padding: 13px 8px 15px;
     text-align: left;
     font-size: 22px;
-    letter-spacing: 1px;
     text-transform: uppercase;
 }
 
@@ -5554,7 +5540,6 @@ div.menu a {
     padding: .1em .2em;
     border: 1px solid #ccc;
     font-size: 11px;
-    font-family: Arial,Helvetica,sans-serif;
     background-color: #f7f7f7;
     -moz-box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px#fff inset;
     -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px#fff inset;
@@ -5612,7 +5597,6 @@ span.letter_badge {
     text-align: center;
     padding: 7px 0;
     font-size: 0.8em;
-    font-family: "Open Sans Regular", Helvetica, sans-serif;
 }
 
 span#alerts_number {
@@ -5646,7 +5630,6 @@ span#alerts_number {
 .rootDirChooser
 {
     font-size: 11px;
-    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     position:absolute;
     z-index: 1500;
     width: 280px !important;
@@ -5675,7 +5658,6 @@ span#alerts_number {
     display: block;
     padding: 6px 5px 5px 6px;
     color: #fff;
-    letter-spacing: 1px;
     /*height: 16px;*/
 }
 
@@ -5708,8 +5690,8 @@ span#alerts_number {
 .bookmarksMenu a.hovered,
 .rootDirChooser a.hovered
 {
-    background-color: #FB725C;
-    color: #fff;
+    background-color: #E7E0DE;
+    color: #48454B;
 }
 
 .rootDirChooser li.separator {
@@ -5757,11 +5739,14 @@ span#alerts_number {
 
 .menu.menuDetails span.menu_description{
     display: block;
-    letter-spacing: 0;
     line-height: 16px;
     font-size: 11px;
     color: white;
     padding-top: 8px;
+}
+
+.menu.menuDetails span.menu_description:hover{
+    color: #48454B;
 }
 
 .menu.menuDetails.workspacesMenu span.ajxp_icon_span{
@@ -5808,7 +5793,6 @@ span#alerts_number {
 .rightAlignMenu a{
     padding: 8px 5px 7px 20px;
     text-align:right;
-    letter-spacing: 1px;
 }
 
 .rightAlignMenu a img{
@@ -5890,7 +5874,6 @@ div.menuActions img{
     width: 25%;
     margin-left: 40%;
     text-align: center;
-    letter-spacing: 1px;
     border: 1px solid rgba(119, 184, 226, 0.62);
 }
 
@@ -6146,7 +6129,6 @@ td.ip_geo_cell{
 {
     font-size:12px;
     padding: 0 10px;
-    letter-spacing: 1px;
 }
 
 #top_toolbar a span.ajxp_icon_span,
@@ -6208,7 +6190,6 @@ TABULATOR IN A TABULATOR
     font-size: 11px;
     padding: 3px 16px 4px 8px;
     height: 35px;
-    letter-spacing: 1px;
     background-color: #ddd;
     color: rgb(111, 123, 136);
     border-right: 0;
@@ -6331,7 +6312,6 @@ div#userdashboard_myparams_title{
     width: 196px;
     left: 0;
     background-color: #222;
-    letter-spacing: 1px;
 }
 
 div#userdashboard_myparams_title span#dash_title{
@@ -6534,13 +6514,14 @@ div.horizontal_tabulator > div > div.horizontal_tabulator div.tabulatorContainer
 }
 
 .breadcrumbs-one span{
-    padding: 20px 15px 20px 35px;
+    display: table;
+    padding: 0 15px 0 35px;
     float: left;
     text-decoration: none;
     color: #666;
     position: relative;
     background-color: #f5f5f5;
-    height: 22px;
+    height: 62px;
 }
 
 .breadcrumbs-one li:first-child span{
@@ -6572,11 +6553,11 @@ div.horizontal_tabulator > div > div.horizontal_tabulator div.tabulatorContainer
 }
 
 .breadcrumbs-one li:first-child span::after{
-    border-left-color: #222;
+    border-left-color: #BDD732;
 }
 .breadcrumbs-one li:first-child span{
-    background-color: #222;
-    color: white;
+    background-color: #BDD732;
+    color: #572600;
 }
 
 .breadcrumbs-one li:nth-child(1) span:before{
@@ -6605,8 +6586,10 @@ div.horizontal_tabulator > div > div.horizontal_tabulator div.tabulatorContainer
 }
 
 .breadcrumbs-one em{
+    display: table-cell;
+    vertical-align: middle;
     font-style: normal;
-    font-weight: lighter;
+    font-weight: bold;
 }
 
 span.first-bread em {
@@ -6681,8 +6664,14 @@ span.first-bread em {
     font-size: 1.3em;
 }
 
-#ajxp_link_form img {
-    display: none;
+#AjxpConnexion-loader {
+  top: 100px !important;
+}
+
+#AjxpConnexion-loader img {
+    height: initial;
+    background-color: rgba(34, 34, 34, 0.4);
+    border: 20px solid rgba(34, 34, 34, 0.4);
 }
 
 .ipanel_no_selection_select, #no-results-found {
@@ -6730,7 +6719,6 @@ span.first-bread em {
     border-radius: 14px;
     margin: 3px 4px 0 1px;
     background: #ffffff;
-    letter-spacing: 1px;
     float: left;
     color: #555;
 }
