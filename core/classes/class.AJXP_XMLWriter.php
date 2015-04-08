@@ -543,9 +543,25 @@ class AJXP_XMLWriter
         if ($errorMessage == null) {
             $messageType = "SUCCESS";
             $message = AJXP_Utils::xmlContentEntities($logMessage);
+        } else if ($errorMessage == 'You are not allowed to access this resource.') {
+            $messageType = "ERROR";
+            $message = $errorMessage;
         } else {
             $messageType = "ERROR";
-            $message = AJXP_Utils::xmlContentEntities($errorMessage);
+            $message = "Er is een fout opgetreden.\n";
+            $message .= "Scouts en Gidsen Vlaanderen is al op de hoogte gebracht.\n";
+            $message .= "\n";
+            $message .= "Details:\n";
+            $message .= AJXP_Utils::xmlContentEntities($errorMessage);
+
+            require_once(__DIR__ . "/../../plugins/mailer.phpmailer-lite/lib/class.phpmailer-lite.php");
+            $mail = new PHPMailerLite();
+            $mail->setFrom('informatica@scoutsengidsenvlaanderen.be');
+            $mail->AddAddress('tvl+pydio@scoutsengidsenvlaanderen.be');
+            $mail->AddAddress('log.informatica+org.error@scoutsengidsenvlaanderen.be');
+            $mail->Subject = '[.Org] Foutmelding';
+            $mail->Body = $message;
+            $mail->Send();
         }
         return AJXP_XMLWriter::write("<message type=\"$messageType\">".$message."</message>", $print);
     }
