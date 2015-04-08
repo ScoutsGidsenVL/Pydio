@@ -668,13 +668,6 @@ class AJXP_XMLWriter
                 $label = ConfService::getUserPersonalParameter("USER_DISPLAY_NAME", $uId, "core.conf", $uId);
                 $isSharedString =  'owner="'.AJXP_Utils::xmlEntities($label).'"';
             }
-            $descTag = "";
-            $public = false;
-            if(!empty($_SESSION["CURRENT_MINISITE"])) $public = true;
-            $description = $repoObject->getDescription($public);
-            if (!empty($description)) {
-                $descTag = '<description>'.AJXP_Utils::xmlEntities($description, true).'</description>';
-            }
             $roleString="";
             if($loggedUser != null){
                 $merged = $loggedUser->mergedRole;
@@ -700,7 +693,7 @@ class AJXP_XMLWriter
                     $roleString.= ' hasMask="true" ';
                 }
             }
-            $st .= "<repo access_type=\"".$repoObject->accessType."\" id=\"".$repoId."\"$rightString $streamString $slugString $isSharedString $roleString><label>".SystemTextEncoding::toUTF8(AJXP_Utils::xmlEntities($repoObject->getDisplay()))."</label>".$descTag.$repoObject->getClientSettings()."</repo>";
+            $st .= "<repo access_type=\"".$repoObject->accessType."\" id=\"".$repoId."\"$rightString $streamString $slugString $isSharedString $roleString><label>".SystemTextEncoding::toUTF8(AJXP_Utils::xmlEntities($repoObject->getDisplay()))."</label>".$repoObject->getClientSettings()."</repo>";
         }
 
         $st .= "</repositories>";
