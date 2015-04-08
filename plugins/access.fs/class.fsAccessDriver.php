@@ -728,16 +728,19 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
                             $userfile_name = AJXP_Utils::sanitize(SystemTextEncoding::fromUTF8(urldecode($httpVars["urlencoded_filename"])), AJXP_SANITIZE_FILENAME);
                         }
 
-
                         // hack - http://tools.scoutsengidsenvlaanderen.net/flyspray/index.php?do=details&task_id=2555
-                        $date = date('Y.m.d');
-                        $userfile_name = preg_replace('/^ *([0-9 \.\-]{3,})?/', $date . ' ', $userfile_name);
+                        if (preg_match('/^ *[0-9]+[ \.\-][0-9]+[ \.\-][0-9]+/', $userfile_name) === 0) {
+                            $userfile_name = date('Y.m.d') . ' ' . $userfile_name;
+                        }
 
                         $userfile_name = substr($userfile_name, 0, ConfService::getCoreConf("NODENAME_MAX_LENGTH"));
-                        if (isSet($httpVars["auto_rename"])) {
+
+                        // auto rename disabled for existing file names because we're using git
+                        if (false && isSet($httpVars["auto_rename"])) {
                             $userfile_name = self::autoRenameForDest($destination, $userfile_name);
                         }
-                        $this->logDebug("User filename ".$userfile_name);
+
+                        $this->logDebug("Filename: ".$userfile_name);
 
                         // CHECK IF THIS IS A FORBIDDEN FILENAME
                         $this->filterUserSelectionToHidden(array($userfile_name));
