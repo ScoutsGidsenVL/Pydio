@@ -38,7 +38,7 @@ $mess=array(
 "52"=> "Weet je zeker dat je dit team wilt verwijderen? Deze actie verwijdert niet de gebruikers.",
 "53"=> "Aan de slag",
 "54"=> "Aan de slag met APPLICATION_TITLE door de How-to videos te volgen",
-"55"=> "Nieuw bij APPLICATION_TITLE? <a>Bekijk onze tutorials.</a>",
+"55"=> "Nieuw bij APPLICATION_TITLE? <a>Bekijk onze tutorials</a>.",
 "56"=> "Aan de slag met APPLICATION_TITLE? Hier zijn wat videos!",
 "57"=> "Download APPLICATION_TITLE voor...",
 "58"=> "Android",
@@ -55,23 +55,6 @@ $mess=array(
                 <li>Snel toegang tot favorieten en de zoekmachine</li>
                 <li>Selectie wagen</li>
             </ul>",
-    "63"=>"<h2>Deel bestanden met APPLICATION_TITLE</h2>
-                            In deze tutorial, leggen we de basis van bestandsdeling met APPLICATION_TITLE uit:
-                            <ul>
-                                <li>Maak web links</li>
-                                <li>Stuur ze naar interne of externe gebruikers</li>
-                                <li>Ontvang een notificatie als een link gedownload is</li>
-                                <li>Maak een wachtwoord beschermde link aan</li>
-                                <li>Maak veel links van 1 bestand</li>
-                                <li>Stop al het delen</li>
-            </ul>",
-    "64"=>"<h2>Sharing folders with APPLICATION_TITLE</h2>
-                            Deze video laat de diverse opties voor bestandsdeling in APPLICATION_TITLE zien
-                            <ul>
-                                <li>Deel als een nieuwe werkplek</li>
-                                <li>Deel als een publieke mini-site</li>
-            </ul>",
-    "65"=> "Ontdek meer op het APPLICATION_TITLE kanaal!",
     "66"=>"<h2>Gebruik van APPLICATION_TITLE op een iOS apparaat</h2>
                             Deze video laat zien hoe de APPLICATION_TITLE applicatie werkt (beschikbaar in de App Store). Het proces is bijna gelijk aan de Android versie.
 <ul><li>Setup de server verbinding</li>

@@ -6,9 +6,9 @@
             <!--<js className="WelcomeComponents" file="plugins/access.ajxp_home/build/WelcomeComponents.js" depends="React"/>-->
             <js className="UserDashboardHome" file="plugins/access.ajxp_home/class.UserDashboardHome.js"/>
             <css file="plugins/access.ajxp_home/home.css" autoload="true"/>
-		</resources>
+    </resources>
         <node_provider ajxpClass="EmptyNodeProvider" ajxpOptions="{}"/>
-	</client_settings>
+  </client_settings>
     <server_settings>
         <global_param name="SIMPLE_CLICK_WS_OPEN" type="boolean" label="CONF_MESSAGE[Open workspace by simple click]"
                       description="CONF_MESSAGE[Open workspace by simple click instead of double click.]" default="true" expose="true"/>
@@ -24,8 +24,8 @@
                       label="CONF_MESSAGE[Mac PydioSync URL]" description="CONF_MESSAGE[URL of the mac sync application]" default="http://pyd.io/apps/pydio-sync/"/>
 
     </server_settings>
-	<registry_contributions>
-		<client_configs>
+  <registry_contributions>
+    <client_configs>
             <template_part theme="umbra" ajxpId="sidebar_splitter" ajxpClass="AjxpPane" ajxpOptions='{"fit":"height","fake":"option"}'><![CDATA[
                 <div id="folderPane" ajxpClass="FoldersTree" ajxpOptions='{"display":"dz","replaceScroller":true}' ajxpPaneHeader="363" ajxpPaneIcon="view_tree.png" style="margin:20px;"></div>
                 <style>#sidebar_splitter{padding-bottom:20px;background-color:#A0C0A4;}</style>
@@ -96,6 +96,7 @@
                             <div id="list_cont" ajxpClass="AjxpPane" ajxpOptions='{"fit":"height","fitMarginBottom":100}'>
                                 <ul id="workspaces_list"></ul>
                             </div>
+                            <!-- Hidden, but required in class.UserDashboardHome.js (line 218) -->
                             <div id="workspaces_button">
                                 <input type="checkbox" name="save_ws_choice" id="save_ws_choice" class="disabled" disabled><label for="save_ws_choice">AJXP_MESSAGE[user_home.41]</label>
                                 <input type="button" name="go_to_ws" id="go_to_ws" value="AJXP_MESSAGE[user_home.42]" class="disabled">
@@ -137,7 +138,7 @@
                         <div id="ws_legend"></div>
                     </div>
                 </div>
-			]]></template_part>
+      ]]></template_part>
         </client_configs>
         <actions>
             <action name="open_tutorial_pane">
@@ -188,31 +189,17 @@
                             </div>
                             <img class="tutorial_video" src="https://img.youtube.com/vi/80kq-T6bQO4/0.jpg">
 
-                            <div class="tutorial_legend" data-videoSrc="//www.youtube.com/embed/ZuVKsIa4XdU?list=PLxzQJCqzktEYnIChsR5h3idjAxgBssnt5">
-                                AJXP_MESSAGE[user_home.63]
-                                <div class="tutorial_load_button"><i class="icon-youtube-play"></i> Play Video</div>
-                            </div>
-                            <img class="tutorial_video" src="https://img.youtube.com/vi/ZuVKsIa4XdU/0.jpg">
-
-                            <div class="tutorial_legend" data-videoSrc="//www.youtube.com/embed/MEHCN64RoTY?list=PLxzQJCqzktEYnIChsR5h3idjAxgBssnt5">
-                                AJXP_MESSAGE[user_home.64]
-                                <div class="tutorial_load_button"><i class="icon-youtube-play"></i> Play Video</div>
-                            </div>
-                            <img class="tutorial_video" src="https://img.youtube.com/vi/MEHCN64RoTY/0.jpg">
-
-                            <div class="tutorial_legend" data-videoSrc="//www.youtube.com/embed/ot2Nq-RAnYE?list=PLxzQJCqzktEYnIChsR5h3idjAxgBssnt5">
+                            <div class="tutorial_legend" data-videoSrc="https://www.youtube.com/embed/ot2Nq-RAnYE?list=PLxzQJCqzktEYnIChsR5h3idjAxgBssnt5">
                                 AJXP_MESSAGE[user_home.66]
                                 <div class="tutorial_load_button"><i class="icon-youtube-play"></i> Play Video</div>
                             </div>
                             <img class="tutorial_video" src="https://img.youtube.com/vi/ot2Nq-RAnYE/0.jpg">
 
-                            <div style="clear:left; text-align:center;">
-                                <a href="http://pyd.io/end-user-tutorials/" target="_blank" style="text-align: center;font-size: 25px;background-color: #e35d52;padding: 10px;border-radius: 5px;color: white;display: inline-block;margin: 40px 0;"><i class="icon-youtube-play"></i> AJXP_MESSAGE[user_home.65]</a></div>
                         </div>
                 ]]></clientForm>
                 </processing>
             </action>
         </actions>
-	</registry_contributions>
+  </registry_contributions>
     <class_definition filename="plugins/access.ajxp_home/class.HomePagePlugin.php" classname="HomePagePlugin"/>
 </ajxpdriver>
