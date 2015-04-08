@@ -26,64 +26,25 @@
  */
 defined('AJXP_EXEC') or die( 'Access not allowed');
 
-$REPOSITORIES[0] = array(
-    "DISPLAY"		=>	"Default Files",
-    "DISPLAY_ID"    =>  430,
-    "DESCRIPTION_ID"=>  475,
-    "AJXP_SLUG"		=>  "default",
-    "DRIVER"		=>	"fs",
-    "DRIVER_OPTIONS"=> array(
-        "PATH"			=>	"AJXP_DATA_PATH/files",
-        "CREATE"		=>	true,
-        "RECYCLE_BIN" 	=> 	'recycle_bin',
-        "CHMOD_VALUE"   =>  '0600',
-        "DEFAULT_RIGHTS"=>  "r",
-        "PAGINATION_THRESHOLD" => 500,
-        "PAGINATION_NUMBER" => 200,
-        "META_SOURCES"		=> array(
-            "metastore.serial"=> array(
-                "METADATA_FILE"	=> ".ajxp_meta",
-                "METADATA_FILE_LOCATION" => "infolders"
-            ),
-            "meta.user"     => array(
-                "meta_fields"		=> "tags",
-                "meta_labels"		=> "Tags",
-                "meta_visibility"   => "hidden"
-            ),
-            "meta.filehasher"   => array(),
-            "meta.watch"        => array(),
-            "meta.syncable"     => array(),
-            "meta.exif"   => array(
-                "meta_fields" => "COMPUTED_GPS.GPS_Latitude,COMPUTED_GPS.GPS_Longitude",
-                "meta_labels" => "Latitude,Longitude"
-            ),
-            "index.lucene" => array(
-                "index_meta_fields" => "tags"
-            ),
-        )
-    ),
-
-);
-
 // DO NOT REMOVE THIS!
 // USER DASHBOARD
 $REPOSITORIES["ajxp_user"] = array(
-    "DISPLAY"		    =>	"My Dashboard",
-    "AJXP_SLUG"		    =>  "dashboard",
-    "DISPLAY_ID"		=>	"user_dash.title",
-    "DESCRIPTION_ID"	=>	"user_dash.desc",
-    "DRIVER"		    =>	"ajxp_user",
+    "DISPLAY"       =>  "My Dashboard",
+    "AJXP_SLUG"       =>  "dashboard",
+    "DISPLAY_ID"    =>  "user_dash.title",
+    "DESCRIPTION_ID"  =>  "user_dash.desc",
+    "DRIVER"        =>  "ajxp_user",
     "DRIVER_OPTIONS"    => array(
         "DEFAULT_RIGHTS" => "rw"
     )
 );
 
 $REPOSITORIES["ajxp_home"] = array(
-    "DISPLAY"		    =>	"Welcome",
-    "AJXP_SLUG"		    =>  "welcome",
-    "DISPLAY_ID"		=>	"user_home.title",
-    "DESCRIPTION_ID"	=>	"user_home.desc",
-    "DRIVER"		    =>	"ajxp_home",
+    "DISPLAY"       =>  "Welcome",
+    "AJXP_SLUG"       =>  "welcome",
+    "DISPLAY_ID"    =>  "user_home.title",
+    "DESCRIPTION_ID"  =>  "user_home.desc",
+    "DRIVER"        =>  "ajxp_home",
     "DRIVER_OPTIONS"    => array(
         "DEFAULT_RIGHTS" => "rw"
     )
@@ -91,35 +52,35 @@ $REPOSITORIES["ajxp_home"] = array(
 
 // ADMIN REPOSITORY
 $REPOSITORIES["ajxp_conf"] = array(
-    "DISPLAY"		    =>	"Settings",
-    "AJXP_SLUG"		    =>  "settings",
-    "DISPLAY_ID"		=>	"165",
-    "DESCRIPTION_ID"	=>	"506",
-    "DRIVER"		    =>	"ajxp_conf",
+    "DISPLAY"       =>  "Settings",
+    "AJXP_SLUG"       =>  "settings",
+    "DISPLAY_ID"    =>  "165",
+    "DESCRIPTION_ID"  =>  "506",
+    "DRIVER"        =>  "ajxp_conf",
     "DRIVER_OPTIONS"    => array()
 );
 
 $REPOSITORIES["fs_template"] = array(
-    "DISPLAY"		=>	"Sample Template",
+    "DISPLAY"   =>  "Sample Template",
     "DISPLAY_ID"    =>  431,
-    "IS_TEMPLATE"	=>  true,
-    "DRIVER"		=>	"fs",
+    "IS_TEMPLATE" =>  true,
+    "DRIVER"    =>  "fs",
     "DRIVER_OPTIONS"=> array(
-        "CREATE"		=>	true,
-        "RECYCLE_BIN" 	=> 	'recycle_bin',
+        "CREATE"    =>  true,
+        "RECYCLE_BIN"   =>  'recycle_bin',
         "CHMOD_VALUE"   =>  '0600',
         "PAGINATION_THRESHOLD" => 500,
         "PAGINATION_NUMBER" => 200,
         "PURGE_AFTER"       => 0,
         "CHARSET"           => "",
-        "META_SOURCES"		=> array(
+        "META_SOURCES"    => array(
             "metastore.serial"=> array(
-                "METADATA_FILE"	=> ".ajxp_meta",
+                "METADATA_FILE" => ".ajxp_meta",
                 "METADATA_FILE_LOCATION" => "infolders"
             ),
             "meta.user"     => array(
-                "meta_fields"		=> "tags",
-                "meta_labels"		=> "Tags",
+                "meta_fields"   => "tags",
+                "meta_labels"   => "Tags",
                 "meta_visibility"   => "hidden"
             ),
             "meta.filehasher"   => array(),
