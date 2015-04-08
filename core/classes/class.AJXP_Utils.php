@@ -666,7 +666,7 @@ class AJXP_Utils
         } elseif ($filesize >= 1048576) {
             $filesize = round($filesize / 1048576 * 100) / 100 . ($phpConfig ? "M" : " M" . self::$sizeUnit);
         } elseif ($filesize >= 1024) {
-            $filesize = round($filesize / 1024 * 100) / 100 . ($phpConfig ? "K" : " K" . self::$sizeUnit);
+            $filesize = round($filesize / 1024 * 100) / 100 . ($phpConfig ? "k" : " k" . self::$sizeUnit);
         } else {
             $filesize = $filesize . " " . self::$sizeUnit;
         }
@@ -2092,5 +2092,5 @@ class AJXP_Utils
     public static function winSetHidden($file)
     {
         @shell_exec("attrib +H " . escapeshellarg($file));
-    }	
+    }
 }
