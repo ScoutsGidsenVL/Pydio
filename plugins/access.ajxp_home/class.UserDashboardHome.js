@@ -134,27 +134,6 @@ Class.create("UserDashboardHome", AjxpPane, {
             ajaxplorer.triggerRepositoryChange(repoId);
         };
 
-        var updateRepoInfo = function(block, repoId){
-            var data = this._repoInfos.get(repoId);
-            var blocks = 0;
-            if(data['core.users'] && data['core.users']['internal'] != undefined && data['core.users']['external'] != undefined){
-                blocks++;
-                block.insert('<div class="repoInfoBadge"><div class="repoInfoTitle">'+MessageHash[527]+'</div><span class="icon-group"></span>'+MessageHash[531]+' ' + data['core.users']['internal'] + ' <br>'+MessageHash[532]+' ' + data['core.users']['external']+"</div>");
-            }
-            if(data['meta.quota']){
-                blocks++;
-                block.insert('<div class="repoInfoBadge"><div class="repoInfoTitle">'+MessageHash['meta.quota.4']+'</div><span class="icon-dashboard"></span>' + parseInt(100*data['meta.quota']['usage']/data['meta.quota']['total']) + '% <br><small>' + roundSize(data['meta.quota']['total'], MessageHash["byte_unit_symbol"]) +"</small></div>");
-            }
-            if(data['core.notifications'] && data['core.notifications'][0]){
-                var date = data['core.notifications'][0]['short_date'];
-                blocks++;
-                block.insert('<div class="repoInfoBadge"><div class="repoInfoTitle">'+MessageHash[4]+'</div><span class="icon-calendar"></span>' + date + "</div>");
-            }
-            if(!blocks){
-                block.previous('small').addClassName('show_description');
-            }
-        }.bind(this);
-
         var updateWsLegend = function(repoObject){
             var legendBlock = this.htmlElement.down('#ws_legend');
             if(!repoObject && this.htmlElement.down('#go_to_ws').CURRENT_REPO_OBJECT){
@@ -195,16 +174,9 @@ Class.create("UserDashboardHome", AjxpPane, {
                     if(transport.responseJSON){
                         var data = transport.responseJSON;
                         this._repoInfos.set(repoId, data);
-                        if(legendBlock.readAttribute("data-repoId") == repoId){
-                            updateRepoInfo(legendBlock.down(".repoInfo"), repoId);
-                        }else{
-
-                        }
                     }
                 }.bind(this);
                 conn.sendAsync();
-            }else if(this._repoInfos.get(repoId)){
-                updateRepoInfo(legendBlock.down(".repoInfo"), repoId);
             }
         }.bind(this);
 
@@ -256,22 +228,17 @@ Class.create("UserDashboardHome", AjxpPane, {
             obj.insert(span);
         }
 
-
             try{
                 window.setTimeout(function(){
                     if($("orbit_content")) $("orbit_content").ajxpPaneObject.resize();
                     else if($("browser")) $("browser").ajxpPaneObject.resize();
                 }, 50);
             }catch(e){}
-
     },
 
     resize: function($super, size){
-
         $super(size);
-
-        //fitHeightToBottom(this.htmlElement.down('#workspaces_center'), this.htmlElement, 0);
     }
-
-
 });
+
+//# sourceURL=___aaa_user_home.js
