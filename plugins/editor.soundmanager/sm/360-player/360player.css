@@ -25,7 +25,6 @@
  position:relative;
  display:inline-block; /* firefox 3 et al */
  float:left; /* IE 6+7, firefox 2 needs this, inline-block would work with fx3 and others */
- *display:inline;
 /*
  clear:left;
 */
@@ -136,13 +135,11 @@
   background image will be removed via JS, in threeSixyPlayer.init()
  */
  background:transparent url(360-button-play.png) no-repeat 14px 50%;
- _background:transparent url(360-button-play.gif) no-repeat 14px 50%; /* IE 6-only: special crap GIF */
 }
 
 .ui360 .sm2-360btn-default,
 .ui360 .sm2-360ui.sm2_paused .sm2-360btn {
  background:transparent url(360-button-play.png) no-repeat 50% 50%;
- _background:transparent url(360-button-play.gif) no-repeat 50% 50%; /* IE 6-only: special crap GIF */
 }
 
 .ui360 .sm2-360btn-default,
@@ -153,14 +150,12 @@
 .ui360 .sm2-360btn-default:hover,
 .ui360 .sm2-360ui.sm2_paused .sm2-360btn:hover {
  background:transparent url(360-button-play-light.png) no-repeat 50% 50%;
- _background:transparent url(360-button-play.gif) no-repeat 50% 50%;
  cursor:pointer;
 }
 
 .ui360 .sm2-360ui.sm2_playing .sm2-360btn:hover,
 .ui360 .sm2-360btn-playing:hover {
  background:transparent url(360-button-pause-light.png) no-repeat 50% 50%;
- _background:transparent url(360-button-pause-light.gif) no-repeat 50% 50%;
  cursor:pointer;
 }
 
@@ -207,7 +202,6 @@
  position:relative;
  display:inline-block;
  float:left;
- _display:inline;
  margin-bottom:-15px;
 }
 

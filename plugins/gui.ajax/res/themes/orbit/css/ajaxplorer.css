@@ -1,42 +1,19 @@
-/*
- * Font Open Sans
- * Open Sans is licensed under the Apache License version 2.0 - http://www.apache.org/licenses/LICENSE-2.0
- */
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: normal;
-  src:
-    local('Open Sans'),
-    local('OpenSans'),
-    url('https://www.scoutsengidsenvlaanderen.be/sites/all/themes/theme2014/assets/fonts/webfonts/OpenSans.woff2') format('woff2'),
-    url('https://www.scoutsengidsenvlaanderen.be/sites/all/themes/theme2014/assets/fonts/webfonts/OpenSans.woff') format('woff'),
-    url('https://www.scoutsengidsenvlaanderen.be/sites/all/themes/theme2014/assets/fonts/webfonts/OpenSans.ttf') format('truetype');
-}
-
-body {
-    font-family: "Open Sans", sans-serif;
-}
-
-/* Drop shadow for SGV Logo on images */
-#logo_div {
-    -webkit-filter: drop-shadow(12px 12px 25px rgba(0,0,0,0.5));
-    filter: url(#drop-shadow);
-    -ms-filter: "progid:DXImageTransform.Microsoft.Dropshadow(OffX=12, OffY=12, Color='#444')";
-    filter: "progid:DXImageTransform.Microsoft.Dropshadow(OffX=12, OffY=12, Color='#444')";
-}
-
-div.dialogBox.form-login_form,
-#overlay {
-  top: 25px !important;
-}
-
-a.icon-flag {
-  display: none;
-}
-
-table.sort-table tr:nth-child(even) {
+table.sort-table tr:nth-child(even)
+{
     background-color: #f9f9f9;
+}
+
+/* FONTS */
+
+*{
+    font-family: "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+#content_pane div.thumbnail_selectable_cell.detailed div.thumbLabel,
+div.infoPanelBasenameTitle,
+.table_rows_container span#ajxp_label
+{
+    font-family: "Open Sans Regular", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;;
 }
 
 *:focus{
@@ -54,18 +31,15 @@ table.sort-table tr:nth-child(even) {
     background: linear-gradient(top, rgba(255,255,255,1) 0%,rgba(229,229,229,1) 100%); /* W3C */
 }
 
-.grey_gradient_emboss,
-.selected {
+.grey_gradient_emboss,.selected{
     background: #CCC !important;
 }
 
-div.selected-webfx-tree-item-inactive,
-div.selected-webfx-tree-item {
+div.selected-webfx-tree-item-inactive{
     background: #666 !important; /* Old browsers */ /* FF3.6+ */ /* Chrome,Safari4+ */ /* Chrome10+,Safari5.1+ */ /* Opera11.10+ */ /* IE10+ */ /* IE6-9 */ /* W3C */
 }
 
-.blue_gradient,
-.selected-focus {
+.blue_gradient,div.selected-webfx-tree-item, .selected-focus{
     background: #E7E0DE !important; /* Old browsers */ /* FF3.6+ */ /* Chrome,Safari4+ */ /* Chrome10+,Safari5.1+ */ /* Opera11.10+ */ /* IE10+ */ /* IE6-9 */ /* W3C */
 }
 
@@ -146,6 +120,7 @@ kbd {
     padding: .1em .6em;
     border: 1px solid #ccc;
     font-size: 11px;
+    font-family: Arial,Helvetica,sans-serif;
     background-color: #f7f7f7;
     -moz-box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px #fff inset;
     -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px #fff inset;
@@ -345,7 +320,6 @@ div.thumbnail_cell_metadata span.metadata_chunk{
 
 .thumbLabel
 {
-    /*overflow: hidden;*/
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -361,7 +335,6 @@ div.thumbnail_cell_metadata span.metadata_chunk{
 
 .text_label{
     display:block;
-    /*float:left;*/
     overflow:hidden;
     padding-left: 6px;
     padding-top: 4px;
@@ -385,7 +358,8 @@ div.thumbnail_cell_metadata span.metadata_chunk{
     font-size: 12px;
     padding-left: 27px !important;
     background-position: 5px 4px;
-    color: #444;
+    color: #48454B;
+    letter-spacing: 1px;
 }
 
 .overlay_icon_div{
@@ -509,6 +483,10 @@ div.shadow_class
     color: #AFAFAF;
 }
 
+.dialogTitle span.string-only-title {
+    font-family: "Open Sans Regular", Helvetica, sans-serif;
+}
+
 .dialogContent
 {
     background-color: #ffffff;
@@ -517,7 +495,7 @@ div.shadow_class
     border-radius: 0 0 5px 5px;
     /* background-image: url('../images/grid_tl.png'); */
     border-top: 0;
-    color: #5C5C5C;
+    color: #48454B;
 }
 
 .dialogContent input,
@@ -532,8 +510,6 @@ div.shadow_class
     background-position: top left;
     height: 24px;
     border-radius: 2px;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
 
 }
 
@@ -664,7 +640,7 @@ div#copymove_form div#treeCopy{
 }
 
 div.treeCopyContainer div.webfx-tree-item a {
-    color: #555 !important;
+    color: #48454B !important;
 }
 
 div.treeCopyContainer div.selected-webfx-tree-item a,
@@ -699,7 +675,7 @@ span.ajxp-caret-up{
     top: -21px;
     left: 118px;
     font-size: 30px;
-    color: #5C5C5C;
+    color: #48454B;
 }
 
 .dialogButtonsCheckbox label{
@@ -745,12 +721,12 @@ span.ajxp-caret-up{
 }
 
 #activity_monitor_warning span.warning_timer{
-    color: #0077b3;
+    color: #256F91;
 }
 
 textarea#myCode
 {
-    border: 1px solid #5C5C5C;
+    border: 1px solid #48454B;
     border-right-color: #ccc;
     border-left-color: #ccc;
 }
@@ -783,6 +759,7 @@ textarea#myCode
     outline: none;
     margin-left: 12px;
     background: rgba(107, 107, 107, 0.87);
+    letter-spacing: 1px;
     float: left;
     cursor: pointer;
     border-radius: 5px;
@@ -841,6 +818,7 @@ div#meta_source_button_add{
     margin: 10px 7px;
     overflow-y: auto;
     max-height: 120px;
+    letter-spacing: 0;
 }
 
 .errorMessage
@@ -892,7 +870,6 @@ html.boxshadow div.errorMessage{
 }
 
 .simple_tooltip_observer_active{
-    /*text-decoration: underline;*/
 }
 
 .simple_tooltip_title{
@@ -908,6 +885,7 @@ html.boxshadow div.errorMessage{
     width: 150px;
     z-index: 10000;
     font-size: 13px;
+    letter-spacing: 1px;
     padding: 5px 10px;
 }
 
@@ -1196,6 +1174,7 @@ div.SF_label{
     text-transform: uppercase;
     width: 100% !important;
     line-height: 22px !important;
+    letter-spacing: 1px;
     margin-top: 3px;
 }
 
@@ -1244,7 +1223,6 @@ select.SF_input {
 
 .SF_elementWithCheckbox > .SF_input{
     width: 50% !important;
-    _width:46% !important; /*IE*/
 }
 
 .SF_inlineButton {
@@ -1394,6 +1372,7 @@ select.SF_input {
 div.tabbed_editor div.innerTitle{
     margin: 10px !important;
     padding: 8px !important;
+    letter-spacing: 1px !important;
 }
 
 /**********************************************
@@ -1521,8 +1500,13 @@ div.dialogBox.form-reset-password-ask,
 div.dialogBox.form-login_form,
 div.dialogBox.form-login_form_dynamic
 {
+    /*
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.23);
+    -webkit-box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.23);
+    -moz-box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.23);
+    */
     box-shadow: none;
-    top: 25px !important;
+    top: 0 !important;
     left: 0 !important;
     bottom: 0 !important;
     background-color: rgba(34,34,34,0.4);
@@ -1593,7 +1577,6 @@ div.dialogBox.form-login_form_dynamic a.forgot-password-link
     margin-right: 45px;
     margin-top: 6px;
     text-decoration: underline;
-    color: #ddd;
     font-size: 13px;
     text-align: right;
     display: block;
@@ -1633,8 +1616,8 @@ div.dialogBox.form-diaporama_box div.dialogContent{
 }
 
 #global_toolbar{
+    height: 47px;
     padding: 0 15px 0 5px;
-    padding-top: 0 !important;
     background-repeat: no-repeat;
     background-position: 7px;
     display: none;
@@ -1724,6 +1707,7 @@ div#navigation_toolbar {
     border: none;
     vertical-align: middle;
     background-color: transparent;
+    letter-spacing: 1px; /* Old browsers */   /* FF3.6+ */   /* Chrome,Safari4+ */   /* Chrome10+,Safari5.1+ */   /* Opera 11.10+ */   /* IE10+ */   /* W3C */   /* IE6-9 */; /* Old browsers */   /* FF3.6+ */   /* Chrome,Safari4+ */   /* Chrome10+,Safari5.1+ */   /* Opera 11.10+ */   /* IE10+ */   /* W3C */   /* IE6-9 */;
 }
 
 
@@ -1736,13 +1720,13 @@ div#navigation_toolbar {
     border-radius: 4px 4px 0 0;
     background-color: #F3F3F3;
     border-bottom: 1px solid #CFCFCF;
-    color: #555;
+    color: #48454B;
     padding: 11px 4px 13px 10px;
 }
 
 #sidebar_splitter div.panelHeader,
 #search_panel div.panelHeader{
-    color: #555;
+    color: #48454B;
 }
 
 #search_panel div.panelHeader{
@@ -1751,6 +1735,7 @@ div#navigation_toolbar {
 
 .action_bar
 {
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-size: 12px;
     padding: 0;
     line-height: 15px;
@@ -1780,6 +1765,7 @@ div#navigation_toolbar {
 }
 
 .create_file_alt_link{
+    font-family: "Open Sans Regular", Helvetica, sans-serif;
     font-style: italic;
     cursor: pointer;
 }
@@ -1927,6 +1913,7 @@ div.action_bar.text_only  span.actionbar_button_label{
     border-radius: 17px;
     margin: 5px 2px 0 1px;
     background: #fff; /* Old browsers */   /* FF3.6+ */   /* Chrome,Safari4+ */   /* Chrome10+,Safari5.1+ */   /* Opera 11.10+ */   /* IE10+ */   /* W3C */   /* IE6-9 */;
+    letter-spacing: 1px;
     float: left;
 }
 
@@ -2114,7 +2101,6 @@ a.carousel-disabled{
 }
 
 a.carousel-control img{
-    /*margin-top:20px !important;*/
 }
 
 #content_pane{
@@ -2133,8 +2119,6 @@ div.class-FetchedResultPane > div.panelHeader
 }
 
 #navigation_pane,#notif_pane{
-    /*background-color: #333;*/
-    /*overflow: auto;*/
 }
 
 #navigation_pane div.thumbnail_selectable_cell.detailed > div.thumbnail_selectable_cell{
@@ -2149,7 +2133,7 @@ div.class-FetchedResultPane > div.panelHeader
 #navigation_pane div.thumbnail_selectable_cell.detailed div.thumbLabel:before{
     content: "\f114";
     font-size: 1.3em;
-    font-family: FontAwesome;
+    font-family: FontAwesome, sans-serif;
     padding: 13px 13px;
     font-weight: normal;
     font-style: normal;
@@ -2183,6 +2167,7 @@ div.class-FetchedResultPane > div.panelHeader
     font-size: 16px;
     padding: 16px 8px 15px 17px;
     margin: 0;
+    letter-spacing: 1px;
     display: block;
     clear: left;
     font-weight: lighter;
@@ -2215,7 +2200,7 @@ div.class-FetchedResultPane > div.panelHeader
     cursor: pointer;
     float: right;
     color: #aaa;
-    background-color: #555;
+    background-color: #48454B;
     border-radius: 5px;
     text-transform: lowercase;
     padding: 0 8px;
@@ -2232,11 +2217,9 @@ div.class-FetchedResultPane > div.panelHeader
 
 #locationbar_cont
 {
-    /*background-image:url(../images/ToolbarBg.gif);*/
     background-position:center center;
     background-repeat:repeat-x;
     height:33px;
-    _height:32px;
     width:100%;
     -webkit-box-shadow:0 0 5px #bbb;
     -moz-box-shadow:0 0 5px #bbb;
@@ -2293,7 +2276,6 @@ div.class-FetchedResultPane > div.panelHeader
 #repository_form input
 {
     margin:1px 0 0 0;
-    _margin: 0 0 1px 0;
     border:none;
     height: 15px;
     width: 325px;
@@ -2310,6 +2292,7 @@ div.class-FetchedResultPane > div.panelHeader
     width: 90px;
     margin-left: 3px;
     color: #fff;
+    letter-spacing: 1px;
 }
 
 #repo_chooser{
@@ -2318,7 +2301,8 @@ div.class-FetchedResultPane > div.panelHeader
     font-size: 15px;
     color: #ffffff;
     font-weight: normal;
-    margin-top:0px;
+    letter-spacing: 1px;
+    margin-top:0;
     cursor: pointer;
     padding: 21px 15px 21px 15px;
     border-right: 2px solid #BDD732;
@@ -2382,7 +2366,6 @@ div.class-FetchedResultPane > div.panelHeader
 .inline_hover_light,
 .user_widget_hover
 {
-    /*background-color: rgba(255, 255, 255, 0.5);*/
 }
 
 .inline_hover
@@ -2417,7 +2400,7 @@ img.simple_button_arrow{
     color:#fff;
     font-size:11px;
     float: right;
-    margin-top: -22px;
+    margin-top: 12px;
 }
 
 #logging_string.disabled{
@@ -2432,6 +2415,7 @@ img.simple_button_arrow{
 {
     font-style: normal;
     font-weight: normal;
+    letter-spacing: 1px;
 }
 #logging_string i img
 {
@@ -2444,9 +2428,10 @@ img.simple_button_arrow{
 }
 .user_widget_label{
     float: left;
-    padding: 3px 10px 3px 7px;
+    padding: 3px 10px 7px 7px;
     cursor: pointer;
     font-size: 12px;
+    letter-spacing: 1px;
 }
 
 .user_widget_label.withImage{
@@ -2481,12 +2466,9 @@ img.user_widget_mini{
 #current_path,
 #repo_path
 {
-    /*width: 455px;*/
     border:none;
     height: 20px;
-    padding: 0;
-    padding-left:3px;
-    padding-top: 0;
+    padding: 0 0 0 3px;
     font-size: 11px;
 }
 
@@ -2557,6 +2539,7 @@ div.header_resizer div.header_label{
     padding: 5px 5px 4px;
     background-color: rgb(255, 255, 255);
     color: rgb(86, 101, 117);
+    letter-spacing: 1px;
     border-bottom: 0;
     height: 18px;
     overflow: hidden;
@@ -2661,6 +2644,7 @@ div.header_resizer div.ascending {
 /* FILE LIST SKINNING
 /********************************/
 .sort-table {
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-size: 10px;
 }
 
@@ -2677,17 +2661,10 @@ div.header_resizer div.ascending {
 }
 
 .sort-table thead td {
-    /*
-     display: block;
-     float: left;
-     overflow:hidden;
-     height: 23px;
-     */
-    background-color: #ddd;
-    border-bottom:  none;
-    cursor:     pointer;
-    border-right:   1px solid buttonhighlight;
-    font-size:12px;
+    border-bottom: none;
+    cursor: pointer;
+    border-right: 1px solid buttonhighlight;
+    font-size: 12px;
     color: #676965;
     padding: 0;
     background-color: #f1f1ef;
@@ -2717,8 +2694,8 @@ div.header_resizer div.ascending {
 }
 
 #last_header{
-    border-right:   0px solid #ddd;
-    widht: auto !important;
+    border-right:   0 solid #ddd;
+    width: auto !important;
 }
 
 #last_header:active{
@@ -2798,6 +2775,7 @@ div.multiple_selection_draggable
     background-color: #fff;
     padding: 5px;
     border: 1px solid #c3d9ff;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif , sans-serif;
     font-size: 12px;
     cursor:default;
     overflow:hidden;
@@ -2851,7 +2829,6 @@ BOOKMARKS BAR
 */
 #bm_bar_cont
 {
-    /*background-color: #ddd;*/
 }
 
 
@@ -2901,7 +2878,7 @@ div.bm, div.bm_hover
     font-size: 11px;
     padding: 3px;
     margin-right: 5px;
-    /*background-color: #ddd;*/
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif , sans-serif;
     color: #333;
 }
 
@@ -2911,13 +2888,6 @@ div.bm_hover
     opacity: 1;
     -moz-opacity:1;
     text-decoration: none;
-    /*
-  border-top: 1px solid #fff;
-  border-left: 1px solid #fff;
-  border-right: 1px solid buttonshadow;
-  border-bottom: 1px solid buttonshadow;
-    background-color: #ddd;
-    */
 }
 
 .extendedMenu
@@ -3027,9 +2997,9 @@ div#upload_files_list div, div#multiple_download_container div
     font-size: 13px;
     background-image: url('../images/dl_bg.png');
     background-repeat: no-repeat;
-    background-size: 0% 100%;
+    background-size: 0 100%;
     border-bottom: 1px solid rgb(227, 229, 233);
-    color: #5C5C5C;
+    color: #48454B;
 }
 
 div#upload_files_list span.item_relative_path{
@@ -3102,7 +3072,6 @@ div#upload_files_list span.item_relative_path{
     cursor: pointer;
 }
 #fileInputContainer input {
-    moz-opacity: 0;
     opacity: 0;
     position: absolute;
     font-size: 60px; /* causes it to fill the containing div */
@@ -3137,7 +3106,7 @@ div#upload_files_list span.item_relative_path{
 
 
 #uploaderTextActions span:hover{
-    color: #5C5C5C;
+    color: #48454B;
 }
 
 
@@ -3206,6 +3175,7 @@ div#upload_files_list span.item_relative_path{
 {
     vertical-align:top;
     font-size: 11px;
+    letter-spacing: 1px;
 }
 
 /***** SCROLLER ******/
@@ -3283,7 +3253,6 @@ div#topPane div.overlay_icon_div {
 }
 
 div#cpane_tabs[data-ajxptabscount="1"] span.toggleHeader {
-    /*visibility: hidden;*/
 }
 
 div.tabulatorContainer div#display_toolbar{
@@ -3345,7 +3314,7 @@ span.toggleHeader{
     text-overflow: ellipsis;
     padding: 10px 17px 6px;
     transition: border-color 0.3s ease;
-    color: #555;
+    color: #48454B;
     font-size: 12px;
     border-bottom: 3px solid #FB725C;
 }
@@ -3472,7 +3441,7 @@ div.tabulatorContainer span.toggleInactive span.tab_close_button:hover {
     cursor: pointer;
     font-size: 1em;
     padding-top: 0;
-    color: #555;
+    color: #48454B;
     position: absolute;
     right: 13px;
     top: 21px;
@@ -3499,7 +3468,6 @@ div.tabulatorContainer span.toggleInactive span.tab_close_button:hover {
 {
     float: right !important;
     margin: 0;
-    margin-top: 0;
     height: 58px;
     background: #f5f5f5;
     border-color: #f5f5f5;
@@ -3522,6 +3490,7 @@ div.tabulatorContainer span.toggleInactive span.tab_close_button:hover {
     text-align: left;
     padding-right: 0;
     font-size: 40px;
+    font-family: "Open Sans Regular", sans-serif;
 }
 
 #search_container span.search_advanced_direct_access{
@@ -3571,7 +3540,7 @@ div.meta_toggle_button {
     border-radius: 30px;
     margin: 10px 10px 0;
     cursor: pointer;
-    color: #555;
+    color: #48454B;
 }
 
 #search_meta input.c3, #search_meta span.c3 {
@@ -4018,7 +3987,6 @@ div.class-FetchedResultPane div.thumbnail_selectable_cell.detailed span.text_lab
 
 #info_panel span[data-ajxpAction]{
     float: right;
-    display: inline-block;
     padding: 0;
     cursor: pointer;
     font-size: 17px;
@@ -4048,7 +4016,7 @@ div.class-FetchedResultPane div.thumbnail_selectable_cell.detailed span.text_lab
 
 #info_panel div.class-FetchedResultPane  div.thumbnail_selectable_cell.detailed div.thumbLabel{
     font-size: 1.3em;
-    color: #222;
+    color: #000;
     white-space: normal;
     line-height: 1.5em;
     padding-bottom: 4px;
@@ -4113,10 +4081,11 @@ div.foldedPanel_tooltip td{
     margin-right: 1px;
     margin-bottom: 6px;
     font-size: 13px;
+    letter-spacing: 1px;
     background-color: rgba(107, 107, 107, 0.87);
     background-color: rgb(107, 107, 107)\9;
     color: #fff;
-    -webkit-font-smoothing:auto;
+    font-family: "Open Sans Regular", Helvetica, sans-serif;
 }
 
 #info_panel a.sm2_link{
@@ -4176,7 +4145,7 @@ div.infoPanelImagePreview img {
 }
 
 div.infoPanelBasenameTitle{
-    color: #555;
+    color: #48454B;
     margin: 9px 15px;
     line-height: 1.5em;
     text-align: left;
@@ -4196,7 +4165,7 @@ div.infoPanelValue
 {
     padding: 0 0 15px;
     font-size: 1.5em;
-    color: #555;
+    color: #48454B;
     line-height: 1.3em;
     vertical-align: top;
 }
@@ -4260,7 +4229,7 @@ div.info_panel_primary_multiple{
     text-overflow: ellipsis;
     padding: 2px 2px 0;
     text-align: center;
-    color: #646464;
+    color: #48454B;
     white-space: nowrap;
 }
 
@@ -4268,15 +4237,13 @@ div.info_panel_primary_multiple{
     font-size: 1.3em;
     padding: 24px 0 8px 0;
     text-transform: uppercase;
-    color: #222;
+    color: #000;
 }
 
 .panelContent div.panelHeader:before{
-    /*content:"> ";*/
 }
 
 .panelContent.scrolling div.panelHeader{
-    /*padding-right: 13px;*/
 }
 
 .panelContent div.panelHeader a[data-ajxpAction]{
@@ -4372,7 +4339,6 @@ div.infoPanelAllMetadata span.meta_user_tag_block {
 #browser
 {
     clear:left;
-    /*background-color: #f5f5f5;*/
     line-height: 18px;
 }
 
@@ -4388,6 +4354,7 @@ div.infoPanelAllMetadata span.meta_user_tag_block {
 }
 
 div.selectable_div, .table_rows_container, #tree_container, #bottomSplitPane, .ajxp_simple_container{
+    font-family:    "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-size: 12px;
 }
 
@@ -4426,16 +4393,14 @@ div.selectable_div, .table_rows_container, #tree_container, #bottomSplitPane, .a
 
 *{
     -moz-user-select: -moz-none;
-    -khtml-user-select: none;
     -webkit-user-select: none;
     user-select: none;
 }
 
 input, textarea, .selectable{
     -moz-user-select: text;
-    -khtml-user-select: auto;
     -webkit-user-select: auto;
-    user-select: auto;
+    user-select: all;
 }
 
 .no_select_bg::selection {
@@ -4495,7 +4460,6 @@ input, textarea, .selectable{
 .hsplitbar
 {
     height: 4px;
-    /*background-color: #eee;*/
     background-image: url(../images/hgrabber.gif);
     background-repeat: no-repeat;
     background-position: center;
@@ -4507,7 +4471,6 @@ input, textarea, .selectable{
 }
 
 .hsplitbar:hover{
-    /*background-color: #ccc;*/
 }
 
 
@@ -4569,7 +4532,7 @@ ADMIN STYLES
 .metaPane{
     margin-bottom:5px;
     margin-top:2px;
-    padding:0px 5px 31px;
+    padding:0 5px 31px;
     width:96%;
 }
 
@@ -4660,7 +4623,7 @@ fieldset
 
 legend
 {
-    color: #5C5C5C;
+    color: #48454B;
 }
 
 legend a{
@@ -4699,7 +4662,6 @@ legend a.active {
 .user_data
 {
     padding: 10px;
-    /*padding-right: 20px;*/
 }
 
 .user_id
@@ -4710,7 +4672,7 @@ legend a.active {
 
 .user_id b
 {
-    color: #5C5C5C;
+    color: #48454B;
 }
 #user_admin_bar, #repo_create_form, #log_chooser
 {
@@ -4742,7 +4704,7 @@ legend a.active {
 #log_chooser b
 {
     font-size: 15px;
-    color: #5C5C5C;
+    color: #48454B;
 }
 
 #user_pref_form input
@@ -4781,7 +4743,6 @@ div#available_roles, div#user_roles{
 
 div#rights_pane{
     border: 1px solid #aaa;
-    _height: 150px;
     max-height: 150px;
     overflow:auto;
     margin-top:5px;
@@ -4906,7 +4867,7 @@ span.user_entry_check{
     width: 84%;
     background-color: #EEE;
     margin: 0 6%;
-    box-shadow: 0 0 7px #5C5C5C;
+    box-shadow: 0 0 7px #48454B;
     padding: 1px 4px;
     border-radius: 0 0 7px 7px;
 
@@ -4951,7 +4912,7 @@ div.autocomplete_readonly span.delete_user_entry{
 
 
 .share_chooser_list li.selected{
-    color: #555555;
+    color: #48454B;
 }
 
 #share_folder_form{
@@ -4961,7 +4922,7 @@ div.autocomplete_readonly span.delete_user_entry{
 .share_info_panel_main_legend {
     padding: 10px 0;
     font-size: 1.5em;
-    color: #555;
+    color: #48454B;
     line-height: 1.4em;
 }
 
@@ -4985,6 +4946,7 @@ input.share_info_panel_link_expired{
     width: 95%;
     text-align: center;
     font-size: 16px !important;
+    font-family: "Open Sans Regular", sans-serif;
     padding: 5px !important;
     border-radius: 5px;
     background-color: #fafafa;
@@ -5015,7 +4977,7 @@ input.share_info_panel_link_expired{
     padding: 10px 0 0;
     border-top: 1px dashed rgb(150,150,150);
     border-bottom: 0;
-    color: #555;
+    color: #48454B;
 }
 
 div#share-folder-type-chooser {
@@ -5086,7 +5048,7 @@ div#target_user{
 }
 
 #target_repository_toggle a {
-    border-bottom: 1px solid #555;
+    border-bottom: 1px solid #48454B;
     cursor: pointer;
 }
 #share_generate{
@@ -5282,6 +5244,7 @@ textarea.editor
 
 #diaporamaMetadataContainer{
     background-color: #757575;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 
 #diaporamaMetadataContainer div.panelContent{
@@ -5376,6 +5339,7 @@ div.menu {
     position: absolute;
     top: 0;
     left: 0;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     -moz-border-radius:5px;
     border-radius: 2px;
     opacity: 0.97;
@@ -5407,8 +5371,8 @@ div.menu a {
 .menu.desktop {
     width: 15em;
     padding: 0;
-    padding-top: 0;
     padding-bottom: 1px;
+    letter-spacing: 1px;
     background-color: #ffffff;
 }
 
@@ -5416,8 +5380,6 @@ div.menu a {
     background: #fff;
     padding-bottom: 0;
     width: auto;
-    /* IE */
-    width:expression("150px");
     -moz-border-radius : 0 5px 5px 5px;
     border-radius: 4px;
     min-width: 15em;
@@ -5467,6 +5429,7 @@ div.menu a {
     padding: 13px 8px 15px;
     text-align: left;
     font-size: 22px;
+    letter-spacing: 1px;
     text-transform: uppercase;
 }
 
@@ -5481,7 +5444,7 @@ div.menu a {
 .menu.desktop.panelHeaderMenu li.menuTitle {
     display: block;
     font-size: 12px;
-    color: #555555;
+    color: #48454B;
     border-bottom: 1px solid #AAAAAA;
     padding: 11px 7px;
     text-align: left;
@@ -5500,7 +5463,7 @@ div.menu a {
 .menu.desktop span.ajxp_icon_span{
     font-size: 1.1em;
     padding-right: 10px;
-    color: #555;
+    color: #48454B;
     opacity: 0.2;
 }
 
@@ -5512,7 +5475,7 @@ div.menu a {
 }
 
 .menu.desktop a {
-    color: #222;
+    color: #000;
     padding: 9px 12px 10px;
     margin: 0;
     font-size: 12px;
@@ -5540,6 +5503,7 @@ div.menu a {
     padding: .1em .2em;
     border: 1px solid #ccc;
     font-size: 11px;
+    font-family: Arial,Helvetica,sans-serif;
     background-color: #f7f7f7;
     -moz-box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px#fff inset;
     -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px#fff inset;
@@ -5550,7 +5514,7 @@ div.menu a {
     text-shadow: 0 1px 0#fff;
     line-height: 1.4;
     white-space: nowrap;
-    color: #222;
+    color: #FFF;
 
 }
 
@@ -5597,6 +5561,7 @@ span.letter_badge {
     text-align: center;
     padding: 7px 0;
     font-size: 0.8em;
+    font-family: "Open Sans Regular", Helvetica, sans-serif;
 }
 
 span#alerts_number {
@@ -5630,12 +5595,11 @@ span#alerts_number {
 .rootDirChooser
 {
     font-size: 11px;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     position:absolute;
     z-index: 1500;
     width: 280px !important;
-    /* IE */
-    width:expression("280px");
-    background-color: #222;
+    background-color: #FFF;
     box-shadow: none !important;
     -webkit-font-smoothing: antialiased;
 }
@@ -5658,7 +5622,7 @@ span#alerts_number {
     display: block;
     padding: 6px 5px 5px 6px;
     color: #fff;
-    /*height: 16px;*/
+    letter-spacing: 1px;
 }
 
 .rootDirChooser a img
@@ -5739,6 +5703,7 @@ span#alerts_number {
 
 .menu.menuDetails span.menu_description{
     display: block;
+    letter-spacing: 0;
     line-height: 16px;
     font-size: 11px;
     color: white;
@@ -5793,6 +5758,7 @@ span#alerts_number {
 .rightAlignMenu a{
     padding: 8px 5px 7px 20px;
     text-align:right;
+    letter-spacing: 1px;
 }
 
 .rightAlignMenu a img{
@@ -5874,6 +5840,7 @@ div.menuActions img{
     width: 25%;
     margin-left: 40%;
     text-align: center;
+    letter-spacing: 1px;
     border: 1px solid rgba(119, 184, 226, 0.62);
 }
 
@@ -5907,8 +5874,8 @@ div.menuActions img{
 }
 
 .dialogBox, div.dialogBox.css_boxshadow{
-    -moz-box-shadow: 5px 5px 60px #222;
-    -webkit-box-shadow: 5px 5px 60px #222;
+    -moz-box-shadow: 5px 5px 60px #FFF;
+    -webkit-box-shadow: 5px 5px 60px #FFF;
     box-shadow: 1px 2px 4px rgba(0,0,0,0.4);
 }
 
@@ -5934,19 +5901,13 @@ div.dialogBox div.dialogBox.css_boxshadow > div{
 {
     display: block;
     z-index: 2002;
-    top: 20%;
-    -moz-border-radius : 5px;
     border-radius : 5px;
     width: 305px !important;
     padding: 3px;
-    display: block;
     top: 30%;
-    z-index: 2002;
     left: 40%;
     position: absolute;
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.23);
-    -webkit-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.23);
-    -moz-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.23);
     min-width: 305px;
 }
 
@@ -6035,7 +5996,6 @@ input#webdav_password{
 }
 
 #video_container{
-    /*margin: 5px 20px 5px 10px !important;*/
 }
 
 td.ip_geo_cell{
@@ -6129,6 +6089,7 @@ td.ip_geo_cell{
 {
     font-size:12px;
     padding: 0 10px;
+    letter-spacing: 1px;
 }
 
 #top_toolbar a span.ajxp_icon_span,
@@ -6190,6 +6151,7 @@ TABULATOR IN A TABULATOR
     font-size: 11px;
     padding: 3px 16px 4px 8px;
     height: 35px;
+    letter-spacing: 1px;
     background-color: #ddd;
     color: rgb(111, 123, 136);
     border-right: 0;
@@ -6311,7 +6273,8 @@ div#userdashboard_myparams_title{
     font-size: 13px;
     width: 196px;
     left: 0;
-    background-color: #222;
+    background-color: #FFF;
+    letter-spacing: 1px;
 }
 
 div#userdashboard_myparams_title span#dash_title{
@@ -6344,7 +6307,7 @@ div#userdashboard_main_tab h3.dashboard_panel_title{
     font-size: 29px;
     margin: 0;
     left: 19px;
-    color: #444;
+    color: #48454B;
 }
 
 div.horizontal_tabulator > div > div.horizontal_tabulator div.tabulatorContainer {
@@ -6432,7 +6395,7 @@ div.horizontal_tabulator > div > div.horizontal_tabulator div.tabulatorContainer
 
 .breadcrumbs-arrow span.first-bread{
     width: 215px;
-    background: #222;
+    background: #FFF;
 }
 
 .breadcrumbs-arrow span em{
@@ -6480,7 +6443,7 @@ div.horizontal_tabulator > div > div.horizontal_tabulator div.tabulatorContainer
 }
 
 .breadcrumbs-arrow span.first-bread::after{
-    border-left-color: #222;
+    border-left-color: #FFF;
 }
 
 .breadcrumbs-arrow span.current,
@@ -6501,7 +6464,7 @@ div.horizontal_tabulator > div > div.horizontal_tabulator div.tabulatorContainer
     color: #ebedf0;
 }
 .breadcrumbs-arrow i.ajxp-goto:hover{
-    color: #555;
+    color: #48454B;
 }
 
 .breadcrumbs-one{
@@ -6664,14 +6627,8 @@ span.first-bread em {
     font-size: 1.3em;
 }
 
-#AjxpConnexion-loader {
-  top: 100px !important;
-}
-
-#AjxpConnexion-loader img {
-    height: initial;
-    background-color: rgba(34, 34, 34, 0.4);
-    border: 20px solid rgba(34, 34, 34, 0.4);
+#ajxp_link_form img {
+    display: none;
 }
 
 .ipanel_no_selection_select, #no-results-found {
@@ -6719,8 +6676,9 @@ span.first-bread em {
     border-radius: 14px;
     margin: 3px 4px 0 1px;
     background: #ffffff;
+    letter-spacing: 1px;
     float: left;
-    color: #555;
+    color: #48454B;
 }
 
 div#buttons_bar_top {
@@ -6728,7 +6686,8 @@ div#buttons_bar_top {
 }
 
 #buttons_bar span.ajxp_icon_span {
-    display: none;
+    position: relative;
+    top: -1px;
 }
 
 a#up_dir_button {
@@ -6783,26 +6742,11 @@ span#up_dir_button_label {
 }
 
 .rotating, .icon-spinner {
-    -webkit-transform-origin: 50% 50%;
-    -webkit-animation-name: rotate;
-    -webkit-animation-duration: 1.0s;
-    -webkit-animation-iteration-count: infinite;
-    -webkit-animation-timing-function: linear;
-    -moz-transform-origin: 50% 50%;
-    -moz-animation-name: rotate;
-    -moz-animation-duration: 1s;
-    -moz-animation-iteration-count: infinite;
-    -moz-animation-timing-function: linear;
-    -ms-transform-origin: 50% 50%;
-    -ms-animation-name: rotate;
-    -ms-animation-duration: 1s;
-    -ms-animation-iteration-count: infinite;
-    -ms-animation-timing-function: linear;
-    -o-transform-origin: 50% 50%;
-    -o-animation-name: rotate;
-    -o-animation-duration: 1s;
-    -o-animation-iteration-count: infinite;
-    -o-animation-timing-function: linear;
+    transform-origin: 50% 50%;
+    animation-name: rotate;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
 }
 
 .icon-spinner{

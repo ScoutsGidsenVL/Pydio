@@ -16,7 +16,6 @@
     box-shadow: 4px 4px 15px rgba(0,0,0,0.3);
     z-index: 1000000;
     font-weight: bold;
-    /*text-shadow: 1px 1px 3px black;*/
 }
 
 .ajxp_bm_menu_legend{
@@ -31,7 +30,6 @@
     width: 248px;
     height: 134px;
     margin-top: 12px;
-    /*border-radius: 5px;*/
 }
 
 #ajxp_bm_link_title{

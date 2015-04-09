@@ -25,7 +25,6 @@ a.carousel-control {
 #browser, .browser_splitter{
 	padding: 0px;
 	border: 0px;
-    /*padding:10px;*/
     clear:left;
     background-color:#eee;
     line-height: 18px;
@@ -39,19 +38,8 @@ a.carousel-control {
     box-shadow: inset 1px 1px 2px #999;
 }
 a.m-2 {
-    /*
-	background: -webkit-gradient(
-			linear,
-			left top,
-			left bottom,
-			from(#64abe6),
-			to(#2b70c4)
-		);
-	border: 1px solid #14528f;
-	*/
 	-webkit-box-shadow: inset 0 1px 1px rgba(255, 255, 255, .25);
 	color: #fff;
-	/*text-shadow: 0 1px 1px rgba(0, 0, 0, .25);*/
 	-webkit-transition: -webkit-box-shadow .1s linear;
 	-webkit-border-radius: 3px;
 	font: bold 11px "Helvetica Neue", Arial, Geneva, sans-serif;
