@@ -314,12 +314,14 @@ class IMagickPreviewer extends AJXP_Plugin
             putenv("PATH=".getenv("PATH").":".$customEnvPath);
         }
         $params = $customOptions." ".( $this->extractAll? $viewerQuality : $thumbQuality );
-        $cmd = $this->getFilteredOption("IMAGE_MAGICK_CONVERT")." ".$params." ".escapeshellarg(($masterFile).$pageLimit)." ".escapeshellarg($tmpFileThumb);
+        $cmd = $this->getFilteredOption("IMAGE_MAGICK_CONVERT")." ".$params." ".escapeshellarg(($masterFile).$pageLimit)." ".escapeshellarg($tmpFileThumb) . ' 2>&1';
         $this->logDebug("IMagick Command : $cmd");
         session_write_close(); // Be sure to give the hand back
         exec($cmd, $out, $return);
-        if (is_array($out) && count($out)) {
-            throw new AJXP_Exception(implode("\n", $out));
+        $this->logDebug("IMagick return : $return");
+        $this->logDebug("IMagick output : $out");
+        if ($return !== 0) {
+            throw new AJXP_Exception("$cmd returned error code $return.\n\nPath: " . getenv("PATH") . "\n\n" . (is_array($out) ? implode("\n", $out) : ''));
         }
         if(!is_file($tmpFileThumb)){
             throw new AJXP_Exception("Error while converting PDF file to JPG thumbnail. Return code '$return'. Command used '".$this->getFilteredOption("IMAGE_MAGICK_CONVERT")."': is the binary at the correct location? Is the server allowed to use it?");
