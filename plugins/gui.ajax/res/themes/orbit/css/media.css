@@ -132,7 +132,7 @@ and (max-width : 420px){
         padding:0 20px;
         height:auto;
     }
-    
+
     div.repository_legend{
         display:none;
     }

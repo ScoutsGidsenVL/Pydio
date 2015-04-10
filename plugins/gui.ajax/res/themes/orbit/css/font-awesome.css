@@ -36,7 +36,7 @@
  * -------------------------- */
 [class^="icon-"],
 [class*=" icon-"] {
-  font-family: FontAwesome;
+  font-family: FontAwesome, sans-serif;
   font-weight: normal;
   font-style: normal;
   text-decoration: inherit;
@@ -46,7 +46,6 @@
 [class*=" icon-"]:before {
   text-decoration: inherit;
   display: inline-block;
-  speak: none;
 }
 /* makes the font 33% larger relative to the icon container */
 .icon-large:before {
@@ -164,10 +163,8 @@ a [class*=" icon-"] {
   height: auto;
   line-height: normal;
   vertical-align: baseline;
-  background-image: none;
-  background-position: 0% 0%;
-  background-repeat: repeat;
-  margin-top: 0;
+    background: none repeat 0;
+    margin-top: 0;
 }
 /* more sprites.less reset */
 .icon-white,

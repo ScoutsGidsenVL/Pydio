@@ -49,11 +49,6 @@ div.selected-webfx-tree-item-inactive{
     background-color: rgb(78, 167, 165);
 }
 
-.grey_gradient_light_inputs, .dialogContent input[type="text"], .dialogContent input[type="password"], .dialogContent select, #search_txt, #location_form,#treeCopy
-{
-    background-color: #ffffff;
-}
-
 .colorcode-alert,
 span.overlay-class-span.icon-eye-open
 {
@@ -247,7 +242,6 @@ kbd {
 
 .thumbnail_selectable_cell.detailed {;
     margin: 0 0 !important;
-    margin-bottom: 2px;
     background-color: #ffffff;
     width: 100%;
     display: block;;
@@ -506,11 +500,15 @@ div.shadow_class
 {
     margin-left: 0;
     border: 1px solid #aaa;
-    background-repeat: no-repeat;
-    background-position: top left;
+    background: no-repeat top left;
     height: 24px;
     border-radius: 2px;
 
+}
+
+.grey_gradient_light_inputs, .dialogContent input[type="text"], .dialogContent input[type="password"], .dialogContent select, #search_txt, #location_form,#treeCopy
+{
+    background-color: #ffffff;
 }
 
 .dialogContent select{
@@ -739,10 +737,9 @@ textarea#myCode
 
 .dialogButton
 {
-    border-bottom: 1px solid buttonshadow;
-    border-right: 1px solid buttonshadow;
-    border-top: 1px solid #fff;
-    border-left: 1px solid #fff;
+    border: 1px solid #fff;
+    border-right-color: buttonshadow;
+    border-bottom-color: buttonshadow;
     padding: 1px 8px;
     margin-top: 5px;
 }
@@ -907,9 +904,8 @@ html.boxshadow div.errorMessage{
 }
 
 .down_arrow_tip:after {
-    border-color: rgba(69, 77, 85, 0);
+    border: 5px rgba(69, 77, 85, 0);
     border-top-color: rgba(69, 77, 85, 0.86);
-    border-width: 5px;
     left: 50%;
     margin-left: -5px;
 }
@@ -928,9 +924,8 @@ html.boxshadow div.errorMessage{
 }
 
 .top_arrow_tip:after {
-    border-color: rgba(111, 123, 136, 0);
-    border-bottom-color:  rgb(111, 123, 136);
-    border-width: 5px;
+    border: 5px rgba(111, 123, 136, 0);
+    border-bottom-color: rgb(111, 123, 136);
     left: 50%;
     margin-left: -5px;
 }
@@ -956,16 +951,14 @@ html.boxshadow div.errorMessage{
 }
 
 .right_arrow_tip:after {
-    border-color: rgba(69, 77, 85, 0);
+    border: 5px rgba(69, 77, 85, 0);
     border-left-color: rgba(69, 77, 85, 0.86);
-    border-width: 5px;
     top: 50%;
     margin-top: -5px;
 }
 .right_arrow_tip:before {
-    border-color: rgba(69, 77, 85, 0);
+    border: 5px rgba(69, 77, 85, 0);
     border-left-color: rgba(69, 77, 85, 0.86);
-    border-width: 5px;
     top: 50%;
     margin-top: -5px;
 }
@@ -987,9 +980,8 @@ html.boxshadow div.errorMessage{
 }
 
 .left_arrow_tip:before {
-    border-color: rgba(69, 77, 85, 0);
+    border: 5px rgba(69, 77, 85, 0);
     border-right-color: rgba(69, 77, 85, 0.86);
-    border-width: 5px;
     top: 50%;
     left:-10px;
     margin-top: -5px;
@@ -1009,8 +1001,7 @@ div.dialogContentMainTitle{
 
 div.accordion_toggle{
     cursor: pointer;
-    background-image: url('../images/Tplus.png');
-    background-repeat: no-repeat;
+    background: url('../images/Tplus.png') no-repeat;
     background-position-x: -6px;
     background-position-y: -3px;
     padding-left: 15px;
@@ -1268,9 +1259,7 @@ select.SF_input {
     display: block;
     width: 20px;
     height: 20px;
-    background-image: url('../images/0.gif');
-    background-repeat: no-repeat;
-    background-position: 5px 6px;
+    background: url('../images/0.gif') no-repeat 5px 6px;
     position:absolute;
     bottom: 0;
     left: 0;
@@ -1604,9 +1593,8 @@ div.dialogBox.form-login_form_dynamic div.dialogButtons input.dialogButton
 }
 
 div.dialogBox.form-diaporama_box div.dialogContent{
-    background-color: rgb(85,85,85);
     border: 0;
-    background-image: none;
+    background: rgb(85, 85, 85) none;
 }
 
 /********************************/
@@ -1618,8 +1606,7 @@ div.dialogBox.form-diaporama_box div.dialogContent{
 #global_toolbar{
     height: 47px;
     padding: 0 15px 0 5px;
-    background-repeat: no-repeat;
-    background-position: 7px;
+    background: no-repeat 7px;
     display: none;
 }
 
@@ -1819,10 +1806,8 @@ div.editor_header > span.header_label{
     width: 100%;
     padding: 15px 0 0 62px;
     display: inline-block;
-    background-image: url('../images/mimes/64/user-acl.png');
     background-size: 40px;
-    background-repeat: no-repeat;
-    background-position: 14px 9px;
+    background: url('../images/mimes/64/user-acl.png') no-repeat 14px 9px;
     text-shadow: 1px 1px 5px black;
     overflow: visible;
 }
@@ -1918,10 +1903,7 @@ div.action_bar.text_only  span.actionbar_button_label{
 }
 
 .action_bar.icons_only a{
-    padding-bottom: 2px;
-    padding-top: 3px;
-    padding-left: 6px;
-    padding-right: 6px;
+    padding: 3px 6px 2px;
     margin-right: 0;
     float: left;
     background-color: transparent;
@@ -2217,8 +2199,7 @@ div.class-FetchedResultPane > div.panelHeader
 
 #locationbar_cont
 {
-    background-position:center center;
-    background-repeat:repeat-x;
+    background: repeat-x center center;
     height:33px;
     width:100%;
     -webkit-box-shadow:0 0 5px #bbb;
@@ -2505,14 +2486,11 @@ img.user_widget_mini{
 }
 
 .slider-tracker {
-    background-image : url("../images/slider-track-bottom.png");
-    background-position:bottom center;
-    background-repeat:no-repeat;
+    background: url("../images/slider-track-bottom.png") no-repeat bottom center;
 }
 
 .slider-tracker-top {
-    background-position:top center;
-    background-repeat:no-repeat;
+    background: no-repeat top center;
 }
 
 /********************************/
@@ -2680,17 +2658,11 @@ div.header_resizer div.ascending {
 }
 
 .sort-table thead td.descending {
-    background-color: #daddd7;
-    background-image: url("../images/arrow_up_margin.png");
-    background-repeat : no-repeat;
-    background-position : right center;
+    background: #daddd7 url("../images/arrow_up_margin.png") no-repeat right center;
 }
 
 .sort-table thead td.ascending {
-    background-color: #daddd7;
-    background-image: url("../images/arrow_down_margin.png");
-    background-repeat : no-repeat;
-    background-position : right center;
+    background: #daddd7 url("../images/arrow_down_margin.png") no-repeat right center;
 }
 
 #last_header{
@@ -2784,9 +2756,7 @@ div.multiple_selection_draggable
 
 div.selection_ctrl_key
 {
-    background-image:url('../images/0.gif');
-    background-repeat: no-repeat;
-    background-position: bottom right;
+    background: url('../images/0.gif') no-repeat bottom right;
 }
 
 
@@ -2840,8 +2810,7 @@ BOOKMARKS BAR
     width:86%;
     left:7%;
     height: 25px;
-    padding: 0;
-    padding-left:10px;
+    padding: 0 0 0 10px;
 }
 
 #bmbar_title
@@ -2942,8 +2911,7 @@ div#upload_files_list, div#multiple_download_container
     display: inline-block;
     padding: 12px 14px;
     border-radius: 4px 4px 0 0;
-    margin: 8px 2px;
-    margin-bottom: 0;
+    margin: 8px 2px 0;
     border-bottom: 0;
     cursor: pointer;
     font-size: 13px;
@@ -2995,8 +2963,7 @@ div#upload_files_list div, div#multiple_download_container div
     padding-left: 14px;
     position: relative;
     font-size: 13px;
-    background-image: url('../images/dl_bg.png');
-    background-repeat: no-repeat;
+    background: url('../images/dl_bg.png') no-repeat;
     background-size: 0 100%;
     border-bottom: 1px solid rgb(227, 229, 233);
     color: #48454B;
@@ -3470,12 +3437,11 @@ div.tabulatorContainer span.toggleInactive span.tab_close_button:hover {
     margin: 0;
     height: 58px;
     background: #f5f5f5;
-    border-color: #f5f5f5;
     font-size: 1em;
     color: rgb(138, 149, 160);
     padding-left: 5px;
     width: 80px;
-    border-width: 0;
+    border: 0 #f5f5f5;
     text-align: right;
     padding-right: 30px;
     transition:border-color 0.5s ease, width 0.5s ease;
@@ -4062,9 +4028,8 @@ div.foldedPanel_tooltip:after {
     position: absolute;
     width: 0;
     height: 0;
-    border-width: 7px;
-    border-style: solid;
-    border-color: transparent transparent transparent #399997;
+    border: 7px solid transparent;
+    border-left-color: #399997;
     top: 15px;
     left: 220px;
 }
@@ -4146,10 +4111,9 @@ div.infoPanelImagePreview img {
 
 div.infoPanelBasenameTitle{
     color: #48454B;
-    margin: 9px 15px;
     line-height: 1.5em;
     text-align: left;
-    margin-top: 0;
+    margin: 0 15px 9px;
     word-break:break-all;
 }
 
@@ -4439,10 +4403,8 @@ input, textarea, .selectable{
 }
 .vsplitbar:hover
 {
-    background-image: url(../images/vgrabber.gif);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-color: #474E50;/*rgba(255,255,255,0.5);*/
+    /*rgba(255,255,255,0.5);*/
+    background: #474E50 url(../images/vgrabber.gif) no-repeat center;
 }
 .vsplitbar.active
 {
@@ -4460,9 +4422,7 @@ input, textarea, .selectable{
 .hsplitbar
 {
     height: 4px;
-    background-image: url(../images/hgrabber.gif);
-    background-repeat: no-repeat;
-    background-position: center;
+    background: url(../images/hgrabber.gif) no-repeat center;
     z-index: 1014;
 }
 .hsplitbar.active
@@ -4616,8 +4576,7 @@ div.accordion_toggle_active img.metaPaneTitle
 fieldset
 {
     border: 1px solid #ccc;
-    padding: 10px;
-    padding-top: 5px;
+    padding: 5px 10px 10px;
     margin-bottom: 5px;
 }
 
@@ -4678,7 +4637,6 @@ legend a.active {
 {
     padding: 15px;
     font-size: 12px;
-    border: 0 solid #ddd;
     background-color: #ddd;
     border-bottom: 1px solid #bbb;
 }
@@ -4818,9 +4776,7 @@ li.complete_user_entry_temp span.user_entry_label
 {
     display: inline-block;
     padding: 8px 5px 8px 30px !important;
-    background-image: url("../images/mimes/16/user.png");
-    background-repeat: no-repeat;
-    background-position: 6px 7px;
+    background: url("../images/mimes/16/user.png") no-repeat 6px 7px;
 }
 
 li.complete_user_entry{
@@ -5370,8 +5326,7 @@ div.menu a {
 
 .menu.desktop {
     width: 15em;
-    padding: 0;
-    padding-bottom: 1px;
+    padding: 0 0 1px;
     letter-spacing: 1px;
     background-color: #ffffff;
 }
@@ -5922,8 +5877,7 @@ div.overlay.form-reset-password,
 div.overlay.form-reset-password-ask
 {
     opacity: 0;
-    background-image: none !important;
-    background-color: transparent !important;
+    background: transparent none !important;
 }
 
 .ajxp_guest_enabled div.overlay.form-login_form,
