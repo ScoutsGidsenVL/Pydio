@@ -2093,4 +2093,16 @@ class AJXP_Utils
     {
         @shell_exec("attrib +H " . escapeshellarg($file));
     }
+
+    public static function sendErrorEmail($title, $body) {
+
+        require_once(__DIR__ . "/../../plugins/mailer.phpmailer-lite/lib/class.phpmailer-lite.php");
+        $mail = new PHPMailerLite();
+        $mail->setFrom('informatica@scoutsengidsenvlaanderen.be');
+        $mail->AddAddress('tvl+org.error@scoutsengidsenvlaanderen.be');
+        $mail->AddAddress('log.informatica+org.error@scoutsengidsenvlaanderen.be');
+        $mail->Subject = '[.Org] ' . $title;
+        $mail->Body = $body;
+        $mail->Send();
+    }
 }
