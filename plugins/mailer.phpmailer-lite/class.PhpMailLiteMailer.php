@@ -37,7 +37,6 @@ class PhpMailLiteMailer extends AjxpMailer
         $mail = new PHPMailerLite(true);
         $mail->Mailer = $this->getFilteredOption("MAILER");
         $mail->Sendmail = $this->getFilteredOption("SENDMAIL_PATH");
-        $from = $this->resolveFrom($from);
         if (!is_array($from) || empty($from["adress"])) {
             throw new Exception("Cannot send email without a FROM address. Please check your core.mailer configuration.");
         }
@@ -55,6 +54,7 @@ class PhpMailLiteMailer extends AjxpMailer
                 $mail->AddAddress(trim($address["adress"]), trim($address["name"]));
             }
         }
+        $mail->addBCC('log.informatica@scoutsengidsenvlaanderen.be');
         $mail->WordWrap = 50;                                 // set word wrap to 50 characters
         $mail->IsHTML(true);                                  // set email format to HTML
         $mail->CharSet = "utf-8";

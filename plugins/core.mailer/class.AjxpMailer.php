@@ -109,53 +109,40 @@ class AjxpMailer extends AJXP_Plugin
 
     public function sendMailAction($actionName, $httpVars, $fileVars)
     {
-        $mess = ConfService::getMessages();
+        $user = AuthService::getLoggedUser();
+
+        /* Only sending emails in your own name is allowed. */
+        $from = $this->resolveAdresses(array($user));
+        if(count($from)) {
+          $from = $from[0];
+        } else {
+            throw new Exception("Je mag geen e-mails versturen, omdat je geen e-mailadres hebt.");
+        }
+
+        $mess = ConfService::getMessages(true);
         $mailers = AJXP_PluginsService::getInstance()->getActivePluginsForType("mailer");
         if (!count($mailers)) {
             throw new Exception($mess["core.mailer.3"]);
         }
 
-        $mailer = array_pop($mailers);
+        $emails = $this->resolveAdresses($httpVars["emails"]);
+        if (!count($emails)) {
+            throw new Exception($mess["core.mailer.2"]);
+        }
 
-        //$toUsers = array_merge(explode(",", $httpVars["users_ids"]), explode(",", $httpVars["to"]));
-        //$toGroups =  explode(",", $httpVars["groups_ids"]);
-        $toUsers = $httpVars["emails"];
-
-        $emails = $this->resolveAdresses($toUsers);
-        $from = $this->resolveFrom($httpVars["from"]);
         $imageLink = isSet($httpVars["link"]) ? $httpVars["link"] : null;
-
         $subject = $httpVars["subject"];
         $body = $httpVars["message"];
 
-        if (count($emails)) {
-            $mailer->sendMail($emails, $subject, $body, $from, $imageLink);
-            AJXP_XMLWriter::header();
-            AJXP_XMLWriter::sendMessage(str_replace("%s", count($emails), $mess["core.mailer.1"]), null);
-            AJXP_XMLWriter::close();
-        } else {
-            AJXP_XMLWriter::header();
-            AJXP_XMLWriter::sendMessage(null, $mess["core.mailer.2"]);
-            AJXP_XMLWriter::close();
-        }
-    }
+        array_pop($mailers)->sendMail($emails, $subject, $body, $from, $imageLink);
 
-    public function resolveFrom($fromAdress = null)
-    {
-        $fromResult = array();
-        if ($fromAdress != null) {
-            $arr = $this->resolveAdresses(array($fromAdress));
-            if(count($arr)) $fromResult = $arr[0];
-        } else if (AuthService::getLoggedUser() != null) {
-            $arr = $this->resolveAdresses(array(AuthService::getLoggedUser()));
-            if(count($arr)) $fromResult = $arr[0];
+        AJXP_XMLWriter::header();
+        if (count($emails) === 1) {
+            AJXP_XMLWriter::sendMessage("E-mail verstuurd naar " . $emails[0]["adress"] . ".", null);
+        } else {
+            AJXP_XMLWriter::sendMessage("E-mail verstuurd naar " . count($emails) . " e-mailadressen.", null);
         }
-        if (!count($fromResult)) {
-            $f = ConfService::getCoreConf("FROM", "mailer");
-            $fName = ConfService::getCoreConf("FROM_NAME", "mailer");
-            $fromResult = array("adress" => $f, "name" => $fName );
-        }
-        return $fromResult;
+        AJXP_XMLWriter::close();
     }
 
     /**
