@@ -154,8 +154,7 @@ Class.create("UserDashboardHome", AjxpPane, {
             }
             var repoId = repoObject.getId();
             legendBlock.writeAttribute("data-repoId", repoId);
-            legendBlock.update(repoObject.getLabel() + '<small>' + repoObject.getDescription() + '</small><div class="repoInfo"></div>');
-            legendBlock.insert('<div style="line-height: 0.5em;"><input type="checkbox" name="save_ws_choice" id="save_ws_choice"><label for="save_ws_choice">'+MessageHash['user_home.41']+'</label></div>');
+            legendBlock.update('<div id="save_ws_choice">'+repoObject.getLabel()+'</div>');
             legendBlock.insert('<a>'+MessageHash['user_home.42']+'</a>');
             legendBlock.down('a').observe('click', function(){
                 switchToRepo(repoId);
