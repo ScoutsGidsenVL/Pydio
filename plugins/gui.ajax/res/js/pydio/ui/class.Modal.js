@@ -694,7 +694,7 @@ Class.create("Modal", {
 	tempoMessageDivClosing: function(){
 		this.messageDivOpen = true;
         if(this.closeTimer) window.clearTimeout(this.closeTimer);
-		this.closeTimer = window.setTimeout(function(){this.closeMessageDiv();}.bind(this), 6000);
+		this.closeTimer = window.setTimeout(function(){this.closeMessageDiv();}.bind(this), 20000);
 	},
 	/**
 	 * Display a user message (notice or error)
