@@ -792,7 +792,7 @@ class AJXP_Plugin implements Serializable
     public function logDebug($prefix, $message = "")
     {
         if(!class_exists("ConfService")) return ;
-        if(!ConfService::getConf("SERVER_DEBUG")) return ;
+        //if(!ConfService::getConf("SERVER_DEBUG")) return ;
         $args = func_get_args();
         array_shift($args);
         AJXP_Logger::log2(LOG_LEVEL_DEBUG, $this->getId(), $prefix, $args);
