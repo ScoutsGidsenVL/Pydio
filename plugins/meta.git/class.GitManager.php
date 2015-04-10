@@ -246,7 +246,10 @@ class GitManager extends AJXP_AbstractMetaSource
             $currentCommit["EVENT"] = "CREATION";
             unset($currentCommit["DETAILS"]);
         }
-        $allCommits[] = $currentCommit;
+        if ($currentCommit) {
+            $allCommits[] = $currentCommit;
+        }
+        $this->logInfo("git history", print_r($allCommits, true));
         return $allCommits;
     }
 
@@ -276,12 +279,13 @@ class GitManager extends AJXP_AbstractMetaSource
         $command->addArgument(".");
         try {
             $cmd = $command->createCommandString();
-            $this->logInfo("git", "Git command ".$cmd);
+            $this->logInfo("git add", "Git command ".$cmd);
             $res = $command->execute();
         } catch (Exception $e) {
-            $this->logInfo("git", "Error ".$e->getMessage());
+            $this->logError("git add", $e->getMessage());
+            return;
         }
-        $this->logInfo("git", "GIT RESULT ADD : ".$res);
+        $this->logInfo("git add", "GIT RESULT ADD : ".$res);
 
         $command = $git->getCommand("commit");
         //$command->setOption("a", true);
@@ -296,12 +300,12 @@ class GitManager extends AJXP_AbstractMetaSource
 
         try {
             $cmd = $command->createCommandString();
-            $this->logInfo("git", "Git command ".$cmd);
+            $this->logInfo("git commit", "Git command ".$cmd);
             $res = $command->execute();
         } catch (Exception $e) {
-            $this->logInfo("git", "Error " . print_r($e, true));
+            $this->logError("git commit", $e->getMessage());
+            return;
         }
         $this->logInfo("git", "GIT RESULT COMMIT : ".$res);
     }
-
 }
