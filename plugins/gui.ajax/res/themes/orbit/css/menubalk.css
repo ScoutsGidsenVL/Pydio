@@ -1,87 +1,120 @@
-
-
-/* Globale menubalk */
-#menubalk {
+.menubalk {
     width: 100%;
     height: auto;
     min-height: 25px;
     z-index: 997;
     vertical-align: middle;
+    font-size: calc(12 * 6.25%);
     background-color: #572600;
 }
 
-#menubalk_content {
+.menubalk_content {
     position: relative;
     width: 1140px;
     margin: 0 auto;
 }
 
-#menubalk ul {
-    width: 100%;
-    padding: 1px calc(7 * 6.25%) 0 0;
+.menubalk ul {
+    padding: 2px 20px 0;
     margin: 0;
     overflow: hidden;
+}
+
+.globale_menu {
+    width: calc(100% - 40px);
     float: none;
 }
 
-#menubalk li {
+.menubalk li {
     float: left;
     list-style-type: none;
     margin: 2px 12px 0 0;
     line-height: 17px;
-    font-size: calc(12 * 6.25%);
 }
 
-#item_sgv {
+.item_sgv {
     display: inline-block;
     height: 15px;
     width: 15px;
     text-indent: -99999px;
-    background-image: url("https://www.scoutsengidsenvlaanderen.be/files/algemeen/menubalk/balk_sprites_sgv.png");
-    background-repeat: no-repeat;
+    background: url("https://www.scoutsengidsenvlaanderen.be/files/algemeen/menubalk/balk_sprites_sgv.png") no-repeat;
 }
 
-#menubalk a:link,
-#menubalk a:visited,
-#menubalk a:hover,
-#menubalk a:active,
-#menubalk a:focus {
+.menubalk a:link,
+.menubalk a:visited,
+.menubalk a:hover,
+.menubalk a:active,
+.menubalk a:focus {
     display: inline-block;
     color: #FFF;
     text-decoration: none;
     transition: color 0.25s linear 0s;
 }
 
-#menubalk a:hover,
-#menubalk a:active,
-#menubalk a:focus {
+.menubalk a:hover,
+.menubalk a:active,
+.menubalk a:focus {
     color: #BDD732;
 }
 
-#item_sgv {
+.item_sgv a {
     display: inline-block;
     height: 15px;
     width: 15px;
     text-indent: -99999px;
-    background-image: url("https://www.scoutsengidsenvlaanderen.be/files/algemeen/menubalk/balk_sprites_sgv.png");
-    background-repeat: no-repeat;
+    background: url("https://www.scoutsengidsenvlaanderen.be/files/algemeen/menubalk/balk_sprites_sgv.png") no-repeat;
 }
 
 a.org {
-  font-weight: bold;
+    /* 'font-weight: bold;' doesn't make it stand out. */
+    font-weight: 800;
 }
 
-#item_facebook,
-#item_twitter {
-    text-indent: 0px;
-    margin: 0px;
+.item_facebook a,
+.item_twitter a {
+    text-indent: 0;
+    margin: 0;
     width: 15px;
     height: auto;
     font-size: calc(15 * 6.25%);
-    background-position: 0px -15px;
-    background-repeat: no-repeat;
+    background: no-repeat 0 -15px;
 }
 
 img.custom_logo_image.linked {
-  display: none;
+    display: none;
+}
+
+.account {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    color: #FFF;
+}
+
+.account li {
+    margin-right: 6px;
+}
+
+.item_instellingen a,
+.item_afmelden a {
+    display: inline-block;
+    position: relative;
+    top: -4px;
+    height: 20px;
+    width: 20px;
+    margin-top: 2px;
+    text-indent: -99999px;
+    background-image: url("https://www.scoutsengidsenvlaanderen.be/files/algemeen/menubalk/balk_sprite_account.png");
+}
+
+.item_instellingen a {
+    background-position: -20px -20px;
+}
+
+.item_afmelden a {
+    background-position: -40px -20px;
+}
+
+.account li:nth-child(n+2) {
+    display: none;
 }
