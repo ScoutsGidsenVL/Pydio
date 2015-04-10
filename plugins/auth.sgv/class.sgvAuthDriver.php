@@ -94,10 +94,11 @@ class sgvAuthDriver extends AbstractAuthDriver
                     if ($naam === strtoupper($naam) || $naam === strtolower($naam)) {
                         $naam = ucwords(strtolower(str_replace('_', ' ', $naam)));
                     }
-                    $this->createWorkspace($gebruikersgroep->id, $naam);
-
-                    $recht = isset($gebruikersgroep->beheersrecht) ? 'r': 'rw';
-                    $userObject->personalRole->setAcl($gebruikersgroep->id, $recht);
+                    $enabled = $this->updateWorkspace($gebruikersgroep->id, $naam);
+                    if ($enabled) {
+                        $recht = isset($gebruikersgroep->beheersrecht) ? 'rw': 'r';
+                        $userObject->personalRole->setAcl($gebruikersgroep->id, $recht);
+                    }
                 }
             }
         }
@@ -106,7 +107,7 @@ class sgvAuthDriver extends AbstractAuthDriver
         AuthService::updateDefaultRights($userObject); // reload the rights from the ACL
     }
 
-    private function createWorkspace($workspace_id, $workspace_titel) {
+    private function updateWorkspace($workspace_id, $workspace_titel) {
 
         $repo = ConfService::getRepositoryById($workspace_id);
 
@@ -126,7 +127,7 @@ class sgvAuthDriver extends AbstractAuthDriver
         $repo->isTemplate = false;
         $repo->enabled = is_dir(SystemTextEncoding::toStorageEncoding($repo->getOption("PATH")));
         if (!$repo->enabled) {
-            $repo->display = 'DISABLED';
+            $repo->display = '[path not found] ' . $repo->display;
         }
 
         $repo->setInferOptionsFromParent(false);
@@ -136,5 +137,7 @@ class sgvAuthDriver extends AbstractAuthDriver
         $repo->options["META_SOURCES"]["meta.git"] = array(); // (re)activate the git plugin
 
         ConfService::replaceRepository($workspace_id, $repo);
+
+        return $repo->enabled;
     }
 }
