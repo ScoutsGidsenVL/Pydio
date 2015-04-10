@@ -10,6 +10,7 @@
 }
 
 #list_cont{
+    height: 100% !important;
     overflow-y: auto;
 }
 
@@ -135,7 +136,6 @@
 #workspaces_list li.ws_selector_title h3{
     font-size: 23px;
     padding: 20px 43px;
-    text-transform: uppercase;
 }
 
 #workspaces_list li.selected{
@@ -270,6 +270,11 @@ div.legend_visible div#ws_legend{
     font-size: 1.3em;
     font-weight: normal;
 }
+
+#home_account_pane #welcome span {
+    line-height: 36px;
+}
+
 #home_account_pane a{
     cursor: pointer;
     text-decoration: underline;
@@ -286,9 +291,8 @@ div.legend_visible div#ws_legend{
 }
 
 #workspaces_button {
-    padding: 38px 30px;
-    width: 340px;
-    text-align: center;
+    display: none;
+    padding: 0;
 }
 
 #workspaces_button input[type="button"] {
@@ -329,7 +333,7 @@ div.legend_visible div#ws_legend{
     color: rgb(64, 68, 71);
     background-color: rgba(255, 255, 255, 1);
     position: absolute;
-    top: 0;
+    top: 25px;
     right: 0;
     width: 70%;
     height: 100%;

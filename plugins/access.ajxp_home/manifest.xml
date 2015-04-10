@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ajxpdriver id="access.ajxp_home" enabled="always" label="CONF_MESSAGE[Welcome Page]" description="CONF_MESSAGE[Welcome Page displaying a list of workspaces]"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:../core.ajaxplorer/ajxp_registry.xsd">
-	<client_settings icon="plugins/access.ajxp_home/share.png">
-		<resources>
-			<i18n namespace="user_home" path="plugins/access.ajxp_home/i18n" />
+  <client_settings icon="plugins/access.ajxp_home/share.png">
+    <resources>
+      <i18n namespace="user_home" path="plugins/access.ajxp_home/i18n" />
             <!--<js className="WelcomeComponents" file="plugins/access.ajxp_home/build/WelcomeComponents.js" depends="React"/>-->
             <js className="UserDashboardHome" file="plugins/access.ajxp_home/class.UserDashboardHome.js"/>
             <css file="plugins/access.ajxp_home/home.css" autoload="true"/>
@@ -149,13 +149,6 @@
                     <clientCallback><![CDATA[
                         $('videos_pane').setStyle({display:'block'});
                         if(!$('videos_pane')._OBSERVER_SET){
-                            $('videos_pane').select('div.tutorial_load_button').invoke("observe", "click", function(e){
-                                var t = Event.findElement(e, 'div.tutorial_load_button');
-                                try{
-                                    var main = t.up('div.tutorial_legend');
-                                    main.next('iframe').src = main.readAttribute('data-videoSrc');
-                                }catch(e){}
-                            });
                             var configs = ajaxplorer.getPluginConfigs('access.ajxp_home');
                             $A(['URL_APP_IOSAPPSTORE', 'URL_APP_ANDROID', 'URL_APP_SYNC_WIN', 'URL_APP_SYNC_MAC']).each(function(p){
                                 $('videos_pane').select('a[href="'+p+'"]').invoke('writeAttribute', 'href', configs.get(p));
@@ -183,18 +176,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="tutorial_legend" data-videoSrc="//www.youtube.com/embed/80kq-T6bQO4?list=PLxzQJCqzktEYnIChsR5h3idjAxgBssnt5">
+                            <div class="tutorial_legend">
                                 AJXP_MESSAGE[user_home.62]
-                                <div class="tutorial_load_button"><i class="icon-youtube-play"></i> Play Video</div>
                             </div>
                             <img class="tutorial_video" src="https://img.youtube.com/vi/80kq-T6bQO4/0.jpg">
 
-                            <div class="tutorial_legend" data-videoSrc="https://www.youtube.com/embed/ot2Nq-RAnYE?list=PLxzQJCqzktEYnIChsR5h3idjAxgBssnt5">
+                            <div class="tutorial_legend">
                                 AJXP_MESSAGE[user_home.66]
-                                <div class="tutorial_load_button"><i class="icon-youtube-play"></i> Play Video</div>
                             </div>
                             <img class="tutorial_video" src="https://img.youtube.com/vi/ot2Nq-RAnYE/0.jpg">
-
                         </div>
                 ]]></clientForm>
                 </processing>
