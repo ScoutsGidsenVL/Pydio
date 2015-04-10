@@ -1540,8 +1540,10 @@ class AJXP_Utils
             'Mac OS (classic)' => '(mac_powerpc)|(macintosh)',
             'QNX' => 'QNX',
             'BeOS' => 'beos',
-            'OS2' => 'os/2',
-            'SearchBot'=>'(nuhk)|(googlebot)|(yammybot)|(openbot)|(slurp)|(msnbot)|(ask jeeves/teoma)|(ia_archiver)'
+            'Apple iPad' => 'iPad',
+            'Apple iPhone' => 'iPhone',
+            'OS2' => 'os\/2',
+            'SearchBot'=>'(nuhk)|(googlebot)|(yammybot)|(openbot)|(slurp)|(msnbot)|(ask jeeves\/teoma)|(ia_archiver)'
         );
 
         if($useragent == null){
@@ -1626,7 +1628,15 @@ class AJXP_Utils
         }
     }
 
-    public static function parseStandardFormParameters(&$repDef, &$options, $userId = null, $prefix = "DRIVER_OPTION_", $binariesContext = null)
+    public static function decypherStandardFormPassword($userId, $password){
+        if (function_exists('mcrypt_decrypt')) {
+            // We have encoded as base64 so if we need to store the result in a database, it can be stored in text column
+            $password = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($userId."\1CDAFx¨op#"), base64_decode($password), MCRYPT_MODE_ECB), "\0");
+        }
+        return $password;
+    }
+
+    public static function parseStandardFormParameters(&$repDef, &$options, $userId = null, $prefix = "DRIVER_OPTION_", $binariesContext = null, $cypheredPassPrefix = "")
     {
         if ($binariesContext === null) {
             $binariesContext = array("USER" => (AuthService::getLoggedUser()!= null)?AuthService::getLoggedUser()->getId():"shared");
@@ -1648,9 +1658,9 @@ class AJXP_Utils
                     } else if ($type == "array") {
                         $value = explode(",", $value);
                     } else if ($type == "password" && $userId!=null) {
-                        if (trim($value) != "" && function_exists('mcrypt_encrypt')) {
+                        if (trim($value) != "" && $value != "__AJXP_VALUE_SET__" && function_exists('mcrypt_encrypt')) {
                             // We encode as base64 so if we need to store the result in a database, it can be stored in text column
-                            $value = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,  md5($userId."\1CDAFx¨op#"), $value, MCRYPT_MODE_ECB));
+                            $value = $cypheredPassPrefix . base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,  md5($userId."\1CDAFx¨op#"), $value, MCRYPT_MODE_ECB));
                         }
                     } else if ($type == "binary" && $binariesContext !== null) {
                         if (!empty($value)) {
@@ -1718,11 +1728,15 @@ class AJXP_Utils
 
     }
 
+    private static $_dibiParamClean = array();
     public static function cleanDibiDriverParameters($params)
     {
         if(!is_array($params)) return $params;
         $value = $params["group_switch_value"];
         if (isSet($value)) {
+            if(isSet(self::$_dibiParamClean[$value])){
+                return self::$_dibiParamClean[$value];
+            }
             if ($value == "core") {
                 $bootStorage = ConfService::getBootConfStorageImpl();
                 $configs = $bootStorage->loadPluginConfig("core", "conf");
@@ -1744,6 +1758,9 @@ class AJXP_Utils
                 $params["formatDateTime"] = "'Y-m-d H:i:s'";
                 $params["formatDate"] = "'Y-m-d'";
                 break;
+        }
+        if(isSet($value)){
+            self::$_dibiParamClean[$value] = $params;
         }
         return $params;
     }
@@ -1920,19 +1937,23 @@ class AJXP_Utils
     /**
      * generates a random password, uses base64: 0-9a-zA-Z
      * @param int [optional] $length length of password, default 24 (144 Bit)
+     * @param bool $complexChars
      * @return string password
      */
-    public static function generateRandomString($length = 24)
+    public static function generateRandomString($length = 24, $complexChars = false)
     {
-        if (function_exists('openssl_random_pseudo_bytes') && USE_OPENSSL_RANDOM) {
+        if (function_exists('openssl_random_pseudo_bytes') && USE_OPENSSL_RANDOM && !$complexChars) {
             $password = base64_encode(openssl_random_pseudo_bytes($length, $strong));
             if($strong == TRUE)
-                return substr(str_replace(array("/","+"), "", $password), 0, $length); //base64 is about 33% longer, so we need to truncate the result
+                return substr(str_replace(array("/","+","="), "", $password), 0, $length); //base64 is about 33% longer, so we need to truncate the result
         }
 
         //fallback to mt_rand if php < 5.3 or no openssl available
         $characters = '0123456789';
         $characters .= 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        if($complexChars){
+            $characters .= "!@#$%&*?";
+        }
         $charactersLength = strlen($characters)-1;
         $password = '';
 

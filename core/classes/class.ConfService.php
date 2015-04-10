@@ -1029,6 +1029,18 @@ class ConfService
     }
 
     /**
+     * Clear the messages cache
+     */
+    public static function clearMessagesCache(){
+        $i18nFiles = glob(dirname(AJXP_PLUGINS_MESSAGES_FILE)."/i18n/*.ser");
+        if (is_array($i18nFiles)) {
+            foreach ($i18nFiles as $file) {
+                @unlink($file);
+            }
+        }
+    }
+
+    /**
      * Get all registered extensions, from both the conf/extensions.conf.php and from the plugins
      * @static
      * @return
@@ -1431,7 +1443,9 @@ class ConfService
         $repository->driverInstance = $plugInstance;
         if (isSet($_SESSION["REPO_ID"]) && $_SESSION["REPO_ID"] == $repository->getId()) {
             $this->configs["REPOSITORY"] = $repository;
-            $this->configs["REPOSITORIES"][$_SESSION['REPO_ID']] = $repository;
+            if(is_array($this->configs["REPOSITORIES"])){
+                $this->configs["REPOSITORIES"][$_SESSION['REPO_ID']] = $repository;
+            }
         }
         return $plugInstance;
     }

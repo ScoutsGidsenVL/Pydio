@@ -138,13 +138,13 @@ class AJXP_ClientDriver extends AJXP_Plugin
                     }
                 }
 
-                $root = $_SERVER['REQUEST_URI'];
+                $root = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                 $configUrl = ConfService::getCoreConf("SERVER_URL");
                 if(!empty($configUrl)){
                     $root = '/'.ltrim(parse_url($configUrl, PHP_URL_PATH), '/');
                     if(strlen($root) > 1) $root = rtrim($root, '/').'/';
                 }else{
-                    preg_match ('/ws-(.)*\/|settings|dashboard|welcome/', $root, $matches, PREG_OFFSET_CAPTURE);
+                    preg_match ('/ws-(.)*\/|settings|dashboard|welcome|user/', $root, $matches, PREG_OFFSET_CAPTURE);
                     if(count($matches)){
                         $capture = $matches[0][1];
                         $root = substr($root, 0, $capture);
@@ -350,6 +350,26 @@ class AJXP_ClientDriver extends AJXP_Plugin
                 $ajxpNode->setMetadata("ajxp_bookmarked", array("ajxp_bookmarked"=> "true"), true, AJXP_METADATA_SCOPE_REPOSITORY, true);
             }
         }
+    }
+
+    /**
+     * @param AJXP_Node $fromNode
+     * @param AJXP_Node $toNode
+     * @param bool $copy
+     */
+    public function nodeChangeBookmarkMetadata($fromNode=null, $toNode=null, $copy=false){
+        if($copy || $fromNode == null) return;
+        $user = AuthService::getLoggedUser();
+        if($user == null) return;
+        if (!isSet(self::$loadedBookmarks)) {
+            self::$loadedBookmarks = $user->getBookmarks();
+        }
+        if($toNode == null) {
+            $fromNode->removeMetadata("ajxp_bookmarked", true, AJXP_METADATA_SCOPE_REPOSITORY, true);
+        } else {
+            $toNode->copyOrMoveMetadataFromNode($fromNode, "ajxp_bookmarked", "move", true, AJXP_METADATA_SCOPE_REPOSITORY, true);
+        }
+        AJXP_Controller::applyHook("msg.instant", array("<reload_bookmarks/>", $fromNode->getRepositoryId()));
     }
 
     public static function filterXml(&$value)

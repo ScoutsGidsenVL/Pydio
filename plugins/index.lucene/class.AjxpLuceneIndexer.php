@@ -162,12 +162,16 @@ class AjxpLuceneIndexer extends AJXP_AbstractMetaSource
                 $index =  $this->loadIndex($repoId, false);
             } catch (Exception $ex) {
                 AJXP_XMLWriter::header();
-                if (ConfService::backgroundActionsSupported() && !ConfService::currentContextIsCommandLine()) {
+                if ($this->seemsCurrentlyIndexing($repoId, 3)){
+                    AJXP_XMLWriter::sendMessage($messages["index.lucene.11"], null);
+                }else if (ConfService::backgroundActionsSupported() && !ConfService::currentContextIsCommandLine()) {
                     AJXP_Controller::applyActionInBackground($repoId, "index", array());
                     sleep(2);
                     AJXP_XMLWriter::triggerBgAction("check_index_status", array("repository_id" => $repoId), sprintf($messages["index.lucene.8"], "/"), true, 5);
+                    AJXP_XMLWriter::sendMessage($messages["index.lucene.7"], null);
+                }else{
+                    AJXP_XMLWriter::sendMessage($messages["index.lucene.12"], null);
                 }
-                AJXP_XMLWriter::sendMessage($messages["index.lucene.7"], null);
                 AJXP_XMLWriter::close();
                 return null;
             }
@@ -523,7 +527,11 @@ class AjxpLuceneIndexer extends AJXP_AbstractMetaSource
      */
     public function createIndexedDocument($ajxpNode, &$index)
     {
-        $ajxpNode->loadNodeInfo();
+        if(!empty($this->metaFields)){
+            $ajxpNode->loadNodeInfo(false, false, "all");
+        }else{
+            $ajxpNode->loadNodeInfo();
+        }
         $ext = strtolower(pathinfo($ajxpNode->getLabel(), PATHINFO_EXTENSION));
         $parseContent = $this->indexContent;
         if ($parseContent && $ajxpNode->bytesize > $this->getFilteredOption("PARSE_CONTENT_MAX_SIZE")) {
@@ -701,6 +709,22 @@ class AjxpLuceneIndexer extends AJXP_AbstractMetaSource
     }
 
     /**
+     * @param String $repositoryId
+     * @param int $checkInterval
+     * @return bool
+     */
+    protected function seemsCurrentlyIndexing($repositoryId, $checkInterval){
+        $tmpIndexPath = $this->getIndexPath($repositoryId)."-PYDIO_TMP";
+        if(is_dir($tmpIndexPath)){
+            $mtime = filemtime($tmpIndexPath);
+            if(time() - $mtime <= 60 * $checkInterval){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * @param $repositoryId
      */
     protected function mergeTemporaryIndexToMain($repositoryId){
@@ -771,13 +795,23 @@ class AjxpLuceneIndexer extends AJXP_AbstractMetaSource
             $iPath = $this->getIndexPath($repositoryId, $resolveUserId);
         }
         if (is_dir($iPath)) {
-            $index = Zend_Search_Lucene::open($iPath);
+            try{
+                $index = Zend_Search_Lucene::open($iPath);
+            }catch (Zend_Search_Lucene_Exception $se){
+                $this->logError(__FUNCTION__, "Error while trying to load lucene index at path ".$iPath."! Maybe a permission issue?");
+                throw $se;
+            }
         } else {
             if (!$create) {
                 $messages = ConfService::getMessages();
                 throw new Exception($messages["index.lucene.9"]);
             }
-            $index = Zend_Search_Lucene::create($iPath);
+            try{
+                $index = Zend_Search_Lucene::create($iPath);
+            }catch (Zend_Search_Lucene_Exception $se){
+                $this->logError(__FUNCTION__, "Error while trying to create lucene index at path ".$iPath."! Maybe a permission issue?");
+                throw $se;
+            }
         }
         return $index;
     }

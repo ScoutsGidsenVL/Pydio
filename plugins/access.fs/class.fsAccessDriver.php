@@ -70,8 +70,8 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
                 @mkdir($path."/".$recycle);
                 if (!is_dir($path."/".$recycle)) {
                     throw new AJXP_Exception("Cannot create recycle bin folder. Please check repository configuration or that your folder is writeable!");
-                } elseif (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                    AJXP_Utils::winSetHidden($path."/".$recycle);
+                } else {
+                    $this->setHiddenAttribute(new AJXP_Node($this->urlBase ."/".$recycle));
                 }
             }
             $dataTemplate = $this->repository->getOption("DATA_TEMPLATE");
@@ -795,6 +795,8 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
                         // NOW PREPARE POST-UPLOAD EVENTS
                         $this->changeMode($destination."/".$userfile_name,$repoData);
                         $createdNode = new AJXP_Node($destination."/".$userfile_name);
+                        clearstatcache(true, $createdNode->getUrl());
+                        $createdNode->loadNodeInfo(true);
                         $logMessage.="$mess[34] ".SystemTextEncoding::toUTF8($userfile_name)." $mess[35] $dir";
                         $this->logInfo("Upload File", array("file"=>$this->addSlugToPath(SystemTextEncoding::fromUTF8($dir))."/".$userfile_name));
 
@@ -826,7 +828,7 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
             case "lsync" :
 
                 if (!ConfService::currentContextIsCommandLine()) {
-                    die("This command must be accessed via CLI only.");
+                    //die("This command must be accessed via CLI only.");
                 }
                 $fromNode = null;
                 $toNode = null;
@@ -1292,6 +1294,9 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
     protected function appendUploadedData($folder, $source, $target){
 
         $already_existed = false;
+        if($source == $target){
+            throw new Exception("Something nasty happened: trying to copy $source into itself, it will create a loop!");
+        }
         if (file_exists($folder ."/" . $target)) {
             $already_existed = true;
             $this->logDebug("Should copy stream from $source to $target");
@@ -1312,6 +1317,9 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
 
     public function readFile($filePathOrData, $headerType="plain", $localName="", $data=false, $gzip=null, $realfileSystem=false, $byteOffset=-1, $byteLength=-1)
     {
+        if(!$data && !$gzip && !file_exists($filePathOrData)){
+            throw new Exception("File $filePathOrData not found!");
+        }
         if ($gzip === null) {
             $gzip = ConfService::getCoreConf("GZIP_COMPRESSION");
         }
@@ -1389,6 +1397,9 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
 
                 header("Content-Length: ". $length);
                 $file = fopen($filePathOrData, 'rb');
+                if(!is_resource($file)){
+                    throw new Exception("Failed opening file ".$filePathOrData);
+                }
                 fseek($file, 0);
                 $relOffset = $offset;
                 while ($relOffset > 2.0E9) {
@@ -1461,6 +1472,9 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
             if ($realfileSystem) {
                 $this->logDebug("realFS!", array("file"=>$filePathOrData));
                 $fp = fopen($filePathOrData, "rb");
+                if(!is_resource($fp)){
+                    throw new Exception("Failed opening file ".$filePathOrData);
+                }
                 if ($byteOffset != -1) {
                     fseek($fp, $byteOffset);
                 }
@@ -1949,6 +1963,18 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
             }
         }
         closedir($handle);
+    }
+
+    /**
+     * Apply specific operation to set a node as hidden.
+     * Can be overwritten, or will probably do nothing.
+     * @param AJXP_Node $node
+     */
+    public function setHiddenAttribute($node){
+        if($this->getWrapperClassName() == "fsAccessWrapper" && strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){
+            $realPath =  call_user_func(array($this->wrapperClassName, "getRealFSReference"),$node->getUrl());
+            @shell_exec("attrib +H " . escapeshellarg($realPath));
+        }
     }
 
     private function purge($fileName)

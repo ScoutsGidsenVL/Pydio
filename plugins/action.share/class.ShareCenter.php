@@ -869,8 +869,6 @@ class ShareCenter extends AJXP_Plugin
         $copy->addOption("PATH", $repository->getOption("PATH"));
         $data["REPOSITORY"] = $copy;
         if ($data["ACTION"] == "") $data["ACTION"] = "download";
-        // Create a random key
-        $data["FINAL_KEY"] = md5(mt_rand().time());
 
         try{
             $hash = $this->getShareStore()->storeShare($repository->getId(), $data, "publiclet");
@@ -1909,7 +1907,7 @@ class ShareCenter extends AJXP_Plugin
                 // check that it's a child user
                 $userObject = $confDriver->createUserObject($userName);
             } else {
-                if (ConfService::getAuthDriverImpl()->getOption("TRANSMIT_CLEAR_PASS")) {
+                if (ConfService::getAuthDriverImpl()->getOptionAsBool("TRANSMIT_CLEAR_PASS")) {
                     $pass = $uPasses[$userName];
                 } else {
                     $pass = md5($uPasses[$userName]);
