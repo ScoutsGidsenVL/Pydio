@@ -19,7 +19,7 @@
  * The latest code can be found at <http://pyd.io/>.
  */
 
-defined('AJXP_EXEC') or die( 'Access not allowed');
+defined('AJXP_EXEC') or die('Access not allowed');
 
 /**
  * User Interface main implementation
@@ -60,7 +60,7 @@ class AJXP_ClientDriver extends AJXP_Plugin
 
         switch ($action) {
             //------------------------------------
-            //	GET AN HTML TEMPLATE
+            //  GET AN HTML TEMPLATE
             //------------------------------------
             case "get_template":
 
@@ -84,7 +84,7 @@ class AJXP_ClientDriver extends AJXP_Plugin
             break;
 
             //------------------------------------
-            //	GET I18N MESSAGES
+            //  GET I18N MESSAGES
             //------------------------------------
             case "get_i18n_messages":
 
@@ -104,7 +104,7 @@ class AJXP_ClientDriver extends AJXP_Plugin
             break;
 
             //------------------------------------
-            //	DISPLAY DOC
+            //  DISPLAY DOC
             //------------------------------------
             case "display_doc":
 
@@ -115,7 +115,7 @@ class AJXP_ClientDriver extends AJXP_Plugin
 
 
             //------------------------------------
-            //	GET BOOT GUI
+            //  GET BOOT GUI
             //------------------------------------
             case "get_boot_gui":
 
@@ -208,11 +208,7 @@ class AJXP_ClientDriver extends AJXP_Plugin
                     if (!isSet($mess)) {
                         $mess = ConfService::getMessages();
                     }
-                    if (is_file(AJXP_INSTALL_PATH."/plugins/gui.ajax/res/themes/$crtTheme/html/gui_debug.html")) {
-                        include(AJXP_INSTALL_PATH."/plugins/gui.ajax/res/themes/$crtTheme/html/gui_debug.html");
-                    } else {
-                        include(AJXP_INSTALL_PATH."/plugins/gui.ajax/res/html/gui_debug.html");
-                    }
+                    include(AJXP_INSTALL_PATH."/plugins/gui.ajax/res/themes/$crtTheme/html/gui_debug.html");
                 } else {
                     if (is_file(AJXP_INSTALL_PATH."/plugins/gui.ajax/res/themes/$crtTheme/html/gui.html")) {
                         $content = file_get_contents(AJXP_INSTALL_PATH."/plugins/gui.ajax/res/themes/$crtTheme/html/gui.html");
@@ -222,6 +218,7 @@ class AJXP_ClientDriver extends AJXP_Plugin
                     if (preg_match('/MSIE 7/',$_SERVER['HTTP_USER_AGENT'])){
                         $ADDITIONAL_FRAMEWORKS = "";
                     }
+                    $content = str_replace("MENUBALK", implode("\n", file(AJXP_INSTALL_PATH."/".AJXP_THEME_FOLDER."/html/menubalk.html")), $content);
                     $content = str_replace("AJXP_ADDITIONAL_JS_FRAMEWORKS", $ADDITIONAL_FRAMEWORKS, $content);
                     $content = AJXP_XMLWriter::replaceAjxpXmlKeywords($content, false);
                     $content = str_replace("AJXP_REBASE", isSet($START_PARAMETERS["REBASE"])?'<base href="'.$START_PARAMETERS["REBASE"].'"/>':"", $content);
@@ -232,7 +229,7 @@ class AJXP_ClientDriver extends AJXP_Plugin
                 }
             break;
             //------------------------------------
-            //	GET CONFIG FOR BOOT
+            //  GET CONFIG FOR BOOT
             //------------------------------------
             case "get_boot_conf":
 
@@ -270,12 +267,12 @@ class AJXP_ClientDriver extends AJXP_Plugin
         self::filterXml($customIcon);
         $config["customWording"] = array(
             "welcomeMessage" => $this->getFilteredOption("CUSTOM_WELCOME_MESSAGE"),
-            "title"			 => ConfService::getCoreConf("APPLICATION_TITLE"),
-            "icon"			 => $customIcon,
-            "iconWidth"		 => $this->getFilteredOption("CUSTOM_ICON_WIDTH"),
+            "title"      => ConfService::getCoreConf("APPLICATION_TITLE"),
+            "icon"       => $customIcon,
+            "iconWidth"    => $this->getFilteredOption("CUSTOM_ICON_WIDTH"),
             "iconHeight"     => $this->getFilteredOption("CUSTOM_ICON_HEIGHT"),
             "iconOnly"       => $this->getFilteredOption("CUSTOM_ICON_ONLY"),
-            "titleFontSize"	 => $this->getFilteredOption("CUSTOM_FONT_SIZE")
+            "titleFontSize"  => $this->getFilteredOption("CUSTOM_FONT_SIZE")
         );
         $cIcBin = $this->getFilteredOption("CUSTOM_ICON_BINARY");
         if (!empty($cIcBin)) {
@@ -301,9 +298,9 @@ class AJXP_ClientDriver extends AJXP_Plugin
         $analytic = $this->getFilteredOption('GOOGLE_ANALYTICS_ID');
         if (!empty($analytic)) {
             $config["googleAnalyticsData"] = array(
-                "id"=> 		$analytic,
+                "id"=>    $analytic,
                 "domain" => $this->getFilteredOption('GOOGLE_ANALYTICS_DOMAIN'),
-                "event" => 	$this->getFilteredOption('GOOGLE_ANALYTICS_EVENT')
+                "event" =>  $this->getFilteredOption('GOOGLE_ANALYTICS_EVENT')
             );
         }
         $config["i18nMessages"] = ConfService::getMessages();
