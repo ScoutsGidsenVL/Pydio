@@ -34,11 +34,6 @@ class textLogDriver extends AbstractLogDriver
     public $USER_GROUP_RIGHTS = 0770;
 
     /**
-     * @var Integer File handle to currently open log file.
-     */
-    public $fileHandle;
-
-    /**
      * @var Array stack of log messages to be written when file becomes available.
      */
     public $stack;
@@ -52,15 +47,6 @@ class textLogDriver extends AbstractLogDriver
      * @var String name of the log file to write.
      */
     public $logFileName = "";
-
-
-    /**
-     * Close file handle on objects destructor.
-     */
-    public function __destruct()
-    {
-        if($this->fileHandle !== false) $this->close();
-    }
 
     /**
      * If the plugin is cloned, make sure to renew the $fileHandle
@@ -93,14 +79,8 @@ class textLogDriver extends AbstractLogDriver
                 // file creation
                 $create = true;
             }
-            $this->fileHandle = @fopen($this->storageDir . $this->logFileName, "at+");
-            if ($this->fileHandle === false) {
-                error_log("Cannot open log file ".$this->storageDir . $this->logFileName);
-            }
-            if ($this->fileHandle !== false && count($this->stack)) {
-                $this->stackFlush();
-            }
-            if ($create && $this->fileHandle !== false) {
+            $this->stackFlush();
+            if ($create) {
                 $mainLink = $this->storageDir."ajxp_access.log";
                 if (file_exists($mainLink)) {
                     @unlink($mainLink);
@@ -126,13 +106,11 @@ class textLogDriver extends AbstractLogDriver
 
         $this->severityDescription = 0;
         $this->stack = array();
-        $this->fileHandle = false;
-
 
         $this->storageDir = isset($this->options['LOG_PATH']) ? $this->options['LOG_PATH'] : "";
         $this->storageDir = AJXP_VarsFilter::filter($this->storageDir);
         $this->storageDir = (rtrim($this->storageDir))."/";
-        $this->logFileName = isset($this->options['LOG_FILE_NAME']) ? $this->options['LOG_FILE_NAME'] : 'log_' . date('m-d-y') . '.txt';
+        $this->logFileName = isset($this->options['LOG_FILE_NAME']) ? $this->options['LOG_FILE_NAME'] : 'log_' . date('y-m-d') . '.txt';
         $this->USER_GROUP_RIGHTS = isset($this->options['LOG_CHMOD']) ? $this->options['LOG_CHMOD'] : 0770;
 
         if (preg_match("/(.*)date\('(.*)'\)(.*)/i", $this->logFileName, $matches)) {
@@ -159,31 +137,26 @@ class textLogDriver extends AbstractLogDriver
      */
     public function write2($level, $ip, $user, $source, $prefix, $message, $nodePathes = array())
     {
-        if(AJXP_Utils::detectXSS($message)) $message = "XSS Detected in message!";
-        $textMessage = date("m-d-y") . " " . date("H:i:s") . "\t";
+        if(AJXP_Utils::detectXSS($message)) {
+            $message = "XSS Detected in message!";
+        }
+        $textMessage = date("Y-m-d") . " " . date("H:i:s") . "\t";
         $textMessage .= "$ip\t".strtoupper((string) $level)."\t$user\t$source\t$prefix\t$message\n";
 
-        if ($this->fileHandle !== false) {
-            if(count($this->stack)) $this->stackFlush();
-            if (fwrite($this->fileHandle, $textMessage) === false) {
-                throw new Exception("There was an error writing to log file ($this->logFileName)");
-            }
-        } else {
-            $this->stack[] = $textMessage;
-        }
+        $this->stack[] = $textMessage;
+        $this->stackFlush();
     }
 
     /**
-     * Flush the stack/buffer of messages that couldn't be written earlier.
-     *
+     * Flush the stack/buffer of messages.
      */
     public function stackFlush()
     {
-        // Flush stack for messages that could have been written before the file opening.
-        foreach ($this->stack as $message) {
-            @fwrite($this->fileHandle, $message);
+        if (file_put_contents($this->storageDir.$this->logFileName, implode("\n", $this->stack), FILE_APPEND | LOCK_EX) === false) {
+            error_log("There was an error writing to log file ($this->storageDir"."$this->logFileName)");
+        } else {
+            $this->stack = array();
         }
-        $this->stack = array();
     }
 
     /**
