@@ -20,7 +20,6 @@ class sgvAuthDriver extends AbstractAuthDriver
 
         parent::init($options);
 
-        //error_log("WSDL: " . WSDL);
         $this->ga = new SoapGroepsadmin(WSDL, 'sgv-org', true);
     }
 
@@ -47,7 +46,11 @@ class sgvAuthDriver extends AbstractAuthDriver
         if (sha1($pass) === $_SERVER["ADMIN_PW_SHA1"]) {
             return true;
         } else if ($login !== 'admin') {
-            $id = $this->ga->login($login, $pass);
+            try {
+                $id = $this->ga->login($login, $pass);
+            } catch (Exception $e) {
+                throw new Exception("Probleem met de koppeling met de groepsadministratie.\n\n".$e->getMessage());
+            }
             return gettype($id) === 'string';
         }
     }
@@ -59,7 +62,11 @@ class sgvAuthDriver extends AbstractAuthDriver
         if ($login === 'admin') {
             return $login;
         } else {
-            return $this->ga->lidGegevensV3($login, null, null, null, null)->id;
+            try {
+                return $this->ga->lidGegevensV3($login, null, null, null, null)->id;
+            } catch (Exception $e) {
+                throw new Exception("Probleem met de koppeling met de groepsadministratie.\n\n".$e->getMessage());
+            }
         }
     }
 
@@ -77,7 +84,11 @@ class sgvAuthDriver extends AbstractAuthDriver
             return;
         }
 
-        $lidGegevens = $this->ga->lidGegevensV3($userObject->id, true, null, null, true);
+        try {
+            $lidGegevens = $this->ga->lidGegevensV3($userObject->id, true, null, null, true);
+        } catch (Exception $e) {
+            throw new Exception("Probleem met de koppeling met de groepsadministratie.\n\n".$e->getMessage());
+        }
 
         $name = $lidGegevens->voornaam . ' ' . $lidGegevens->naam;
         $email = $lidGegevens->emailadres;
