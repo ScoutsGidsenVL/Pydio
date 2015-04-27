@@ -263,7 +263,7 @@ div.legend_visible div#ws_legend{
 }
 
 #home_account_pane #welcome{
-    text-align: left;
+    text-align: center;
     padding: 32px 0;
     margin: 0 30px;
     border-bottom: 1px solid #ddd;
