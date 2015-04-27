@@ -147,6 +147,12 @@ class sgvAuthDriver extends AbstractAuthDriver
         $repo->options["CREATE"] = $repo->create; // backward compatibility
         $repo->options["META_SOURCES"]["meta.git"] = array(); // (re)activate the git plugin
 
+        // All repos may be synced using the new sync api.
+        $repo->options["META_SOURCES"]["meta.syncable"] = array(
+            "REPO_SYNCABLE" => true,
+            "OBSERVE_STORAGE_CHANGES" => false,
+            "OBSERVE_STORAGE_EVERY" => "5");
+
         ConfService::replaceRepository($workspace_id, $repo);
 
         return $repo->enabled;
