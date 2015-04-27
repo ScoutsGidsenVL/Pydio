@@ -262,7 +262,7 @@ Class.create("AjxpBootstrap", {
       var iconWidth = customWording.iconWidth || '35px';
       var fontSize = customWording.titleFontSize || '35px';
             var titleDivSize = (customWording.iconHeight ? 'height:' + customWording.iconHeight + ';' : '');
-      html+=' <div class="dialogTitle" style="border-bottom:0; margin-bottom:0px; font-size:'+fontSize+';font-weight:bold; background-size: 100%; background-image:url(\''+ (this.parameters.get("SERVER_PREFIX_URI") || '') + icon+'\');background-position:left center;background-repeat:no-repeat;padding-left:'+iconWidth+';'+titleDivSize+'color:#0077b3;border-radius:3px 3px 0 0;">'+(customWording.iconOnly?'':title)+'</div>';
+      html+=' <div class="dialogTitle" style="border-bottom:0; margin-bottom:0px; font-size:'+fontSize+';font-weight:bold; background-size: 100%; background-image:url(\'/plugins/gui.ajax/res/themes/orbit/images/logo.png\');background-position:left center;background-repeat:no-repeat;padding-left:'+iconWidth+';'+titleDivSize+'color:#0077b3;border-radius:3px 3px 0 0;">'+(customWording.iconOnly?'':title)+'</div>';
             if(customWording.welcomeMessage){
                 html+= '<div id="progressCustomMessage" style="font-size: 20px;line-height: 1.3em;padding:10px;">' + customWording.welcomeMessage.replace(new RegExp("\n", "g"), "<br>") + '</div>';
             }else{

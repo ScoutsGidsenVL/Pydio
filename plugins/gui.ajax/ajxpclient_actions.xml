@@ -20,25 +20,11 @@
         </serverCallback>
       </processing>
     </action>
-    <action name="up_dir">
-      <gui text="148" title="24" src="up.png" iconClass="icon-chevron-left" hasAccessKey="true"
-        accessKey="parent_access_key">
-        <context selection="false" dir="false" recycle="false"
-          actionBar="true" contextMenu="true" infoPanel="false" actionBarGroup="navigation">
-        </context>
-      </gui>
-      <rightsContext noUser="true" userLogged="only" read="true" write="false" adminOnly=""/>
-      <processing>
-        <clientCallback prepareModal="false"><![CDATA[
-          ajaxplorer.fireContextUp();
-          ]]></clientCallback>
-      </processing>
-    </action>
     <action name="refresh">
       <gui text="149" title="149" iconClass="icon-refresh" src="reload.png" hasAccessKey="true"
         accessKey="refresh_access_key">
         <context selection="false" dir="true" recycle="false"
-          actionBar="false" actionBarGroup="navigation" contextMenu="true" infoPanel="false">
+          actionBar="true" actionBarGroup="navigation" contextMenu="false" infoPanel="false">
         </context>
       </gui>
       <rightsContext noUser="true" userLogged="only" read="true" write="false" adminOnly=""/>

@@ -6,3 +6,4 @@ js/core/util/HasherUtils.js
 js/vendor/prototype/jsProgressBarHandler.js
 js/ui/prototype/http/class.Connexion.js
 js/ui/prototype/class.AjxpBootstrap.js
+js/sgv.js

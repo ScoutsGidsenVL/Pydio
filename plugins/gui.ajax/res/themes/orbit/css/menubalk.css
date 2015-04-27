@@ -9,20 +9,13 @@
 }
 
 .menubalk_content {
-    position: relative;
-    width: 1140px;
-    margin: 0 auto;
+    margin: 0px 480px 0px 280px;
 }
 
 .menubalk ul {
-    padding: 2px 20px 0;
+    padding: 2px 0;
     margin: 0;
     overflow: hidden;
-}
-
-.globale_menu {
-    width: calc(100% - 40px);
-    float: none;
 }
 
 .menubalk li {
@@ -87,7 +80,7 @@ img.custom_logo_image.linked {
 .account {
     position: absolute;
     top: 0;
-    right: 20px;
+    right: 280px;
     color: #FFF;
 }
 
@@ -95,7 +88,7 @@ img.custom_logo_image.linked {
     margin-right: 6px;
 }
 
-.item_instellingen a,
+.item_home a,
 .item_afmelden a {
     display: inline-block;
     position: relative;
@@ -107,7 +100,7 @@ img.custom_logo_image.linked {
     background-image: url("https://www.scoutsengidsenvlaanderen.be/files/algemeen/menubalk/balk_sprite_account.png");
 }
 
-.item_instellingen a {
+.item_home a {
     background-position: -20px -20px;
 }
 
@@ -117,4 +110,14 @@ img.custom_logo_image.linked {
 
 .account li:nth-child(n+2) {
     display: none;
+}
+
+@media screen and (max-width: 1150px) {
+    .menubalk_content {
+        margin: 0px 220px 0px 20px;
+    }
+
+    .account {
+        right: 20px;
+    }
 }

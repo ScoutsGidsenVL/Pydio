@@ -1,52 +1,53 @@
 .webfx-tree-container {
-	margin: 0;
-	padding: 0;
-	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-	white-space: nowrap;
-	font-size: 11px;
+    margin: 0;
+    padding: 0;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    white-space: nowrap;
+    font-size: 11px;
 }
 
-.webfx-tree-item
-{
-	padding: 5px 4px;
-	margin: 0;
-	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-	font-size: 11px;
-	white-space: nowrap;
-	height: 27px;
+.webfx-tree-item {
+    padding: 5px 4px 5px 17px;
+    margin: 0;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-size: 11px;
+    white-space: nowrap;
+    height: 27px;
     position: relative;
 }
 
-.webfx-tree-item:hover{
-	background-color: #666;
+.webfx-tree-item:hover {
+    background-color: #666;
     color: #48454B;
 }
 
 .selected-webfx-tree-item {
-	color : white;
+    color: white;
 }
 
-.selected-webfx-tree-item-inactive 
-{
-	text-decoration: none;
+.selected-webfx-tree-item-inactive {
+    text-decoration: none;
 }
 
-.webfx-tree-item a, .webfx-tree-item a:active, .webfx-tree-item a:hover, .webfx-tree-item a:link {
-	margin-left: 0;
-	outline:0;
-	cursor: default;
-}
-
-.webfx-tree-item a {	
-	text-decoration: none;
-}
-
-.webfx-tree-item a:hover {
-	text-decoration: none;
+.webfx-tree-item a,
+.webfx-tree-item a:active,
+.webfx-tree-item a:hover,
+.webfx-tree-item a:link {
+    margin-left: 0;
+    outline:0;
+    cursor: default;
 }
 
 .webfx-tree-item a {
-	outline:0;
+    text-decoration: none;
+}
+
+.webfx-tree-item a:hover {
+    text-decoration: none;
+}
+
+.webfx-tree-item a {
+    outline:0;
     color: #ccc !important;
     font-weight: lighter !important;
 }
@@ -61,38 +62,37 @@
     background-size: 16px;
 }
 
-*::-moz-focus-inner { 
-	border: none; 
+*::-moz-focus-inner {
+    border: none;
 }
 
 .selected-webfx-tree-item a {
-	color: white !important;
-	text-decoration: none;
+    color: #48454B !important;
+    text-decoration: none;
 }
 
-
 .webfx-tree-item a.selected-focus{
-      color: white;
+    color: white;
 }
 
 .webfx-tree-item img {
-	vertical-align: middle;
-	border: 0;
-	float:left;
+    vertical-align: middle;
+    border: 0;
+    float:left;
     visibility: hidden;
 }
 
 .webfx-tree-icon {
-	width: 16px;
-	height: 16px;
-	margin-right:3px;
+    width: 16px;
+    height: 16px;
+    margin-right:3px;
 }
 
 .selected
 {
-	background: #ddd;
-	color: white;
-	text-decoration: none;
+    background: #ddd;
+    color: white;
+    text-decoration: none;
 }
 
 .flat_tree_pane div#tree_container{
@@ -116,7 +116,7 @@
 }
 
 .flat_tree_pane  div.webfx-tree-item a span{
-    padding-left: 33px; 
+    padding-left: 33px;
     background-position: 13px 4px !important;
     background-repeat: no-repeat;
     font-size: 13px;
@@ -151,7 +151,7 @@
 }
 
 .flat_tree_pane > #tree_container > .webfx-tree-container > .webfx-tree-item a span:before{
-	display: none;
+    display: none;
 }
 
 .flat_tree_pane div.webfx-tree-container.first_container {
@@ -202,14 +202,14 @@
 }
 
 div#tree_container > div:first-child {
-    padding-left: 23px;
+    padding-left: 17px;
 }
 
 div#tree_container > div:first-child > a > span,
 div#tree_container div[data-node-icon] > a > span
 {
     background-image: none !important;
-    padding-left: 4px;
+    padding-left: 0;
 }
 
 div#tree_container > div:first-child > a > span:before,
@@ -238,10 +238,6 @@ div#tree_container div[data-node-icon="trashcan_full.png"] > a > span:before,
 div#tree_container div[data-node-icon="trashcan.png"] > a > span:before
 {
     content: "\f014";
-}
-
-#folder_pane{
-    margin-left: -4px;
 }
 
 #folder_pane.show_first_level div#tree_container > div.webfx-tree-container > div.webfx-tree-container{
