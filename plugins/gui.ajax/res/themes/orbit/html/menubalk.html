@@ -15,34 +15,9 @@
 
     <ul class="account">
       <li class="item_registratie"><a href="https://groepsadmin.scoutsengidsenvlaanderen.be/groepsadmin/gebruiker-aanmaken?applicatie=org" rel="nofollow">Registreren</a></li>
-      <li class="item_username"></li>
-      <li class="item_instellingen"><a href="#" onclick="; return to_settings();" rel="nofollow">Instellingen</a></li>
+      <li class="item_username"><a href="#" onclick="; return to_home();" rel="nofollow"></a></li>
+      <li class="item_home"><a href="#" onclick="; return to_home();" rel="nofollow">Instellingen</a></li>
       <li class="item_afmelden"><a href="/" onclick="return logout();" rel="nofollow">Afmelden</a></li>
     </ul>
   </div>
 </div>
-<script>
-  function to_settings() {
-    ajaxplorer.actionBar.actions.get('switch_to_settings').apply();
-    return false;
-  }
-
-  function logout() {
-    ajaxplorer.actionBar.actions.get('logout').apply();
-    return false;
-  }
-
-  function update_account() {
-    var loggedIn = ajaxplorer && ajaxplorer.user;
-    document.querySelector('.item_registratie').style.display = loggedIn ? 'none' : 'initial';
-    document.querySelector('.item_username').innerHTML = loggedIn ? ajaxplorer.user.getPreference('USER_DISPLAY_NAME') : '';
-    document.querySelector('.item_username').style.display = loggedIn ? 'initial' : 'none';
-    document.querySelector('.item_instellingen').style.display = loggedIn && (ajaxplorer.user.id == 'admin') ? 'initial' : 'none';
-    document.querySelector('.item_afmelden').style.display = loggedIn ? 'initial' : 'none';
-  }
-
-  // "You can't avoid polling, there isn't any event for href change."
-  // http://stackoverflow.com/a/3522154
-  update_account();
-  setInterval(update_account, 100);
-</script>

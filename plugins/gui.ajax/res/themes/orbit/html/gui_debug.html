@@ -1,20 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:ajxp>
-<head>
+  <head>
     <title>Pydio</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <?php if(isSet($START_PARAMETERS) && isSet($START_PARAMETERS["REBASE"])){
         echo '<base href="'.$START_PARAMETERS["REBASE"].'"/>';
     }?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="icon" type="image/x-png" href="<?php print(AJXP_THEME_FOLDER);?>/images/html-folder.png">
-    <!--[if IE 8]>
-    <script src="plugins/gui.ajax/res/js/vendor/es6/es5-shim.min.js"></script>
-    <script src="plugins/gui.ajax/res/js/vendor/es6/es5-sham.min.js"></script>
-    <![endif]-->
-    <!--[if IE 7]>
-    <script src="plugins/gui.ajax/res/js/vendor/es6/json3.min.js"></script>
-    <![endif]-->
     <?php
       print($ADDITIONAL_FRAMEWORKS);
 
@@ -23,15 +15,15 @@
       foreach ($lines as $line){
         print("<link rel=\"stylesheet\" type=\"text/css\" href=\"".CLIENT_RESOURCES_FOLDER."/".trim($line)."\">\n");
       }
-    ?>
 
-    <?php
 $list = AJXP_INSTALL_PATH."/".CLIENT_RESOURCES_FOLDER."/js/ajaxplorer_boot_list.txt";
 $lines = file($list);
 foreach ($lines as $line){
   print("<script language=\"javascript\" type=\"text/javascript\" src=\"".CLIENT_RESOURCES_FOLDER."/".trim($line)."\"></script>\n");
 }
 ?>
+  <script src="/plugins/editor.ckeditor/ckeditor/ckeditor.js"></script>
+  <link rel="shortcut icon" href="AJXP_THEME_FOLDER/images/favicon.ico" type="image/x-icon" />
 </head>
 <body style="overflow:hidden;">
 
@@ -48,7 +40,7 @@ window.ajxpBootstrap = new AjxpBootstrap(startParameters);
 $list = AJXP_INSTALL_PATH."/".CLIENT_RESOURCES_FOLDER."/js/ajaxplorer_core.txt";
 $lines = file($list);
 foreach ($lines as $line){
-	print("<script language=\"javascript\" type=\"text/javascript\" src=\"".CLIENT_RESOURCES_FOLDER."/".trim($line)."\"></script>\n");
+  print("<script language=\"javascript\" type=\"text/javascript\" src=\"".CLIENT_RESOURCES_FOLDER."/".trim($line)."\"></script>\n");
 }
 $list = AJXP_INSTALL_PATH."/".CLIENT_RESOURCES_FOLDER."/js/ajaxplorer_ui.txt";
 $lines = file($list);
@@ -67,8 +59,6 @@ implode("\n", file(AJXP_INSTALL_PATH."/".AJXP_THEME_FOLDER."/html/menubalk.html"
         <form id="login_form" action="login" style="display:none;" box_width="320" box_padding="0" overlayStyle='{"backgroundColor":"white","opacity":10,"backgroundImage":"url(\"<?php print(AJXP_THEME_FOLDER); ?>/images/grid_t.png\")"}'>
         <input type="hidden" name="get_action" value="login">
         <input type="hidden" name="login_seed" id="login_seed" value="">
-        <a style="float:right;font-size: 16px;" href="javascript:pydio.getController().fireAction('switch_language');" title="<?php print($mess[190]);?>" alt="<?php print($mess[190]);?>" class="icon-flag"></a>
-        <div class="dialogLegend" style="margin-bottom: 3px;margin-top:4px;" ajxp_message_id="180"><?php print($mess[180]);?></div>
 <div style="width:100%;">
         <div class="SF_element">
         <div class="SF_label"><ajxp:message ajxp_message_id="181"><?php print($mess[181]);?></ajxp:message></div>
@@ -81,6 +71,9 @@ implode("\n", file(AJXP_INSTALL_PATH."/".AJXP_THEME_FOLDER."/html/menubalk.html"
         <div class="SF_element">
         <input type="checkbox" class="radio" name="remember_me" style="border: none; width:20px !important;" checked /><ajxp:message ajxp_message_id="261"><?php print($mess[261]);?></ajxp:message>
         </div>
+        <div class="SF_element login_help">
+          <a class="login_help" href='https://wiki.scoutsengidsenvlaanderen.be/doku.php?id=handleidingen:groepsadmin:wachtwoord_vergeten'>Gebruikersnaam of  wachtwoord vergeten?</a>
+        </div>
         </div>
         </form>
         </div>
@@ -92,6 +85,5 @@ implode("\n", file(AJXP_INSTALL_PATH."/".AJXP_THEME_FOLDER."/html/menubalk.html"
                 document.documentElement.className += " ajxp_theme_orbit";
             });
     </script>
-
-    </body>
+  </body>
 </html>
