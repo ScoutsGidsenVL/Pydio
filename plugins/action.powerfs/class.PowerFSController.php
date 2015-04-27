@@ -46,6 +46,9 @@ class PowerFSController extends AJXP_Plugin
         }
         $urlBase = "pydio://". ConfService::getRepository()->getId();
         $mess = ConfService::getMessages();
+
+        error_log("PowerFSController action: $action");
+
         switch ($action) {
 
             case "monitor_compression" :
@@ -65,6 +68,7 @@ class PowerFSController extends AJXP_Plugin
                         1);
                     AJXP_XMLWriter::close();
                 } else {
+                    error_log("unlinking $percentFile...");
                     @unlink($percentFile);
                     AJXP_XMLWriter::header();
                     if ($httpVars["on_end"] == "reload") {
@@ -150,6 +154,7 @@ class PowerFSController extends AJXP_Plugin
                 if (!$compressLocally) {
                     $archiveName = AJXP_Utils::getAjxpTmpDir().DIRECTORY_SEPARATOR.$httpVars["ope_id"]."_".$archiveName;
                 }
+                error_log("ch $rootDir...");
                 chdir($rootDir);
                 $cmd = $this->getFilteredOption("ZIP_PATH")." -r ".escapeshellarg($archiveName)." ".implode(" ", $args);
                 $fsDriver = AJXP_PluginsService::getInstance()->getUniqueActivePluginForType("access");
@@ -158,6 +163,7 @@ class PowerFSController extends AJXP_Plugin
                     $cmd .= " -x .\*";
                 }
                 $cmd .= " ".$cmdSeparator." echo ZIP_FINISHED";
+                error_log("command: $cmd");
                 $proc = popen($cmd, "r");
                 $toks = array();
                 $handled = array();
