@@ -98,7 +98,6 @@ class AJXP_Controller
         $paramValues = array_map(array("SystemTextEncoding", "toUTF8"), $paramValues);
         $httpVars = array_merge($_GET, $_POST, array_combine($paramNames, $paramValues));
         return self::findActionAndApply($actionName, $httpVars, $_FILES, $action);
-
     }
 
     /**
@@ -277,6 +276,7 @@ class AJXP_Controller
      */
     public static function applyActionInBackground($currentRepositoryId, $actionName, $parameters, $user ="", $statusFile = "")
     {
+        error_log("action in background: $actionName");
         $token = md5(time());
         $logDir = AJXP_CACHE_DIR."/cmd_outputs";
         if(!is_dir($logDir)) mkdir($logDir, 0755);
@@ -324,6 +324,8 @@ class AJXP_Controller
             }
         }
 
+        error_log("cmd in background: $cmd");
+        error_log("logFile: $logFile");
         $res = self::runCommandInBackground($cmd, $logFile);
         if(!empty($clearEnv)){
             putenv($clearEnv);
@@ -354,7 +356,7 @@ class AJXP_Controller
               }
             return null;
         } else {
-            $process = new UnixProcess($cmd, (AJXP_SERVER_DEBUG?$logFile:null));
+            $process = new UnixProcess($cmd, /*(AJXP_SERVER_DEBUG?*/$logFile/*:null)*/);
             AJXP_Logger::debug("Starting process and sending output dev null");
             return $process;
         }
