@@ -1713,9 +1713,14 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
         if (!$this->isWriteable($old)) {
             throw new AJXP_Exception($mess[34]." ".$nom_fic." ".$mess[99]);
         }
-        if($dest == null) $new=dirname($old)."/".$filename_new;
-        else $new = $this->urlBase.$dest;
-        if ($filename_new=="" && $dest == null) {
+        if($dest == null) {
+          $new = dirname($old)."/".$filename_new;
+        }
+        else {
+          $new = $this->urlBase.$dest;
+        }
+
+        if ($filename_new == "" && $dest == null) {
             throw new AJXP_Exception("$mess[37]");
         }
         if (file_exists($new)) {
