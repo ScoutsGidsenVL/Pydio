@@ -48,6 +48,7 @@ class GitManager extends AJXP_AbstractMetaSource
         parent::initMeta($accessDriver);
         require_once("VersionControl/Git.php");
         $repo = $accessDriver->repository;
+
         $this->repoBase = $repo->getOption("PATH");
         if(empty($this->repoBase)){
             throw new Exception("Meta.git: cannot find PATH option in repository! Are you sure it's an FS-based workspace?");
@@ -79,8 +80,8 @@ class GitManager extends AJXP_AbstractMetaSource
                     AJXP_XMLWriter::renderNode("/".$commit["ID"], basename($commit["FILE"]), true, $commit);
                 }
                 AJXP_XMLWriter::close();
+
                 break;
-            break;
 
             case "git_revertfile":
 
@@ -99,13 +100,12 @@ class GitManager extends AJXP_AbstractMetaSource
                 $outputStream = fopen($this->repoBase.$originalFile, "w");
                 $this->executeCommandInStreams($git, $commandLine, $outputStream);
                 fclose($outputStream);
-                $this->commitChanges();
+                $this->commitChanges($this->repoBase.$originalFile);
                 AJXP_XMLWriter::header();
                 AJXP_XMLWriter::reloadDataNode();
                 AJXP_XMLWriter::close();
 
-
-            break;
+                break;
 
             case "git_getfile":
 
@@ -146,15 +146,13 @@ class GitManager extends AJXP_AbstractMetaSource
                 $outputStream = fopen("php://output", "a");
                 $this->executeCommandInStreams($git, $commandLine, $outputStream);
                 fclose($outputStream);
+
                 break;
 
-            break;
-
             default:
-            break;
+
+                break;
         }
-
-
     }
 
     protected function executeCommandInStreams($git, $commandLine, $outputStream, $errorStream = null)
@@ -196,7 +194,6 @@ class GitManager extends AJXP_AbstractMetaSource
         }
         $command->setOption("p", true);
         $command->addArgument($file);
-        //var_dump($command->createCommandString());
         $res = $command->execute();
         $lines = explode(PHP_EOL, $res);
         $allCommits = array();
@@ -256,27 +253,26 @@ class GitManager extends AJXP_AbstractMetaSource
 
     /**
      * @param AJXP_Node $fromNode
-     * @param AJXP_Node$toNode
+     * @param AJXP_Node $toNode
      * @param boolean $copy
      */
     public function changesHook($fromNode=null, $toNode=null, $copy=false)
     {
-        $this->commitChanges();
-        return;
-        /*
         $refNode = $fromNode;
         if ($fromNode == null && $toNode != null) {
             $refNode = $toNode;
         }
-        $this->commitChanges(dirname($refNode->getPath()));
-        */
+        $this->commitChanges($refNode == null ? null : ($this->repoBase . $refNode->getPath()));
     }
 
     private function commitChanges($path = null)
     {
+        $this->logInfo("git commitChanges", "path: ".$path);
+        $this->logInfo("git commitChanges", "repoBase: ".$this->repoBase);
+
         $git = new VersionControl_Git($this->repoBase);
         $command = $git->getCommand("add");
-        $command->addArgument(".");
+        $command->addArgument($path == null ? '.' : $path);
         try {
             $cmd = $command->createCommandString();
             $this->logInfo("git add", "Git command ".$cmd);
@@ -289,14 +285,16 @@ class GitManager extends AJXP_AbstractMetaSource
 
         $command = $git->getCommand("commit");
         //$command->setOption("a", true);
-        $username = "no user";
-        $mail = "mail@mail.com";
-        if (AuthService::getLoggedUser()!=null) {
-            $username = AuthService::getLoggedUser()->personalRole->getParameterValue("core.conf", "USER_DISPLAY_NAME");
+        $username = '?';
+        $id = '';
+        $mail = 'mail@mail.com';
+        if (AuthService::getLoggedUser() != null) {
+            $username = AuthService::getLoggedUser()->personalRole->filterParameterValue("core.conf", "USER_DISPLAY_NAME", AJXP_REPO_SCOPE_ALL, "");
+            $id = AuthService::getLoggedUser()->id;
             $mail = AuthService::getLoggedUser()->personalRole->filterParameterValue("core.conf", "email", AJXP_REPO_SCOPE_ALL, "mail@mail.com");
         }
-        $command->setOption("m", $username);
-        $command->setOption("author", "$username <$mail>");
+        $command->setOption("m", "$username ($id)");
+        $command->setOption("author", "$username ($id) <$mail>");
 
         try {
             $cmd = $command->createCommandString();
