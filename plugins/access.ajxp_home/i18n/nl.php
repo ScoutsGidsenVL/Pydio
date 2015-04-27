@@ -22,7 +22,7 @@ $mess=array(
 "title"=> "Home",
 "desc" => "Welkom pagina",
 "39"=> "Hieronder is een lijst van werkplekken waar je toegang tot hebt. Dit kunnen persoonlijke zijn maar ook gedeelde door andere gebruikers.",
-"40"=> "Welkom, %s! ",
+"40"=> "Welkom %s! ",
 "41"=> "Gebruik deze werkplek als standaard",
 "42"=> "Bekijk",
 "43"=> "Mijn Profiel",
@@ -38,8 +38,8 @@ $mess=array(
 "52"=> "Weet je zeker dat je dit team wilt verwijderen? Deze actie verwijdert niet de gebruikers.",
 "53"=> "Aan de slag",
 "54"=> "Aan de slag met APPLICATION_TITLE door de How-to videos te volgen",
-"55"=> "Nieuw bij APPLICATION_TITLE? <a>Bekijk onze tutorials</a>.",
-"56"=> "Aan de slag met APPLICATION_TITLE? Hier zijn wat videos!",
+"55"=> "<a>Nieuw bij APPLICATION_TITLE?</a>",
+"56"=> "Aan de slag met APPLICATION_TITLE?",
 "57"=> "Download APPLICATION_TITLE voor...",
 "58"=> "Android",
 "59"=> "iPhone/iPad",
@@ -48,7 +48,7 @@ $mess=array(
     "62"=>"<h2>Aan de slag</h2>
             Deze video is een introductie voor de APPLICATION_TITLE web applicatie:
             <ul>
-                <li>Gebruikers Dashboard</li>
+                <li>Dashboard</li>
                 <li>GUI Overzicht</li>
                 <li>Beheer bestanden en mappen</li>
                 <li>Preview en wijzig bestanden</li>
