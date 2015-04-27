@@ -49,7 +49,7 @@
         <action name="mkdir">
             <gui text="154" title="155" src="folder_new.png" iconClass="icon-plus" accessKey="folder_access_key" hasAccessKey="true">
                 <context selection="false" dir="true" recycle="hidden" actionBar="true"
-                         contextMenu="true" infoPanel="false" actionBarGroup="put,minisite" inZip="false"/>
+                         contextMenu="true" infoPanel="false" actionBarGroup="navigation,minisite" inZip="false"/>
             </gui>
             <rightsContext noUser="true" userLogged="only" read="true" write="true" adminOnly=""/>
             <processing>
@@ -126,7 +126,7 @@
       <gui text="27" title="27" src="yast_backup.png" iconClass="icon-upload-alt" accessKey="upload_access_key" hasAccessKey="true">
         <context selection="false" dir="true" recycle="hidden"
           actionBar="true" contextMenu="true" infoPanel="false"
-          actionBarGroup="put,minisite,orbit_create" inZip="false">
+          actionBarGroup="navigation,minisite,orbit_create" inZip="false">
         </context></gui>
       <rightsContext noUser="true" userLogged="only" read="false" write="true" adminOnly=""/>
       <processing>
@@ -386,6 +386,12 @@
         <clientCallback prepareModal="true"><![CDATA[
           function onLoad(oForm) {
             oForm.down('em[id="email_file"]').innerHTML = ajaxplorer.getUserSelection().getUniqueNode().getLabel();
+
+            var box = document.getElementById('generic_dialog_box');
+            box.style.cssText += 'width: initial !important;';
+
+            /* Double IDs :-( */
+            CKEDITOR.replace(box.querySelector('#email_area'));
           }
 
           function onOk() {
@@ -402,8 +408,8 @@
           var link = url + '?goto=' + repoId + encodeURIComponent(selected.getPath());
 
           var params = $H({get_action:"send_mail"});
-          params.set('subject', '[ORG - ' + repo.label + '] ' + selected.getLabel());
-          params.set('message', '<p>' + ajaxplorer.user.getPreference('USER_DISPLAY_NAME') + ' heeft <a href=' + link + '>' + selected.getLabel() + '</a> gedeeld met ' + repo.label + '.</p>');
+          params.set('subject', '[.Org - ' + repo.label + '] ' + selected.getLabel());
+          params.set('message', '<p>' + ajaxplorer.user.getPreference('USER_DISPLAY_NAME') + ' heeft <a href=' + link + '>' + selected.getLabel() + '</a> gedeeld met ' + repo.label + '.</p>' + CKEDITOR.instances.email_area.getData());
             params.set('emails[]', [
               /*ajaxplorer.repositoryId + '@scoutsengidsenvlaanderen.org'*/
               'tvl+' + ajaxplorer.repositoryId + '@scoutsengidsenvlaanderen.be']);
@@ -423,9 +429,11 @@
           // For firefox debugging: //# sourceURL=aaa_share.js
         ]]></clientCallback>
         <clientForm id="ajxp_email_form"><![CDATA[
-          <div id="ajxp_email_form" box_width="500" action="ajxp_email">
-              <p>Ben je zeker dat je <em id="email_file"></em> in een e-mail wilt sturen naar alle gebruikers van deze map?</p>
-        </div>
+          <div id="ajxp_email_form" action="ajxp_email">
+              <p>Ben je zeker dat je <em id="email_file"></em> in een e-mail wilt sturen <b>naar alle gebruikers</b> van deze map?</p>
+              <p>Wil je nog een bericht meegeven?</p>
+              <textarea id="email_area" name="email_area"></textarea>
+          </div>
         ]]></clientForm>
       </processing>
     </action>
@@ -518,10 +526,13 @@
                 var orig = ajaxplorer.getUserSelection().getSelectionSource();
             }
           var callback = function(node, newValue){
-              if(!node) node = ajaxplorer.getUserSelection().getUniqueNode();
+            if(!node) node = ajaxplorer.getUserSelection().getUniqueNode();
             var filename = node.getPath();
             var conn = new Connexion();
             conn.addParameter('get_action', 'rename');
+            if (filename === '/' + newValue) {
+              return;
+            }
             conn.addParameter('file', filename);
             conn.addParameter('filename_new', newValue);
             conn.onComplete = function(transport){
@@ -534,131 +545,18 @@
           };
           if(ajaxplorer.getUserSelection() && ajaxplorer.getUserSelection().getSelectionSource() && ajaxplorer.getUserSelection().getSelectionSource().switchCurrentLabelToEdition) {
               ajaxplorer.getUserSelection().getSelectionSource().switchCurrentLabelToEdition(callback);
-                    }else{
-                        var test = ajaxplorer._focusables.detect(function(obj){return obj.hasFocus;});
-                        if (test && test.switchCurrentLabelToEdition){
-                            test.switchCurrentLabelToEdition(callback);
-                        }
-                    }
+          }else{
+              var test = ajaxplorer._focusables.detect(function(obj){return obj.hasFocus;});
+              if (test && test.switchCurrentLabelToEdition){
+                  test.switchCurrentLabelToEdition(callback);
+              }
+          }
         ]]></clientCallback>
         <serverCallback methodName="switchAction" restParams="/" developerComment="Rename a resource, file or folder.">
                     <input_param description="Full path to the resource that will be renamed" name="file" type="path" mandatory="true"/>
                     <input_param description="New basename of the resource, in that case the new fullname will be the parent folder of source plus this filename_new." name="filename_new" type="string"/>
                     <input_param description="Full path to the new resource. Can be used instead of filename_new parameter." name="dest" type="path"/>
                 </serverCallback>
-        </processing>
-    </action>
-    <action name="copy" ctrlDragndropDefault="true">
-      <gui text="66" title="159" src="editcopy.png" iconClass="icon-copy" hasAccessKey="false">
-        <context selection="true" dir="" recycle="hidden"
-          actionBar="true" contextMenu="true" infoPanel="false"
-          actionBarGroup="change_main">
-        </context>
-        <selectionContext dir="true" file="true" recycle="false" unique="false" image="false" editable="false"/></gui>
-      <rightsContext noUser="true" userLogged="only" read="true" write="false" adminOnly=""/>
-      <processing>
-        <clientCallback prepareModal="true"><![CDATA[
-          if(ajaxplorer.user){
-            var user = ajaxplorer.user;
-            var activeRepository = user.getActiveRepository();
-          }
-          var context = pydio.getController();
-          var onLoad = function(oForm){
-            var getAction = oForm.select('input[name="get_action"]')[0];
-            getAction.value = 'copy';
-            this.treeSelector = new TreeSelector(oForm, {
-                            nodeFilter : function(ajxpNode){
-                                return (!ajxpNode.isLeaf() && !ajxpNode.hasMetadataInBranch("ajxp_readonly", "true"));
-                            }
-                        });
-            if(user && user.canCrossRepositoryCopy() && user.hasCrossRepositories()){
-              var firstKey ;
-              var reposList = new Hash();
-              ProtoCompat.map2hash(user.getCrossRepositories()).each(function(pair){
-                if(!firstKey) firstKey = pair.key;
-                reposList.set(pair.key, pair.value.getLabel());
-              }.bind(this));
-              if(!user.canWrite()){
-                var nodeProvider = new RemoteNodeProvider();
-                nodeProvider.initProvider({tmp_repository_id:firstKey});
-                var rootNode = new AjxpNode("/", false, MessageHash[373], "folder.png", nodeProvider);
-                this.treeSelector.load(rootNode);
-              }else{
-                this.treeSelector.load();
-              }
-              this.treeSelector.setFilterShow(true);
-              reposList.each(function(pair){
-                this.treeSelector.appendFilterValue(pair.key, pair.value);
-              }.bind(this));
-              if(user.canWrite()) this.treeSelector.appendFilterValue(activeRepository, "&lt;"+MessageHash[372]+"&gt;", 'top');
-              this.treeSelector.setFilterSelectedIndex(0);
-              this.treeSelector.setFilterChangeCallback(function(e){
-                externalRepo = this.filterSelector.getValue();
-                var nodeProvider = new RemoteNodeProvider();
-                nodeProvider.initProvider({tmp_repository_id:externalRepo});
-                this.resetAjxpRootNode(new AjxpNode("/", false, MessageHash[373], "folder.png", nodeProvider));
-              });
-            }else{
-              this.treeSelector.load();
-            }
-          }.bind(context);
-          var onCancel = function(){
-            this.treeSelector.unload();
-            hideLightBox();
-          }.bind(context);
-          var onSubmit = function(){
-            var oForm = modal.getForm();
-            var getAction = oForm.select('input[name="get_action"]')[0];
-            var selectedNode = this.treeSelector.getSelectedNode();
-            if(activeRepository && this.treeSelector.getFilterActive(activeRepository)){
-              getAction.value = "cross_copy" ;
-            }
-            ajaxplorer.getUserSelection().updateFormOrUrl(oForm);
-            this.submitForm(oForm);
-            this.treeSelector.unload();
-            hideLightBox();
-          }.bind(context);
-          modal.showDialogForm('Move/Copy', 'copymove_form', onLoad, onSubmit, onCancel);
-          ]]></clientCallback>
-        <clientForm id="copymove_form"><![CDATA[
-          <div id="copymove_form" action="copy" box_width="272">
-            <input type="hidden" name="dest_node" value=""/>
-            <div class="dialogLegend">AJXP_MESSAGE[175]</div>
-            <select id="external_repository" name="dest_repository_id" style="width: 248px; font-size: 12px; height: 21px; margin-top:5px; margin-bottom:7px; border: 1px solid #ccc;"></select>
-            <div style="height:200px; width:246px; padding: 0px 0px; border: 1px solid #ccc;">
-              <div id="treeCopy" style="height:194px; padding: 3px 2px; overflow:auto; text-align:left;" class="treeCopyContainer"></div>
-            </div>
-            <input type="text" name="dest" value="/" readonly  style="width:248px; border: 1px solid #ccc; margin-top:7px; margin-bottom:2px;background-image:none;"/>
-          </div>
-        ]]></clientForm>
-        <clientListener name="contextChange"><![CDATA[
-        if(ajaxplorer){
-          var action = pydio.getController().getActionByName("copy");
-          if(action){
-            action.rightsContext.write = true;
-            var ajxpUser = ajaxplorer.user;
-            if(ajxpUser && !ajxpUser.canWrite() && ajxpUser.canCrossRepositoryCopy() && ajxpUser.hasCrossRepositories()){
-              action.rightsContext.write = false;
-              pydio.getController().defaultActions['delete']('ctrldragndrop');
-              pydio.getController().defaultActions['delete']('dragndrop');
-            }
-            if(ajxpUser && ajxpUser.canWrite() && ajaxplorer.getContextNode().hasAjxpMimeInBranch("ajxp_browsable_archive")){
-                action.rightsContext.write = false;
-            }
-            if(ajaxplorer.getContextNode().hasAjxpMimeInBranch("ajxp_browsable_archive")){
-              action.setLabel(247, 248);
-              action.setIconSrc('ark_extract.png');
-            }else{
-              action.setLabel(66, 159);
-              action.setIconSrc('editcopy.png');
-            }
-          }
-        }
-        ]]></clientListener>
-        <serverCallback methodName="switchAction" restParams="/" developerComment="Copy one or more items to a given target">
-                    <input_param description="Selection" name="nodes" type="AJXP_NODE[]" mandatory="true"/>
-                    <input_param description="Target folder where to copy" name="dest" type="path" mandatory="true"/>
-        </serverCallback>
         </processing>
     </action>
     <action name="move" dragndropDefault="true">
