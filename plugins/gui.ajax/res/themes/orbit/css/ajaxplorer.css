@@ -3201,6 +3201,10 @@ div.tabulatorContainer div#display_toolbar{
     height: 100% !important;
 }
 
+table#selectable_div-1 {
+    height: auto !important;
+}
+
 #info_panel div#display_toolbar {
     float: left;
     text-align: left;
@@ -4338,6 +4342,10 @@ input, textarea, .selectable{
     position: relative;
     height: calc(100% - 41px) !important;
     overflow: hidden;
+}
+
+#vertical_splitter.settings_main_pane {
+    height: 100% !important;
 }
 
 #vertical_splitter > div {
