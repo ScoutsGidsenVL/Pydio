@@ -36,7 +36,11 @@ function apiPost($baseData, $url, $parameters, $private){
     $hash = $nonce.":".hash_hmac("sha256", $msg, $parameters["auth_token"]);
     $client = new HttpClient($baseData["host"]);
     $parameters["auth_hash"] = $hash;
-    $client->post($url, $parameters);
+    $res  = $client->post($url, $parameters);
+    echo "Protocol: ".$baseData["protocol"]." (ignored!)<br>\n";
+    echo "URL: ".$baseData["host"].$url."<br>\n";
+    echo "Parameters: ".print_r($parameters, true)."<br>\n";
+    echo "Result: ".$res."<br>\n";
     return $client;
 
 }
@@ -61,11 +65,11 @@ if(isSet($_GET["api"])){
         $tokens = file_get_contents("${protocol}://${user}:${password}@${host}${path}/api/pydio/keystore_generate_auth_token/php_client");
         $data = json_decode($tokens, true);
         if(is_array($data)){
-            echo "\n\nData is correctly decoded as JSON.";
+            echo "\n\nData is correctly decoded as JSON.<br>\n";
             var_dump($data);
         }else{
-            echo "\n\nData returned is not JSON! There is something wrong with the API. Exiting.";
-            var_dump($data);
+            echo "\n\nData returned is not JSON! There is something wrong with the API. Exiting.<br>\n";
+            var_dump($tokens);
             exit();
         }
         // Now use tokens
@@ -82,8 +86,9 @@ if(isSet($_GET["api"])){
             echo "\n\nData is correctly received as XML.";
             var_dump($crtListing);
         }else{
-            echo "\n\nDid not receive XML data! Did you enter a correct workspace? Exiting.";
+            echo "\n\nDid not receive XML data! Did you enter a correct workspace? Exiting.<br>\n";
             var_dump($client->getHeaders());
+            echo "<br>\n";
             var_dump($crtListing);
             exit();
         }
@@ -96,18 +101,21 @@ if(isSet($_GET["api"])){
         $client = apiPost($urlBaseData, "/api/$ws/changes/$lastSeq", array("auth_token" => $token, "flatten" => "true"), $private);
         $headers = $client->getHeaders();
         if($headers["content-type"] != "application/json; charset=UTF-8"){
-            echo "\n\n Seems like response header is not JSON. Did you correctly enable the Syncable feature on this workspace?";
+            echo "\n\n Seems like response header is not JSON. Did you correctly enable the Syncable feature on this workspace?<br>\n";
             var_dump($headers);
+            echo "<br>\n";
+            var_dump($client->getContent());
             exit();
         }
         $data = json_decode($client->getContent(), true);
         if(is_array($data)){
             $lastSeq = $data["last_seq"];
-            echo "\n\nData is correctly decoded as JSON. Saving Last Seq Id to ".$lastSeq;
+            echo "\n\nData is correctly decoded as JSON. Saving Last Seq Id to ".$lastSeq."<br>\n";
             var_dump($data["last_seq"]);
         }else{
-            echo "\n\nData not decoded as JSON, normal?";
+            echo "\n\nData not decoded as JSON, normal?<br>\n";
             var_dump($headers);
+            echo "<br>\n";
             var_dump($data);
             exit();
         }
