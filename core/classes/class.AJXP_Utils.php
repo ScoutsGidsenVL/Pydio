@@ -2096,6 +2096,16 @@ class AJXP_Utils
 
     public static function sendErrorEmail($title, $body) {
 
+        $ignored_messages = array(
+            'You are not allowed to access this resource.',
+            'Probleem met de koppeling met de groepsadministratie.',
+            'wachtwoord-verplicht');
+        foreach($ignored_messages as $ignored) {
+            if (strpos($body, $ignored) !== false) {
+                return;
+            }
+        }
+
         require_once(__DIR__ . "/../../plugins/mailer.phpmailer-lite/lib/class.phpmailer-lite.php");
         $mail = new PHPMailerLite();
         $mail->setFrom('informatica@scoutsengidsenvlaanderen.be');

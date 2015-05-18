@@ -366,7 +366,6 @@ class AJXP_XMLWriter
         return AJXP_XMLWriter::write("<reload_instruction object=\"data\" node=\"$nodePath\" file=\"$pendingSelection\"/>", $print);
     }
 
-
     /**
      * Send a <reload> XML instruction for refreshing the list
      * @static
@@ -543,12 +542,6 @@ class AJXP_XMLWriter
         if ($errorMessage == null) {
             $messageType = "SUCCESS";
             $message = AJXP_Utils::xmlContentEntities($logMessage);
-        } else if ($errorMessage === 'You are not allowed to access this resource.') {
-            $messageType = "ERROR";
-            $message = $errorMessage;
-        } else if ($errorMessage === 'wachtwoord-verplicht') {
-            $messageType = "ERROR";
-            $message = 'Wachtwoord verplicht';
         } else {
             $messageType = "ERROR";
             $message = "Er is een fout opgetreden.\n";

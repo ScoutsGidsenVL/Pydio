@@ -87,7 +87,7 @@ class AJXP_Logger extends AJXP_Plugin
             }
         }
 
-        if ($level == LOG_LEVEL_ERROR && $res != 'message=You are not allowed to access this resource.') {
+        if ($level == LOG_LEVEL_ERROR) {
             AJXP_Utils::sendErrorEmail('Fout in ' . $source . ': ' . $prefix, $res);
         }
 
