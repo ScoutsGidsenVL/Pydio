@@ -57,11 +57,11 @@ class sgvAuthDriver extends AbstractAuthDriver
 
     public function getGroepsadminId($login) {
 
-        $this->logInfo(__FUNCTION__, 'Login: ' . $login);
-
-        if ($login === 'admin') {
+        if ($login === 'admin' || preg_match('/^[0-9a-f]{32}$/', $login)) {
             return $login;
         } else {
+            $this->logInfo(__FUNCTION__, 'Looking up id: '.$login);
+
             try {
                 return $this->ga->lidGegevensV3($login, null, null, null, null)->id;
             } catch (Exception $e) {
@@ -127,11 +127,12 @@ class sgvAuthDriver extends AbstractAuthDriver
 
             $repo = new Repository($workspace_id, $workspace_titel, 'fs'); # fs -> filesystem
             $repo->uuid = $workspace_id;
-            $repo->path = 'AJXP_DATA_PATH/sgv/' . $workspace_id;
-            $repo->options["PATH"] = $repo->path; // required for backward compatibility
 
             ConfService::addRepository($repo);
         }
+
+        $repo->path = 'AJXP_DATA_PATH/sgv/' . $workspace_id;
+        $repo->options["PATH"] = $repo->path; // required for backward compatibility
 
         $repo->create = false; // created and controlled by an external script
         $repo->display = $workspace_titel;
@@ -145,13 +146,9 @@ class sgvAuthDriver extends AbstractAuthDriver
         $repo->setSlug($workspace_id);
 
         $repo->options["CREATE"] = $repo->create; // backward compatibility
-        $repo->options["META_SOURCES"]["meta.git"] = array(); // (re)activate the git plugin
 
-        // All repos may be synced using the new sync api.
-        $repo->options["META_SOURCES"]["meta.syncable"] = array(
-            "REPO_SYNCABLE" => true,
-            "OBSERVE_STORAGE_CHANGES" => false,
-            "OBSERVE_STORAGE_EVERY" => "5");
+        $repo->options["META_SOURCES"] = array(); // clear old meta settings
+        $repo->options["META_SOURCES"]["meta.git"] = array(); // (re)activate the git plugin
 
         ConfService::replaceRepository($workspace_id, $repo);
 
