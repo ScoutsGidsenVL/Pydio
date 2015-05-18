@@ -85,7 +85,7 @@ class FileHasher extends AJXP_AbstractMetaSource
         parent::initMeta($accessDriver);
         $store = AJXP_PluginsService::getInstance()->getUniqueActivePluginForType("metastore");
         if ($store === false) {
-            throw new Exception("The 'meta.simple_lock' plugin requires at least one active 'metastore' plugin");
+            throw new Exception("The 'meta.filehasher' plugin requires at least one active 'metastore' plugin");
         }
         $this->metaStore = $store;
         $this->metaStore->initMeta($accessDriver);
