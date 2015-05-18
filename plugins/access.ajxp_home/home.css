@@ -218,6 +218,7 @@
     margin: 8% 20px;
     line-height: 55px;
     transition: opacity ease 0.4s;
+    background-color: rgba(34, 34, 34, 0.5);
 }
 
 #home_account_pane div#ws_legend.empty_ws_legend{

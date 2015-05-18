@@ -26,7 +26,7 @@ Class.create("HistoryBrowser", {
     initialize:function(form){
 
         this.toolbar = form.down('div.action_bar');
-		this.element = form.down('[id="versions_table"]');
+    this.element = form.down('[id="versions_table"]');
 
         this.element.up('div.dialogContent').setStyle({padding:0});
         this.element.setStyle({
@@ -34,9 +34,9 @@ Class.create("HistoryBrowser", {
             position:'relative'
         });
         this.container = this.element;
-		if(!$('historydownload_iframe')){
-			$('hidden_frames').insert('<iframe id="historydownload_iframe" name="historydownload_iframe" style="display:none"></iframe>');
-		}
+    if(!$('historydownload_iframe')){
+      $('hidden_frames').insert('<iframe id="historydownload_iframe" name="historydownload_iframe" style="display:none"></iframe>');
+    }
 
         this.dlAction = new Action({
             name: "dl_history",
@@ -97,17 +97,17 @@ Class.create("HistoryBrowser", {
             }
         }.bind(this));
 
-	},
-	
-	open: function(currentRep){
-		var selection = ajaxplorer.getUserSelection();
-		if(currentRep || selection.isEmpty()){
-			this.ajxpNode = ajaxplorer.getContextNode();
-		}else{
+  },
+
+  open: function(currentRep){
+    var selection = ajaxplorer.getUserSelection();
+    if(currentRep || selection.isEmpty()){
+      this.ajxpNode = ajaxplorer.getContextNode();
+    }else{
             this.ajxpNode = selection.getUniqueNode();
-		}
-		this.fileName = this.ajxpNode.getPath();
-		this.isFile = this.ajxpNode.isLeaf();
+    }
+    this.fileName = this.ajxpNode.getPath();
+    this.isFile = this.ajxpNode.isLeaf();
         this.currentFileMetadata = this.ajxpNode.getMetadata();
 
         var provider = new RemoteNodeProvider();
@@ -125,9 +125,9 @@ Class.create("HistoryBrowser", {
             this.filesList = new FilesList(this.element, {
                 dataModel:this.versionsDm,
                 columnsDef:[{attributeName:"index", messageId:'meta.git.9', sortType:'String', fixedWidth:'5'},
-                            {attributeName:"ajxp_modiftime", messageId:'meta.git.10', sortType:'String', fixedWidth:"40"},
+                            {attributeName:"EVENT", messageId:'meta.git.12', sortType:'String', fixedWidth:"20"},
                             {attributeName:"MESSAGE", messageId:'meta.git.11', sortType:'String', fixedWidth:"20"},
-                            {attributeName:"EVENT", messageId:'meta.git.12', sortType:'String', fixedWidth:"20"}//,
+                            {attributeName:"ajxp_modiftime", messageId:'meta.git.10', sortType:'String', fixedWidth:"40"}//,
                             //{attributeName:"ajxp_label", messageId:1, sortType:'String'}
                 ],
                 defaultSortTypes:["Number", "Date", "String", "String"],
@@ -197,18 +197,18 @@ Class.create("HistoryBrowser", {
         connex.sendAsync();
     },
 
-	close:function(){
-		
-	},
-	setOnLoad:function(){
-		addLightboxMarkupToElement(this.container);
-		var img = new Element("img", {
-			src:ajxpResourcesFolder+'/images/loadingImage.gif',
-			style:'margin-top:80px;'
-		});
-		this.container.down("#element_overlay").insert(img);		
-	},
-	removeOnLoad:function(){
-		removeLightboxFromElement(this.container);
-	}
+  close:function(){
+
+  },
+  setOnLoad:function(){
+    addLightboxMarkupToElement(this.container);
+    var img = new Element("img", {
+      src:ajxpResourcesFolder+'/images/loadingImage.gif',
+      style:'margin-top:80px;'
+    });
+    this.container.down("#element_overlay").insert(img);
+  },
+  removeOnLoad:function(){
+    removeLightboxFromElement(this.container);
+  }
 });

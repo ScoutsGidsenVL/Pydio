@@ -35,12 +35,15 @@ div.infoPanelBasenameTitle,
     background: #CCC !important;
 }
 
-div.selected-webfx-tree-item-inactive{
-    background: #48454B !important; /* Old browsers */ /* FF3.6+ */ /* Chrome,Safari4+ */ /* Chrome10+,Safari5.1+ */ /* Opera11.10+ */ /* IE10+ */ /* IE6-9 */ /* W3C */
+.blue_gradient,
+div.selected-webfx-tree-item-inactive,
+div.selected-webfx-tree-item {
+    background: #E7E0DE !important;
 }
 
-.blue_gradient,div.selected-webfx-tree-item {
-    background: #E7E0DE !important; /* Old browsers */ /* FF3.6+ */ /* Chrome,Safari4+ */ /* Chrome10+,Safari5.1+ */ /* Opera11.10+ */ /* IE10+ */ /* IE6-9 */ /* W3C */
+div.selected-webfx-tree-item-inactive a,
+div.selected-webfx-tree-item a {
+    color: #48454B !important;
 }
 
 .settings_main_pane div.selected-webfx-tree-item,
@@ -196,28 +199,26 @@ kbd {
     background-size: auto 100% !important;
 }
 
-.thumbnail_selectable_cell
-{
+.thumbnail_selectable_cell {
     width: 110px;
     height: 100px;
     float: left;
     text-align: center;
     margin: 0 4px;
-    background-color: rgb(250,250,250);
     -moz-border-radius : 2px;
     border-radius: 2px;
     padding: 0 6px;
     color: #48454B;
 }
 
-.fl-displayMode-thumb div.thumbnail_selectable_cell{
+.fl-displayMode-thumb div.thumbnail_selectable_cell {
     margin: 1px;
     background-color: #f9f9f9;
     border-radius: 2px;
     padding: 0 0 3px;
 }
 
-.fl-displayMode-thumb div.thumbnail_selectable_cell div.thumbLabel{
+.fl-displayMode-thumb div.thumbnail_selectable_cell div.thumbLabel {
     margin-top: -29px;
     opacity: 1;
     background-color: rgba(237,237,237,0.82);
@@ -226,48 +227,40 @@ kbd {
     text-shadow: 1px 1px 0 #fff;
 }
 
-.fl-displayMode-thumb div.thumbnail_selectable_cell.fl-displayMode-thumbsize-medium div.thumbLabel{
+.fl-displayMode-thumb div.thumbnail_selectable_cell.fl-displayMode-thumbsize-medium div.thumbLabel {
     padding:1px;
     margin-top: -15px;
     font-size: 0.8em;
 }
 
-.fl-displayMode-thumb div.thumbnail_selectable_cell.fl-displayMode-thumbsize-small div.thumbLabel{
+.fl-displayMode-thumb div.thumbnail_selectable_cell.fl-displayMode-thumbsize-small div.thumbLabel {
     display: none;
 }
 
-.fl-displayMode-thumb div.thumbnail_selectable_cell.selected-focus div.thumbLabel{
+.fl-displayMode-thumb div.thumbnail_selectable_cell.selected-focus div.thumbLabel {
     opacity: 1;
 }
 
 .thumbnail_selectable_cell.detailed {;
     margin: 0 0 !important;
-    background-color: #ffffff;
     width: 100%;
     display: block;;
     height: auto;
     position: relative;
     border-radius: 0;
-    padding: 6px 4px;
+    padding: 0 4px;
 }
 
-.thumbnail_selectable_cell.detailed:hover{
-    background-color: #f7f7f7;
-}
-
-.thumbnail_selectable_cell.detailed:last-child{
+.thumbnail_selectable_cell.detailed:last-child {
     border-bottom: 0;
 }
 
-.thumbnail_selectable_cell.detailed div.thumbnail_selectable_cell{
-
+.thumbnail_selectable_cell.detailed div.thumbnail_selectable_cell {
     margin-right: 11px;
     background-color: transparent;
-
 }
 
-.thumbnail_selectable_cell.detailed div.thumbLabel{
-
+.thumbnail_selectable_cell.detailed div.thumbLabel {
     font-size: 15px;
     text-align: left;
     padding-top: 9px;
@@ -277,8 +270,7 @@ kbd {
     overflow: hidden;
 }
 
-.thumbnail_selectable_cell.detailed div.thumbnail_cell_metadata{
-
+.thumbnail_selectable_cell.detailed div.thumbnail_cell_metadata {
     text-align: left;
     padding-top: 0;
     font-size: 11px;
@@ -1615,7 +1607,7 @@ div.dialogBox.form-diaporama_box div.dialogContent{
 
 #topPane{
     width:280px;
-    background-color: #48454B;
+    background-color: rgba(72, 69, 75, 0.93); /*#48454B*/
 }
 
 .no-flexbox div#topPane{
@@ -2070,7 +2062,7 @@ a.carousel-control img{
 }
 
 #content_pane{
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.93); /*#FFF*/
 }
 
 #content_pane div.panelHeader,
@@ -3939,7 +3931,7 @@ div.class-FetchedResultPane div.thumbnail_selectable_cell.detailed span.text_lab
 #info_panel div.panelContent
 {
     overflow: hidden;
-    background-color: #E7E0DE;
+    background-color: rgba(231, 224, 222, 0.96); /*#E7E0DE*/
     padding-bottom: 15px;
     -webkit-font-smoothing: antialiased;
 }
@@ -5371,16 +5363,16 @@ div.menu a {
     margin-top: -5px;
 }
 
-.menu.desktop span.ajxp_icon_span{
+.menu.desktop span.ajxp_icon_span {
+    display: inline-block;
+    width: 25px;
     font-size: 1.1em;
-    padding-right: 10px;
     color: #48454B;
-    opacity: 0.2;
+    opacity: 0.5;
 }
 
 .menu.desktop a:hover span.ajxp_icon_span,
-.menu.desktop li.menuAnchorSelected span.ajxp_icon_span
-{
+.menu.desktop li.menuAnchorSelected span.ajxp_icon_span {
     color: #fff;
     opacity: 1;
 }
@@ -5394,10 +5386,12 @@ div.menu a {
 }
 
 .menu.desktop a u {
+    font-size: 11px;
     text-decoration: none;
     display: inline-block;
-    border: 1px solid #fff;
     border-radius: 3px;
+    line-height: 1.4;
+    white-space: nowrap;
 }
 
 .menu.desktop a.menu_item_default{
@@ -5409,27 +5403,14 @@ div.menu a {
 }
 
 .menu.desktop a:hover u,
-.menu.desktop li.menuAnchorSelected u
-{
-    padding: .1em .2em;
-    border: 1px solid #E7E0DE;
-    font-size: 11px;
-    font-family: Arial,Helvetica,sans-serif;
-    background-color: #f7f7f7;
-    -moz-box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px#fff inset;
-    -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px#fff inset;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px#fff inset;
-    border-radius: 3px;
-    display: inline-block;
-    margin: 1px;
-    text-shadow: 0 1px 0#fff;
-    line-height: 1.4;
-    white-space: nowrap;
-    color: #fff;
-
+.menu.desktop li.menuAnchorSelected u {
+    margin: 0 1px;
+    padding: 2px;
+    font-weight: bold;
+    background-color: #CCC;
 }
 
-.menu.desktop.toolbarmenu a img{
+.menu.desktop.toolbarmenu a img {
     margin-right: 6px;
 }
 
@@ -6050,17 +6031,17 @@ TABULATOR IN A TABULATOR
 */
 #files_list_header,
 .innerTabulator  div.panelHeader {
-    font-size: 12px;
     padding: 3px 16px 4px 8px;
-    background-color: #F5F5F5;
-    color: #999;
-    border-right: 0;
-    border-top: 1px solid #E7E0DE;
     overflow: hidden;
+    color: #999;
+    border-top: 1px solid #CCC;
+    border-bottom: 1px solid #CCC;
+    border-right: 0;
+    font-size: 12px;
+    background-color: rgba(231, 224, 222, 0.96); /*#E7E0DE*/
 }
 
-.innerTabulator  div.panelHeader.tabulatorContainer
-{
+.innerTabulator div.panelHeader.tabulatorContainer {
     padding: 0 0 0 0;
     height: 26px;
 }
