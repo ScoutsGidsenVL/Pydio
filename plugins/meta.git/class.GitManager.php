@@ -187,6 +187,9 @@ class GitManager extends AJXP_AbstractMetaSource
 
     protected function gitHistory($git, $file)
     {
+        // We want to prevent that uncommitted changes would mess up the history.
+        $this->commitChanges(null, true);
+
         $command = $git->getCommand("log");
         if(strpos($file, " ") === false){
             // We currently cannot use follow if file/folder has a space
@@ -199,6 +202,7 @@ class GitManager extends AJXP_AbstractMetaSource
         $allCommits = array();
         while (count($lines)) {
             $line = array_shift($lines);
+            $this->logInfo("git history", "line: ".$line);
             if (preg_match("/^commit /i", $line)) {
                 if (isSet($currentCommit)) {
                     if (isSet($currentCommit["DETAILS"])) {
@@ -262,13 +266,16 @@ class GitManager extends AJXP_AbstractMetaSource
         if ($fromNode == null && $toNode != null) {
             $refNode = $toNode;
         }
-        $this->commitChanges($refNode == null ? null : ($this->repoBase . $refNode->getPath()));
+
+        $path = $refNode == null ? null : ($this->repoBase . $refNode->getPath());
+        $this->commitChanges($path);
     }
 
-    private function commitChanges($path = null)
+    private function commitChanges($path = null, $personeel = false)
     {
         $this->logInfo("git commitChanges", "path: ".$path);
         $this->logInfo("git commitChanges", "repoBase: ".$this->repoBase);
+        $this->logInfo("git commitChanges", "personeel: ".$personeel);
 
         $git = new VersionControl_Git($this->repoBase);
         $command = $git->getCommand("add");
@@ -278,7 +285,11 @@ class GitManager extends AJXP_AbstractMetaSource
             $this->logInfo("git add", "Git command ".$cmd);
             $res = $command->execute();
         } catch (Exception $e) {
-            $this->logError("git add", $e->getMessage());
+            // If a directory was deleted.
+            // Git doesn't track directories, only files. 
+            if (strpos($e->getMessage(), 'nothing to commit') === false) {
+                $this->logError("git add", $e->getMessage());
+            }
             return;
         }
         $this->logInfo("git add", "GIT RESULT ADD : ".$res);
@@ -286,12 +297,15 @@ class GitManager extends AJXP_AbstractMetaSource
         $command = $git->getCommand("commit");
         //$command->setOption("a", true);
         $username = '?';
-        $id = '';
-        $mail = 'mail@mail.com';
-        if (AuthService::getLoggedUser() != null) {
+        $id = '?';
+        $mail = 'info@scoutsengidsenvlaanderen.be';
+        if ($personeel) {
+            $username = 'Personeel';
+            $id = 'of VV/VB';
+        } else if (AuthService::getLoggedUser() != null) {
             $username = AuthService::getLoggedUser()->personalRole->filterParameterValue("core.conf", "USER_DISPLAY_NAME", AJXP_REPO_SCOPE_ALL, "");
             $id = AuthService::getLoggedUser()->id;
-            $mail = AuthService::getLoggedUser()->personalRole->filterParameterValue("core.conf", "email", AJXP_REPO_SCOPE_ALL, "mail@mail.com");
+            $mail = AuthService::getLoggedUser()->personalRole->filterParameterValue("core.conf", "email", AJXP_REPO_SCOPE_ALL, $mail);
         }
         $command->setOption("m", "$username ($id)");
         $command->setOption("author", "$username ($id) <$mail>");
@@ -301,7 +315,9 @@ class GitManager extends AJXP_AbstractMetaSource
             $this->logInfo("git commit", "Git command ".$cmd);
             $res = $command->execute();
         } catch (Exception $e) {
-            $this->logError("git commit", $e->getMessage());
+            if (strpos($e->getMessage(), 'nothing to commit') === false) {
+                $this->logError("git commit", $e->getMessage());
+            }
             return;
         }
         $this->logInfo("git", "GIT RESULT COMMIT : ".$res);
