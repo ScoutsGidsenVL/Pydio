@@ -189,7 +189,6 @@ class MqManager extends AJXP_Plugin
                 if (AuthService::usersEnabled()) {
                     $user = AuthService::getLoggedUser();
                     if ($user == null) {
-                        //throw new Exception("You must be logged in");
                         AJXP_XMLWriter::header();
                         AJXP_XMLWriter::requireAuth();
                         AJXP_XMLWriter::close();
@@ -201,6 +200,14 @@ class MqManager extends AJXP_Plugin
                 } else {
                     $GROUP_PATH = '/';
                     $uId = 'shared';
+                }
+                $currentRepository = ConfService::getCurrentRepositoryId();
+                $channelRepository = str_replace("nodes:", "", $httpVars["channel"]);
+                if($channelRepository != $currentRepository){
+                    AJXP_XMLWriter::header();
+                    echo "<require_registry_reload/>";
+                    AJXP_XMLWriter::close();
+                    return;
                 }
                //session_write_close();
 
@@ -271,8 +278,10 @@ class MqManager extends AJXP_Plugin
                 throw new Exception("Web Socket server seems to already be running!");
             }
         }
-
-        $cmd = ConfService::getCoreConf("CLI_PHP")." ws-server.php -host=".$params["WS_SERVER_BIND_HOST"]." -port=".$params["WS_SERVER_BIND_PORT"]." -path=".$params["WS_SERVER_PATH"];
+        $host = escapeshellarg($params["WS_SERVER_BIND_HOST"]);
+        $port = escapeshellarg($params["WS_SERVER_BIND_PORT"]);
+        $path = escapeshellarg($params["WS_SERVER_PATH"]);
+        $cmd = ConfService::getCoreConf("CLI_PHP")." ws-server.php -host=".$host." -port=".$port." -path=".$path;
         chdir(AJXP_INSTALL_PATH.DIRECTORY_SEPARATOR.AJXP_PLUGINS_FOLDER.DIRECTORY_SEPARATOR."core.mq");
         $process = AJXP_Controller::runCommandInBackground($cmd, null);
         if ($process != null) {

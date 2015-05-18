@@ -724,7 +724,7 @@ abstract class AbstractConfDriver extends AJXP_Plugin
                     if($original_id != $data["new_user_id"]){
                         throw new Exception(str_replace("%s", $data["new_user_id"], $mess["ajxp_conf.127"]));
                     }
-                    if (AuthService::userExists($data["new_user_id"])) {
+                    if (AuthService::userExists($data["new_user_id"],"w")) {
                         throw new Exception($mess["ajxp_conf.43"]);
                     }
                     $loggedUser = AuthService::getLoggedUser();
@@ -1112,7 +1112,7 @@ abstract class AbstractConfDriver extends AJXP_Plugin
                         case 'group':
                             $authGroups = AuthService::listChildrenGroups($baseGroup);
                             foreach ($authGroups as $gId => $gName) {
-                                $allGroups["AJXP_GRP_" . AuthService::filterBaseGroup($gId)] = $gName;
+                                $allGroups["AJXP_GRP_" . rtrim($baseGroup, "/")."/".ltrim($gId, "/")] = $gName;
                             }
                             break;
                         case 'role':
@@ -1122,7 +1122,7 @@ abstract class AbstractConfDriver extends AJXP_Plugin
                             $groups = array();
                             $authGroups = AuthService::listChildrenGroups($baseGroup);
                             foreach ($authGroups as $gId => $gName) {
-                                $groups["AJXP_GRP_" . AuthService::filterBaseGroup($gId)] = $gName;
+                                $groups["AJXP_GRP_" . rtrim($baseGroup, "/")."/".ltrim($gId, "/")] = $gName;
                             }
                             $roles = $this->getUserRoleList($loggedUser, $rolePrefix, $includeString, $excludeString, $listRoleType);
 
