@@ -44,7 +44,7 @@ class HomePagePlugin extends AbstractAccessDriver
                 $contribNode->removeChild($gettingStartedList->item(0));
             }else{
                 $cdata = $gettingStartedList->item(0)->firstChild;
-                $keys = array("URL_APP_IOSAPPSTORE", "URL_APP_ANDROID", "URL_APP_SYNC_WIN", "URL_APP_SYNC_MAC");
+                $keys = array("URL_APP_IOSAPPSTORE", "URL_APP_ANDROID");
                 $values = array();
                 foreach($keys as $k) $values[] = $this->getFilteredOption($k);
                 $newData = str_replace($keys, $values, $cdata->nodeValue);
