@@ -50,7 +50,7 @@ class AJXP_Controller
      */
     private static function initXPath($useCache = false)
     {
-        if (!isSet(self::$xPath)) {
+        if (!isSet(self::$xPath) || !self::$xPath->query("actions/action[@name='ls']")->length) {
             $registry = ConfService::getFilteredXMLRegistry(false, false, $useCache);
             self::$xPath = new DOMXPath($registry);
         }
@@ -261,6 +261,7 @@ class AJXP_Controller
         } else {
             if(isSet($result)) return $result;
         }
+
         return null;
     }
 
