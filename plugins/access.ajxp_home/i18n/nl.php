@@ -43,26 +43,25 @@ $mess=array(
 "57"=> "Download APPLICATION_TITLE voor...",
 "58"=> "Android",
 "59"=> "iPhone/iPad",
-    "60"=>"Mac OS",
-    "61"=>"Windows",
-    "62"=>"<h2>Aan de slag</h2>
-            Deze video is een introductie voor de APPLICATION_TITLE web applicatie:
-            <ul>
-                <li>Dashboard</li>
-                <li>GUI Overzicht</li>
-                <li>Beheer bestanden en mappen</li>
-                <li>Preview en wijzig bestanden</li>
-                <li>Snel toegang tot favorieten en de zoekmachine</li>
-                <li>Selectie wagen</li>
-            </ul>",
-    "66"=>"<h2>Gebruik van APPLICATION_TITLE op een iOS apparaat</h2>
-                            Deze video laat zien hoe de APPLICATION_TITLE applicatie werkt (beschikbaar in de App Store). Het proces is bijna gelijk aan de Android versie.
-<ul><li>Setup de server verbinding</li>
-<li>Navigeer door de bestandenen</li>
-<li>Houdt bestanden offline en interactie met externe applicaties mogelijk</li>
-<li>Bescherm de app met een PIN-code</li>
-<li>Gebruik favorieten en zoekmachine</li></ul>",
+"60"=>"Mac OS",
+"61"=>"Windows",
+"62"=>"<h2>Aan de slag</h2>
+    Deze video is een introductie voor de APPLICATION_TITLE web applicatie:
+    <ul>
+        <li>Dashboard</li>
+        <li>GUI Overzicht</li>
+        <li>Beheer bestanden en mappen</li>
+        <li>Preview en wijzig bestanden</li>
+        <li>Snel toegang tot favorieten en de zoekmachine</li>
+        <li>Selectie wagen</li>
+    </ul>",
+"66"=>"<h2>Gebruik van APPLICATION_TITLE op een iOS apparaat</h2>
+    Deze video laat zien hoe de APPLICATION_TITLE applicatie werkt (beschikbaar in de App Store). Het proces is bijna gelijk aan de Android versie.
+    <ul>
+        <li>Setup de server verbinding</li>
+        <li>Navigeer door de bestandenen</li>
+        <li>Houdt bestanden offline en interactie met externe applicaties mogelijk</li>
+        <li>Gebruik de zoekmachine</li>
+    </ul>",
 "67"=> "Als je niet %s bent, %logout.",
-
 );
-
