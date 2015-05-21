@@ -21,6 +21,14 @@
 
 defined('AJXP_EXEC') or die('Access not allowed');
 
+function get_scripts($list) {
+
+    foreach($list as $index => $script){
+        $scripts[$index] = '<script src="'.CLIENT_RESOURCES_FOLDER.'/'.preg_replace('/\n/', '', $script).'"></script>' . "\n";
+    }
+    return implode("", $scripts);
+}
+
 /**
  * User Interface main implementation
  * @package AjaXplorer_Plugins
@@ -200,7 +208,7 @@ class AJXP_ClientDriver extends AJXP_Plugin
                 if( !empty($additionalFrameworks) ){
                     $frameworkList = explode(",", $additionalFrameworks);
                     foreach($frameworkList as $index => $framework){
-                        $frameworkList[$index] = '<script language="javascript" type="text/javascript" src="'.$framework.'"></script>'."\n";
+                        $frameworkList[$index] = '<script src="'.$framework.'"></script>'."\n";
                     }
                     $ADDITIONAL_FRAMEWORKS = implode("", $frameworkList);
                 }
@@ -220,6 +228,8 @@ class AJXP_ClientDriver extends AJXP_Plugin
                     }
                     $content = str_replace("MENUBALK", implode("\n", file(AJXP_INSTALL_PATH."/".AJXP_THEME_FOLDER."/html/menubalk.html")), $content);
                     $content = str_replace("AJXP_ADDITIONAL_JS_FRAMEWORKS", $ADDITIONAL_FRAMEWORKS, $content);
+                    $content = str_replace("JS_BOOT_LIBS", get_scripts(file(AJXP_INSTALL_PATH."/".CLIENT_RESOURCES_FOLDER."/js/ajaxplorer_boot_list.txt")), $content);
+                    $content = str_replace("JS_LIBS", get_scripts(file(AJXP_INSTALL_PATH."/".CLIENT_RESOURCES_FOLDER."/js/ajaxplorer_list.txt")), $content);
                     $content = AJXP_XMLWriter::replaceAjxpXmlKeywords($content, false);
                     $content = str_replace("AJXP_REBASE", isSet($START_PARAMETERS["REBASE"])?'<base href="'.$START_PARAMETERS["REBASE"].'"/>':"", $content);
                     if ($JSON_START_PARAMETERS) {

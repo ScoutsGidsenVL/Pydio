@@ -180,7 +180,7 @@ Class.create("ActionsToolbar", AjxpPane, {
         div.id = 'leesrechten';
         div.style.display = 'inline-block';
         div.style.position = 'relative';
-        div.style.top = '-7px';
+        div.style.top = '7px';
         div.style.left = '13px';
         div.innerHTML = 'Je hebt enkel leesrechten op deze bestanden.';
         this.element.appendChild(div);
