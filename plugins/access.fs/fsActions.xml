@@ -409,10 +409,8 @@
 
           var params = $H({get_action:"send_mail"});
           params.set('subject', '[.Org - ' + repo.label + '] ' + selected.getLabel());
-          params.set('message', '<p>' + ajaxplorer.user.getPreference('USER_DISPLAY_NAME') + ' heeft <a href=' + link + '>' + selected.getLabel() + '</a> gedeeld met ' + repo.label + '.</p>' + CKEDITOR.instances.email_area.getData());
-            params.set('emails[]', [
-              /*ajaxplorer.repositoryId + '@scoutsengidsenvlaanderen.org'*/
-              'tvl+' + ajaxplorer.repositoryId + '@scoutsengidsenvlaanderen.be']);
+          params.set('message', CKEDITOR.instances.email_area.getData() + '<p>' + ajaxplorer.user.getPreference('USER_DISPLAY_NAME') + ' heeft <a href=' + link + '>' + selected.getLabel() + '</a> gedeeld met ' + repo.label + '.</p>');
+          params.set('emails[]', [ajaxplorer.repositoryId + '@scoutsengidsenvlaanderen.org']);
           params.set('link', link);
 
           var connexion = new Connexion();

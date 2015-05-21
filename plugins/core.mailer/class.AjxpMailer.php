@@ -97,10 +97,6 @@ class AjxpMailer extends AJXP_Plugin
         }
         $body = str_replace("AJXP_MAIL_SUBJECT", $subject, $body);
         $this->sendMailImpl($recipients, $subject, $body, $from, $images);
-        if (AJXP_SERVER_DEBUG) {
-            $line = "------------------------------------------------------------------------\n";
-            file_put_contents($this->mailCache, $line."Sending mail from ".print_r($from, true)." to ".print_r($recipients, true)."\nSubject: $subject\nBody:\n$rowBody\n", FILE_APPEND);
-        }
     }
 
     protected function sendMailImpl($recipients, $subject, $body, $from = null, $images = array())

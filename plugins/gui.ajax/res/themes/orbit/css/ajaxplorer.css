@@ -2058,11 +2058,8 @@ a.carousel-disabled{
     background-color: transparent;
 }
 
-a.carousel-control img{
-}
-
 #content_pane{
-    background-color: rgba(255, 255, 255, 0.93); /*#FFF*/
+    background-color: #FFF;
 }
 
 #content_pane div.panelHeader,

@@ -138,9 +138,8 @@
     padding: 20px 43px;
 }
 
-#workspaces_list li.selected{
-    background-color: rgba(227, 93, 82, 0.7) !important;
-    color: white;
+#workspaces_list li.selected {
+    background-color: rgba(198, 215, 50, 0.9) !important; /* #BDD732 */
 }
 
 #workspaces_list li:last-of-type {
