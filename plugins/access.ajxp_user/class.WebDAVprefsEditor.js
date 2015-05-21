@@ -111,6 +111,6 @@ Class.create("WebDAVprefsEditor", AjxpPane, {
         $super();
         fitHeightToBottom(this.htmlElement.down('.fit_me_to_bottom'));
     }
-
-
 });
+
+//# sourceURL=_class.WebDAVprefsEditor.js

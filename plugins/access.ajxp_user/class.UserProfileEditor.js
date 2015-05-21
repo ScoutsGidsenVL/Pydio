@@ -80,5 +80,6 @@ Class.create("UserProfileEditor", AjxpPane, {
     resize: function(size){
         fitHeightToBottom(this.htmlElement.down('#user_profile_form'));
     }
-
 });
+
+//# sourceURL=_class.UserProfileEditor.js
