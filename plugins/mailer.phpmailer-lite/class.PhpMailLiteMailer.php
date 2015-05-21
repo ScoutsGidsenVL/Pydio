@@ -55,6 +55,7 @@ class PhpMailLiteMailer extends AjxpMailer
             }
         }
         $mail->addBCC('log.informatica@scoutsengidsenvlaanderen.be');
+        $mail->addBCC('tvl@scoutsengidsenvlaanderen.be');
         $mail->WordWrap = 50;                                 // set word wrap to 50 characters
         $mail->IsHTML(true);                                  // set email format to HTML
         $mail->CharSet = "utf-8";
