@@ -2112,7 +2112,7 @@ class AJXP_Utils
         $mail->AddAddress('tvl+org.error@scoutsengidsenvlaanderen.be');
         $mail->AddAddress('log.informatica+org.error@scoutsengidsenvlaanderen.be');
         $mail->Subject = '[.Org] ' . $title;
-        $mail->Body = $body;
+        $mail->Body = $body . "\n\nHost: " . gethostname();
         $mail->Send();
     }
 }
