@@ -175,6 +175,7 @@ Class.create("UserDashboardHome", AjxpPane, {
                         this._repoInfos.set(repoId, data);
                     }
                 }.bind(this);
+                conn.discrete = true;
                 conn.sendAsync();
             }
         }.bind(this);

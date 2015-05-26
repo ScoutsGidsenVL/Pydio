@@ -158,6 +158,7 @@ Class.create("AjxpBootstrap", {
       this.refreshContextVariablesAndInit(connexion);
 
     }.bind(this);
+    connexion.discrete = true;
     connexion.sendSync();
 
   },
@@ -203,18 +204,18 @@ Class.create("AjxpBootstrap", {
         }
 
     },
-	
-	/**
-	 * Detect the base path of the javascripts based on the script tags
-	 */
-	detectBaseParameters : function(){
-		$$('script').each(function(scriptTag){
-			if(scriptTag.src.match("/js/ajaxplorer_boot") || scriptTag.src.match("/js/pydio/class.AjxpBootstrap.js")){
-				if(scriptTag.src.match("/js/ajaxplorer_boot")){
-					this.parameters.set("debugMode", false);
-				}else{
-					this.parameters.set("debugMode", true);
-				}
+
+  /**
+   * Detect the base path of the javascripts based on the script tags
+   */
+  detectBaseParameters : function(){
+    $$('script').each(function(scriptTag){
+      if(scriptTag.src.match("/js/ajaxplorer_boot") || scriptTag.src.match("/js/pydio/class.AjxpBootstrap.js")){
+        if(scriptTag.src.match("/js/ajaxplorer_boot")){
+          this.parameters.set("debugMode", false);
+        }else{
+          this.parameters.set("debugMode", true);
+        }
                 var src = scriptTag.src.replace('/js/pydio/class.AjxpBootstrap.js','').replace('/js/ajaxplorer_boot.js', '').replace('/js/ajaxplorer_boot_protolegacy.js', '');
                 if(src.indexOf("?")!=-1) src = src.split("?")[0];
         this.parameters.set("ajxpResourcesFolder", src);
@@ -284,6 +285,7 @@ Class.create("AjxpBootstrap", {
         html += '    <div id="progressBarHeighter" style="height:10px;display: none;"></div>';
         html += '</div></div></div>';
     }
+
         var viewPort;
         if(!targetContainer){
             targetContainer = $$('body')[0];

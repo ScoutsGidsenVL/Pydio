@@ -6486,15 +6486,17 @@ span.first-bread em {
     visibility:visible;
 }
 
-
 #AjxpConnexion-loader{
+    display: hidden;
     left: 49% !important;
     top: 35% !important;
-    width: 40px;
+    width: 50px;
+    padding: 21px 26px 20px;
+    background-color: rgba(34, 34, 34, 0.5);
 }
 
 #AjxpConnexion-loader img{
-    display: none;
+    width: 100%;
 }
 
 #ajxp_link_form span.icon-envelope-alt {
