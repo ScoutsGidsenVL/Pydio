@@ -84,31 +84,37 @@ class sgvAuthDriver extends AbstractAuthDriver
             return;
         }
 
-        try {
-            $lidGegevens = $this->ga->lidGegevensV3($userObject->id, true, null, null, true);
-        } catch (Exception $e) {
-            throw new Exception("Probleem met de koppeling met de groepsadministratie.\n\n".$e->getMessage());
-        }
+        $last_update = $userObject->personalRole->filterParameterValue("core.conf", "last_update", 'AJXP_REPO_SCOPE_ALL', 0);
+        $outdated = $last_update + 60 < time();
 
-        $name = $lidGegevens->voornaam . ' ' . $lidGegevens->naam;
-        $email = $lidGegevens->emailadres;
+        if ($outdated) {
+            try {
+                $lidGegevens = $this->ga->lidGegevensV3($userObject->id, true, null, null, true);
+            } catch (Exception $e) {
+                throw new Exception("Probleem met de koppeling met de groepsadministratie.\n\n".$e->getMessage());
+            }
 
-        $userObject->personalRole->setParameterValue("core.conf", "USER_DISPLAY_NAME", $name);
-        $userObject->personalRole->setParameterValue("core.conf", "email", $email);
-        $userObject->personalRole->clearAcls();
+            $name = $lidGegevens->voornaam . ' ' . $lidGegevens->naam;
+            $email = $lidGegevens->emailadres;
 
-        $gebruikersgroepen = $lidGegevens->gebruikersgroepen->gebruikersgroep;
-        if ($gebruikersgroepen !== null) {
-            foreach ($gebruikersgroepen as $gebruikersgroep) {
-                if (preg_match('/^[A-Z][0-9]{4}[A-Z]/', $gebruikersgroep->id)) {
-                    $naam = $gebruikersgroep->naam;
-                    if ($naam === strtoupper($naam) || $naam === strtolower($naam)) {
-                        $naam = ucwords(strtolower(str_replace('_', ' ', $naam)));
-                    }
-                    $enabled = $this->updateWorkspace($gebruikersgroep->id, $naam);
-                    if ($enabled) {
-                        $recht = isset($gebruikersgroep->beheersrecht) ? 'rw': 'r';
-                        $userObject->personalRole->setAcl($gebruikersgroep->id, $recht);
+            $userObject->personalRole->setParameterValue("core.conf", "USER_DISPLAY_NAME", $name);
+            $userObject->personalRole->setParameterValue("core.conf", "email", $email);
+            $userObject->personalRole->setParameterValue("core.conf", "last_update", time());
+            $userObject->personalRole->clearAcls();
+
+            $gebruikersgroepen = $lidGegevens->gebruikersgroepen->gebruikersgroep;
+            if ($gebruikersgroepen !== null) {
+                foreach ($gebruikersgroepen as $gebruikersgroep) {
+                    if (preg_match('/^[A-Z][0-9]{4}[A-Z]/', $gebruikersgroep->id)) {
+                        $naam = $gebruikersgroep->naam;
+                        if ($naam === strtoupper($naam) || $naam === strtolower($naam)) {
+                            $naam = ucwords(strtolower(str_replace('_', ' ', $naam)));
+                        }
+                        $enabled = $this->updateWorkspace($gebruikersgroep->id, $naam);
+                        if ($enabled) {
+                            $recht = isset($gebruikersgroep->beheersrecht) ? 'rw': 'r';
+                            $userObject->personalRole->setAcl($gebruikersgroep->id, $recht);
+                        }
                     }
                 }
             }
@@ -149,6 +155,7 @@ class sgvAuthDriver extends AbstractAuthDriver
 
         $repo->options["META_SOURCES"] = array(); // clear old meta settings
         $repo->options["META_SOURCES"]["meta.git"] = array(); // (re)activate the git plugin
+        $repo->options["META_SOURCES"]["index.lucene"] = array("index_content" => true, "index_meta_fields" => "", "repository_specific_keywords" => "");
 
         ConfService::replaceRepository($workspace_id, $repo);
 
