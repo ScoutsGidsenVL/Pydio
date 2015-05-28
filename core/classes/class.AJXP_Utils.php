@@ -2099,6 +2099,7 @@ class AJXP_Utils
         $ignored_messages = array(
             'You are not allowed to access this resource.',
             'Probleem met de koppeling met de groepsadministratie.',
+            'De zoekopdracht moet beginnen met',
             'wachtwoord-verplicht');
         foreach($ignored_messages as $ignored) {
             if (strpos($body, $ignored) !== false) {

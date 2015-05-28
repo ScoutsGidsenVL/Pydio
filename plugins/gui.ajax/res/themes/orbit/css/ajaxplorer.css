@@ -1638,10 +1638,6 @@ div.dialogBox.form-diaporama_box div.dialogContent{
     display:none;
 }
 
-#toolbars
-{
-}
-
 .toolbars_separator
 {
     border-bottom: 1px solid #fff;
@@ -1672,7 +1668,6 @@ div#navigation_toolbar {
     background-color: transparent;
     letter-spacing: 1px; /* Old browsers */   /* FF3.6+ */   /* Chrome,Safari4+ */   /* Chrome10+,Safari5.1+ */   /* Opera 11.10+ */   /* IE10+ */   /* W3C */   /* IE6-9 */; /* Old browsers */   /* FF3.6+ */   /* Chrome,Safari4+ */   /* Chrome10+,Safari5.1+ */   /* Opera 11.10+ */   /* IE10+ */   /* W3C */   /* IE6-9 */;
 }
-
 
 .dialogTitle{
     /*
@@ -2073,9 +2068,6 @@ div.class-FetchedResultPane > div.panelHeader
     border: 0 !important;
 }
 
-#navigation_pane,#notif_pane{
-}
-
 #navigation_pane div.thumbnail_selectable_cell.detailed > div.thumbnail_selectable_cell{
     display: none;
 }
@@ -2135,6 +2127,10 @@ div.class-FetchedResultPane > div.panelHeader
 #topPane span.expand_label_hide,
 #topPane small.expand_button_hide span.expand_label_show,
 #topPane small.expand_button_hide span.expand_label_hide {
+    display: none;
+}
+
+#navigation_shared {
     display: none;
 }
 

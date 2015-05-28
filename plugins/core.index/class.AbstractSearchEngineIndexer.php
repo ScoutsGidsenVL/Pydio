@@ -27,6 +27,10 @@ abstract class AbstractSearchEngineIndexer extends AJXP_AbstractMetaSource {
      */
     protected function extractIndexableContent($ajxpNode){
 
+        if (is_dir($ajxpNode->getUrl())) {
+            return null;
+        }
+
         $ext = strtolower(pathinfo($ajxpNode->getLabel(), PATHINFO_EXTENSION));
         if (in_array($ext, explode(",",$this->getFilteredOption("PARSE_CONTENT_TXT")))) {
             return file_get_contents($ajxpNode->getUrl());
@@ -49,6 +53,8 @@ abstract class AbstractSearchEngineIndexer extends AJXP_AbstractMetaSource {
                 register_shutdown_function("unlink", $newTarget);
             }
             $output = array();
+
+            $this->logInfo(__FUNCTION__, 'Txt command: '.$unoconv);
             exec($unoconv, $output, $return);
             if (!$pipe) {
                 $out = implode("\n", $output);
@@ -67,10 +73,14 @@ abstract class AbstractSearchEngineIndexer extends AJXP_AbstractMetaSource {
             }
             $cmd = $pdftotext." ".escapeshellarg($realFile)." -";
             $output = array();
+            $this->logInfo(__FUNCTION__, 'Pdf command: '.$cmd);
             exec($cmd, $output, $return);
             $out = implode("\n", $output);
+            $this->logInfo(__FUNCTION__, 'Pdf out: '.strlen($out));
             $enc = 'UTF8';
-            $asciiString = iconv($enc, 'ASCII//TRANSLIT//IGNORE', $out);
+            ini_set('mbstring.substitute_character', "none");
+            $asciiString = mb_convert_encoding(mb_convert_encoding($out, $enc, $enc), $enc, 'ASCII');
+            $this->logInfo(__FUNCTION__, 'Pdf asciiString: '.strlen($asciiString));
             return $asciiString;
         }
         return null;
@@ -135,4 +145,4 @@ abstract class AbstractSearchEngineIndexer extends AJXP_AbstractMetaSource {
         return $repositoryId.$specificId;
     }
 
-} 
+}

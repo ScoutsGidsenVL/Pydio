@@ -142,7 +142,7 @@ class Zend_Search_Lucene_Search_Query_Wildcard extends Zend_Search_Lucene_Search
 
         if ($prefixLength < self::$_minPrefixLength) {
             require_once 'Zend/Search/Lucene/Exception.php';
-            throw new Zend_Search_Lucene_Exception('At least ' . self::$_minPrefixLength . ' non-wildcard characters are required at the beginning of pattern.');
+            throw new Zend_Search_Lucene_Exception('De zoekopdracht moet beginnen met minstens ' . self::$_minPrefixLength . ' (gewone) karakters.');
         }
 
         /** @todo check for PCRE unicode support may be performed through Zend_Environment in some future */
