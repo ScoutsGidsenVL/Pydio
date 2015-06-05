@@ -604,7 +604,7 @@ class AbstractAccessDriver extends AJXP_Plugin
                 if(strcasecmp($search, $pathParts["extension"]) == 0) return true;
             }
         }
-        return false;
+        return substr($pathParts["basename"], 0, 2) === "~$";
     }
 
     public function filterFolder($folderName, $compare = "equals")
