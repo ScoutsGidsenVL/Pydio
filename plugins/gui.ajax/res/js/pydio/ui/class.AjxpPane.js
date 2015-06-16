@@ -21,32 +21,32 @@
 /**
  * Abstract container any type of pane that can resize
  */
-Class.create("AjxpPane", {	
-	
-	__implements : "IAjxpWidget",
+Class.create("AjxpPane", {
+
+  __implements : "IAjxpWidget",
     childrenPanes : null,
-	
-	/**
-	 * Constructor
-	 * @param htmlElement HTMLElement The Node anchor
-	 * @param options Object The pane parameters
-	 */
-	initialize : function(htmlElement, options){
-		this.htmlElement = $(htmlElement);
-		if(!this.htmlElement){
-			throw new Error('Cannot find element for AjxpPane : ' + this.__className);
-		}
-		this.options = options || {};
-		this.htmlElement.ajxpPaneObject = this;
-		if(this.htmlElement.getAttribute('ajxpPaneHeader')){
-			this.addPaneHeader(
-				this.htmlElement.getAttribute('ajxpPaneHeader'), 
-				this.htmlElement.getAttribute('ajxpPaneIcon'));
-		}
+
+  /**
+   * Constructor
+   * @param htmlElement HTMLElement The Node anchor
+   * @param options Object The pane parameters
+   */
+  initialize : function(htmlElement, options){
+    this.htmlElement = $(htmlElement);
+    if(!this.htmlElement){
+      throw new Error('Cannot find element for AjxpPane : ' + this.__className);
+    }
+    this.options = options || {};
+    this.htmlElement.ajxpPaneObject = this;
+    if(this.htmlElement.getAttribute('ajxpPaneHeader')){
+      this.addPaneHeader(
+        this.htmlElement.getAttribute('ajxpPaneHeader'),
+        this.htmlElement.getAttribute('ajxpPaneIcon'));
+    }
         if(this.htmlElement && this.options.elementStyle){
             this.htmlElement.setStyle(this.options.elementStyle);
         }
-		this.scanChildrenPanes(this.htmlElement, true);
+    this.scanChildrenPanes(this.htmlElement, true);
         if(this.options.bindSizeTo){
             this.boundSizeEvents = $H();
             if(this.options.bindSizeTo.width){
@@ -99,23 +99,10 @@ Class.create("AjxpPane", {
             this.scrollbar = new Control.ScrollBar(this.htmlElement,this.scroller, {fixed_scroll_distance:50});
         }
 
-        var cPref = this.getUserPreference('rootElementClassPreference');
-        if(cPref){
-            if(Object.isString(cPref))cPref= {className:cPref};
-            var cName = cPref['className'];
-            if(cName){
-                if(cName[0] == '!'){
-                    cName = cName.substring(1);
-                    this.htmlElement.removeClassName(cName);
-                }else{
-                    this.htmlElement.addClassName(cName);
-                }
-                if(cPref['externalButtonId'] && $(cPref['externalButtonId'])){
-                    $(cPref['externalButtonId']).toggleClassName(cPref['externalButtonClassName'])
-                }
-            }
+        this.htmlElement.removeClassName("show_first_level");
+        if($("folders_pane_expander")){
+            $("folders_pane_expander").toggleClassName("expand_button_hide")
         }
-
     },
 
     parseComponentConfig: function(domNode){
@@ -198,30 +185,30 @@ Class.create("AjxpPane", {
         return original;
     },
 
-	/**
-	 * Called when the pane is resized
-	 */
-	resize : function(){		
-		// Default behaviour : resize children
-    	if(this.options.fit && this.options.fit == 'height'){
-    		var marginBottom = 0;
-    		if(this.options.fitMarginBottom){
-    			var expr = this.options.fitMarginBottom;
-    			try{marginBottom = parseInt(eval(expr));}catch(e){}
-    		}
+  /**
+   * Called when the pane is resized
+   */
+  resize : function(){
+    // Default behaviour : resize children
+      if(this.options.fit && this.options.fit == 'height'){
+        var marginBottom = 0;
+        if(this.options.fitMarginBottom){
+          var expr = this.options.fitMarginBottom;
+          try{marginBottom = parseInt(eval(expr));}catch(e){}
+        }
             var minOffsetTop = 0;
             if(this.options.fitMinOffsetTop){
                 var expr2 = this.options.fitMinOffsetTop;
                 try{minOffsetTop = parseInt(eval(expr2));}catch(e){}
             }
-    		fitHeightToBottom(this.htmlElement, this.options.fitParent, marginBottom, false, minOffsetTop);
+        fitHeightToBottom(this.htmlElement, this.options.fitParent, marginBottom, false, minOffsetTop);
             if(this.scrollbar){
                 this.scroller.setStyle({
                     height:this.htmlElement.getHeight() + 'px'
                 });
                 this.scrollbar.recalculateLayout();
             }
-    	}
+      }
         if(this.options.flexTo){
             var parentWidth = $(this.options.flexTo).getWidth();
             var siblingWidth = 0;
@@ -255,20 +242,20 @@ Class.create("AjxpPane", {
                 this.htmlElement.removeClassName('fit_background_height');
             }
         }
-    	this.childrenPanes.invoke('resize');
-	},
-	
-	/**
-	 * Implementation of the IAjxpWidget methods
-	 */	
-	getDomNode : function(){
-		return this.htmlElement;
-	},
-	
-	/**
-	 * Implementation of the IAjxpWidget methods
-	 */	
-	destroy : function(){
+      this.childrenPanes.invoke('resize');
+  },
+
+  /**
+   * Implementation of the IAjxpWidget methods
+   */
+  getDomNode : function(){
+    return this.htmlElement;
+  },
+
+  /**
+   * Implementation of the IAjxpWidget methods
+   */
+  destroy : function(){
         this.childrenPanes.each(function(child){
             child.destroy();
         });
@@ -277,7 +264,7 @@ Class.create("AjxpPane", {
         if(window[this.htmlElement.id]){
             try{delete window[this.htmlElement.id];}catch(e){}
         }
-		this.htmlElement = null;
+    this.htmlElement = null;
         if(this.boundSizeEvents){
             this.boundSizeEvents.each(function(pair){
                 document.stopObserving(pair.key, pair.value);
@@ -299,48 +286,48 @@ Class.create("AjxpPane", {
         if(this.configObserver){
             document.stopObserving("ajaxplorer:component_config_changed", this.configObserver);
         }
-	},
+  },
 
     /**
      * Find and reference direct children IAjxpWidget
      * @param element HTMLElement
      * @param reset Clear existing children
      */
-	scanChildrenPanes : function(element, reset){
+  scanChildrenPanes : function(element, reset){
         if(!element.childNodes) return;
         if(reset) this.childrenPanes = $A();
-		$A(element.childNodes).each(function(c){
-			if(c.ajxpPaneObject) {
-				if(!this.childrenPanes){
+    $A(element.childNodes).each(function(c){
+      if(c.ajxpPaneObject) {
+        if(!this.childrenPanes){
                     this.childrenPanes = $A();
                 }
                 this.childrenPanes.push(c.ajxpPaneObject);
-			}else{
-				this.scanChildrenPanes(c);
-			}
-		}.bind(this));
-	},
-	
-	/**
-	 * Show the main html element
-	 * @param show Boolean
-	 */
-	showElement : function(show){
-		if(show){
-			this.htmlElement.show();
+      }else{
+        this.scanChildrenPanes(c);
+      }
+    }.bind(this));
+  },
+
+  /**
+   * Show the main html element
+   * @param show Boolean
+   */
+  showElement : function(show){
+    if(show){
+      this.htmlElement.show();
             if(this.childrenPanes) this.childrenPanes.invoke('showElement', show);
-		}else{
+    }else{
             if(this.childrenPanes) this.childrenPanes.invoke('showElement', show);
-			this.htmlElement.hide();
-		}
-	},
-	
-	/**
-	 * Adds a simple haeder with a title and icon
-	 * @param headerLabel String The title
-	 * @param headerIcon String Path for the icon image
-	 */
-	addPaneHeader : function(headerLabel, headerIcon){
+      this.htmlElement.hide();
+    }
+  },
+
+  /**
+   * Adds a simple haeder with a title and icon
+   * @param headerLabel String The title
+   * @param headerIcon String Path for the icon image
+   */
+  addPaneHeader : function(headerLabel, headerIcon){
         var label = new Element('span', {ajxp_message_id:headerLabel}).update(MessageHash[headerLabel]);
         var header = new Element('div', {className:'panelHeader'}).update(label);
         var ic;
@@ -358,8 +345,8 @@ Class.create("AjxpPane", {
                 window[sp]["fold"]();
             });
         }
-		this.htmlElement.insert({top : header});
-		disableTextSelection(header);
+    this.htmlElement.insert({top : header});
+    disableTextSelection(header);
 
         if(this.options.headerToolbarOptions){
             var tbD = new Element('div', {id:"display_toolbar"});
@@ -369,15 +356,15 @@ Class.create("AjxpPane", {
 
 
     },
-	
-	/**
-	 * Sets a listener when the htmlElement is focused to notify ajaxplorer object
-	 */
-	setFocusBehaviour : function(){
-		this.htmlElement.observe("click", function(){
-			if(ajaxplorer) ajaxplorer.focusOn(this);
-		}.bind(this));
-	},
+
+  /**
+   * Sets a listener when the htmlElement is focused to notify ajaxplorer object
+   */
+  setFocusBehaviour : function(){
+    this.htmlElement.observe("click", function(){
+      if(ajaxplorer) ajaxplorer.focusOn(this);
+    }.bind(this));
+  },
 
     toggleClassNameSavingPref:function(className, externalButtonId, externalButtonClassName){
         var invert = false;
