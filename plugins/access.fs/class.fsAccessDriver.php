@@ -860,7 +860,6 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
                 if(!isSet($dir) || $dir == "/") $dir = "";
                 $lsOptions = $this->parseLsOptions((isSet($httpVars["options"])?$httpVars["options"]:"a"));
 
-                $startTime = microtime();
                 $dir = AJXP_Utils::securePath($dir);
                 $path = $this->urlBase.($dir!= ""?($dir[0]=="/"?"":"/").$dir:"");
                 $nonPatchedPath = $path;
@@ -1140,8 +1139,6 @@ class fsAccessDriver extends AbstractAccessDriver implements AjxpWrapperProvider
                         AJXP_XMLWriter::renderAjxpNode($recycleNode);
                     }
                 }
-
-                $this->logDebug("LS Time : ".intval((microtime()-$startTime)*1000)."ms");
 
                 AJXP_XMLWriter::close();
 
