@@ -176,3 +176,5 @@ Class.create("AjxpMqObserver", {
     }
 
 });
+
+//# sourceURL=class.AjxpMqObserver.js
