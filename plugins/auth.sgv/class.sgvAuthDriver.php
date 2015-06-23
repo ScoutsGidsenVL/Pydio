@@ -72,8 +72,6 @@ class sgvAuthDriver extends AbstractAuthDriver
 
     public function updateUserObject(&$userObject){
 
-        $this->logInfo(__FUNCTION__, 'User id: ' . $userObject->id);
-
         parent::updateUserObject($userObject);
 
         if ($userObject->id === 'admin') {
@@ -85,9 +83,11 @@ class sgvAuthDriver extends AbstractAuthDriver
         }
 
         $last_update = $userObject->personalRole->filterParameterValue("core.conf", "last_update", 'AJXP_REPO_SCOPE_ALL', 0);
-        $outdated = $last_update + 60 < time();
+        $outdated = $last_update + 300 < time();
 
         if ($outdated) {
+            $this->logInfo(__FUNCTION__, 'User id: ' . $userObject->id);
+
             try {
                 $lidGegevens = $this->ga->lidGegevensV3($userObject->id, true, null, null, true);
             } catch (Exception $e) {
