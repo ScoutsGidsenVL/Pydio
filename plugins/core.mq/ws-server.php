@@ -75,7 +75,7 @@ class AjaxplorerSocketServer implements IWebSocketServerObserver
 {
     protected $debug = true;
     protected $server;
-    public static $ADMIN_KEY = "adminsecretkey";
+    public static $ADMIN_KEY = "GuzULQcO";
     protected $host;
     protected $port;
     protected $path;
@@ -83,9 +83,13 @@ class AjaxplorerSocketServer implements IWebSocketServerObserver
     public function __construct($host, $port, $path)
     {
         $this->host = $host;
+        $this->say("host: ".$host);
         $this->port = $port;
+        $this->say("port: ".$port);
         $this->path =  trim($path, "/");
-        $this->server = new WebSocketServer("tcp://{$host}:{$port}", self::$ADMIN_KEY);
+        $url = "tcp://{$host}:{$port}";
+        $this->say("url: ".$url);
+        $this->server = new WebSocketServer($url, self::$ADMIN_KEY);
         $this->server->addObserver($this);
         $this->server->addUriHandler($this->path, new AjaXplorerHandler());
     }
@@ -104,13 +108,22 @@ class AjaxplorerSocketServer implements IWebSocketServerObserver
          */
         $c = WebSocketFunctions::cookie_parse($h["Cookie"]);
 
-        $client = new HttpClient($this->host);
-        $client->cookies = $c;
-        $client->get("/{$this->path}/?get_action=ws_authenticate&key=".self::$ADMIN_KEY);
-        $registry = $client->getContent();
-        //$this->say("[ECHO] Registry loaded".$registry);
+        $url = "https://pydio-dev-tvl.scoutsengidsenvlaanderen.be/?get_action=ws_authenticate&key=".self::$ADMIN_KEY;
+        $this->say("url: ".$url);
+
+        $request = curl_init();
+        curl_setopt($request, CURLOPT_URL, $url);
+        curl_setopt($request, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
+        $output = curl_exec($request);
+        $reponse_code = curl_getinfo($request, CURLINFO_HTTP_CODE);
+        curl_close($request);
+        $this->say("output: ".$output);
+        $this->say("reponse_code: ".$reponse_code);
+
         $xml = new DOMDocument();
-        $xml->loadXML($registry);
+        $xml->loadXML($output);
+        //$this->say($xml->saveHTML());
         $xPath = new DOMXPath($xml);
         $err = $xPath->query("//message[@type='ERROR']");
         if ($err->length) {
