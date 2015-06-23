@@ -33,8 +33,9 @@ setInterval(update_account, 100);
 
 function update_vertical_splitter() {
   var vertical_splitter = document.querySelector('#vertical_splitter');
-  if (vertical_splitter) {
-    var in_use = document.querySelector('#files_list_header').clientHeight;
+  var file_list_header = document.querySelector('#files_list_header');
+  if (vertical_splitter && file_list_header) {
+    var in_use = file_list_header.clientHeight;
     vertical_splitter.style.cssText = 'height: calc(100% - ' + in_use + 'px) !important;';
   }
 }
