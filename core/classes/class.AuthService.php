@@ -223,7 +223,7 @@ class AuthService
     public static function suspectBruteForceLogin()
     {
         $loginAttempt = self::getBruteForceLoginArray();
-        return !self::checkBruteForceLogin($loginAttempt);
+        return FALSE; // !self::checkBruteForceLogin($loginAttempt);
     }
 
     public static function filterUserSensitivity($user)
