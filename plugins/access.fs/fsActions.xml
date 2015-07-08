@@ -385,12 +385,14 @@
       <processing>
         <clientCallback prepareModal="true"><![CDATA[
           function onLoad(oForm) {
-            oForm.down('em[id="email_file"]').innerHTML = ajaxplorer.getUserSelection().getUniqueNode().getLabel();
+            var repoId = ajaxplorer.repositoryId || (ajaxplorer.user ? ajaxplorer.user.activeRepository : null);
+            oForm.down('[id="gebruikersgroep"]').innerHTML = ajaxplorer.user.repositories.get(repoId).label;
+            oForm.down('[id="email_file"]').innerHTML = ajaxplorer.getUserSelection().getUniqueNode().getLabel();
 
             var box = document.getElementById('generic_dialog_box');
             box.style.cssText += 'width: initial !important;';
 
-            /* Double IDs :-( */
+            /* Duplicate IDs :-( */
             CKEDITOR.replace(box.querySelector('#email_area'));
           }
 
@@ -410,7 +412,9 @@
           var params = $H({get_action:"send_mail"});
           params.set('subject', '[.Org - ' + repo.label + '] ' + selected.getLabel());
           params.set('message', CKEDITOR.instances.email_area.getData() + '<p>' + ajaxplorer.user.getPreference('USER_DISPLAY_NAME') + ' heeft <a href=' + link + '>' + selected.getLabel() + '</a> gedeeld met ' + repo.label + '.</p>');
-          params.set('emails[]', [ajaxplorer.repositoryId + '@scoutsengidsenvlaanderen.org']);
+          var repoName = ajaxplorer.user.repositories.get(ajaxplorer.repositoryId).label;
+          var mailRepoName = repoName.toLowerCase().replace(/[\$#@~!&*()\[\];.,:?^ `'\\\/ ]+/g, '_');
+          params.set('emails[]', [mailRepoName + '_' + ajaxplorer.repositoryId + '@scoutsengidsenvlaanderen.org']);
           params.set('link', link);
 
           var connexion = new Connexion();
@@ -427,10 +431,17 @@
           // For firefox debugging: //# sourceURL=aaa_share.js
         ]]></clientCallback>
         <clientForm id="ajxp_email_form"><![CDATA[
+          <style>
+            #ajxp_email_form b {
+              display: inline-block;
+              width: 55px;
+            }
+          </style>
           <div id="ajxp_email_form" action="ajxp_email">
-              <p>Ben je zeker dat je <em id="email_file"></em> in een e-mail wilt sturen <b>naar alle gebruikers</b> van deze map?</p>
-              <p>Wil je nog een bericht meegeven?</p>
-              <textarea id="email_area" name="email_area"></textarea>
+            <p><b>Aan:</b> Alle gebruikers van <em id="gebruikersgroep"></em></p>
+            <p><b>Bestand:</b> <span id="email_file"></span></p>
+            <p><b>Bericht:</b></p>
+            <textarea id="email_area" name="email_area"></textarea>
           </div>
         ]]></clientForm>
       </processing>
