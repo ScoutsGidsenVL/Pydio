@@ -4,8 +4,7 @@ defined('AJXP_EXEC') or die('Access not allowed');
 
 require('SoapGroepsadmin.php');
 
-define('WSDL', 'https://groepsadmin-develop.scoutsengidsenvlaanderen.net/groepsadmin/webservice?wsdl');
-/* define('WSDL', 'https://groepsadmin.scoutsengidsenvlaanderen.be/groepsadmin/webservice?wsdl'); */
+define('WSDL', 'https://groepsadmin.scoutsengidsenvlaanderen.be/groepsadmin/webservice?wsdl');
 
 /**
  * @package AjaXplorer_Plugins
