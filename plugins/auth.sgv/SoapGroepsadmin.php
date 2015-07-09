@@ -17,7 +17,19 @@ class SoapGroepsadmin
     function __construct($wsdl, $applicatie, $debug = false)
     {
         $this->applicatie = $applicatie;
-        $this->soap_client = new SoapClient($wsdl, array('cache_wsdl' => WSDL_CACHE_NONE, 'features' => SOAP_SINGLE_ELEMENT_ARRAYS, 'location' => 'https://groepsadmin.scoutsengidsenvlaanderen.be/groepsadmin/webservice', 'trace' => $debug));
+        $this->soap_client = new SoapClient($wsdl, array(
+            'cache_wsdl' => WSDL_CACHE_NONE,
+            'features' => SOAP_SINGLE_ELEMENT_ARRAYS,
+            'location' => 'https://groepsadmin.scoutsengidsenvlaanderen.be/groepsadmin/webservice',
+            'trace' => $debug,
+            "stream_context" => stream_context_create(
+                array(
+                    'ssl' => array(
+                        'verify_peer'       => false,
+                        'verify_peer_name'  => false,
+                    )
+                )
+            )));
     }
 
     /**
