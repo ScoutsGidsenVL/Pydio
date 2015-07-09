@@ -5609,6 +5609,7 @@ span#alerts_number {
 
 .menu.menuDetails.workspacesMenu span.menu_label{
     margin-top: 0;
+    margin-left: 50px;
 }
 
 .menu.menuDetails.workspacesMenu li a{
