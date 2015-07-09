@@ -105,6 +105,24 @@
         }
         /* end Android targeting */
 
+        #header{
+          height: 105px;
+          background-color: #572600;
+          color: #FFF;
+        }
+
+        #header h1{
+          font-size: 20px;
+          margin: 0;
+          padding: 0;
+          padding-left: 10px;
+          padding-bottom: 10px;
+        }
+
+        #header td{
+          padding: 5px 10px;
+          vertical-align: bottom;
+        }
     </style>
 
     <!-- Targeting Windows Mobile -->
@@ -123,7 +141,20 @@
 <!-- Wrapper/Container Table: Use a wrapper table to control the width and the background color consistently of your email. Use this approach instead of setting attributes on the body tag. -->
 <table cellpadding="0" cellspacing="0" border="0" id="backgroundTable">
     <tr>
-        <td colspan="2"><br><br></td>
+      <td colspan="2">
+        <div id="header">
+          <table>
+            <tr>
+              <td>
+                <a href="/"><img src="https://www.scoutsengidsenvlaanderen.be/sites/all/themes/theme2014/assets/img/logo-small.png" alt="Scouts en Gidsen Vlaanderen" style="margin: 0; padding: 0; border: 0;" /></a>
+              </td>
+              <td>
+                <h1 style="color: #FFF !important;">.Org</h1>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
     </tr>
     <tr>
         <td style="width: 100px; padding-left: 30px;">
