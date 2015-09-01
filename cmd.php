@@ -69,10 +69,10 @@ if (!empty($optUser)) {
         // Consider "u" is a crypted version of u:p
         $optToken = $options["t"];
         $cKey = ConfService::getCoreConf("AJXP_CLI_SECRET_KEY", "conf");
-        if(empty($cKey)) $cKey = "\1CDAFx¨op#";
+        if (empty($cKey)) $cKey = "\1CDAFx¨op#";
         $optUser = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($optToken.$cKey), base64_decode($optUser), MCRYPT_MODE_ECB), "\0");
         $env = getenv("AJXP_SAFE_CREDENTIALS");
-        if(!empty($env)){
+        if (!empty($env)){
             $array = AJXP_Safe::getCredentialsFromEncodedString($env);
             if(isSet($array["user"]) && $array["user"] == $optUser){
                 unset($optToken);
@@ -138,7 +138,7 @@ if ($optRepoId !== false) {
                 $path
             );
             $parts = explode("AJXP_USER", $path);
-            if(count($parts) == 1) $parts[1] = "";
+            if (count($parts) == 1) $parts[1] = "";
             $first = str_replace("\\", "\\\\", $parts[0]);
             $last = str_replace("\\", "\\\\", $parts[1]);
             if (preg_match("/$first(.*)$last.*/", $optDetectUser, $matches)) {
