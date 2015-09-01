@@ -85,7 +85,7 @@ if (!empty($optUser)) {
         $nextUsers = explode(",", $optUser);
         $optUser = array_shift($nextUsers);
         $nextUsers = implode(",",$nextUsers);
-    } else if (strpos($optUser, "queue:") === 0) {
+    } elseif (strpos($optUser, "queue:") === 0) {
         $optUserQueue = substr($optUser, strlen("queue:"));
         $optUser = false;
         //echo("QUEUE : ".$optUserQueue);
@@ -195,7 +195,7 @@ if (AuthService::usersEnabled() && !empty($optUser)) {
 //Set language
 $loggedUser = AuthService::getLoggedUser();
 if($loggedUser != null && $loggedUser->getPref("lang") != "") ConfService::setLanguage($loggedUser->getPref("lang"));
-else if(isSet($_COOKIE["AJXP_lang"])) ConfService::setLanguage($_COOKIE["AJXP_lang"]);
+elseif(isSet($_COOKIE["AJXP_lang"])) ConfService::setLanguage($_COOKIE["AJXP_lang"]);
 $mess = ConfService::getMessages();
 
 // THIS FIRST DRIVERS DO NOT NEED ID CHECK
@@ -213,7 +213,7 @@ if ($xmlResult !== false && $xmlResult != "") {
     AJXP_XMLWriter::header();
     print($xmlResult);
     AJXP_XMLWriter::close();
-} else if (isset($requireAuth) && AJXP_Controller::$lastActionNeedsAuth) {
+} elseif (isset($requireAuth) && AJXP_Controller::$lastActionNeedsAuth) {
     AJXP_XMLWriter::header();
     AJXP_XMLWriter::requireAuth();
     AJXP_XMLWriter::close();
@@ -245,7 +245,7 @@ if (!empty($nextUsers) || !empty($nextRepositories) || !empty($optUserQueue) ) {
         }
     }
 
-} else if (isSet($optStatusFile)) {
+} elseif (isSet($optStatusFile)) {
 
     $status = explode(":", file_get_contents($optStatusFile));
     file_put_contents($optStatusFile, "FINISHED".(in_array("QUEUED", $status)?":QUEUED":""));
