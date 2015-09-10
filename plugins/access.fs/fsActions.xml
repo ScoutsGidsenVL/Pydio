@@ -412,9 +412,7 @@
           var params = $H({get_action:"send_mail"});
           params.set('subject', '[.Org - ' + repo.label + '] ' + selected.getLabel());
           params.set('message', CKEDITOR.instances.email_area.getData() + '<p>' + ajaxplorer.user.getPreference('USER_DISPLAY_NAME') + ' heeft <a href=' + link + '>' + selected.getLabel() + '</a> gedeeld met ' + repo.label + '.</p>');
-          var repoName = ajaxplorer.user.repositories.get(ajaxplorer.repositoryId).label;
-          var mailRepoName = repoName.toLowerCase().replace(/[\$#@~!&*()\[\];.,:?^ `'\\\/ ]+/g, '_');
-          params.set('emails[]', [mailRepoName + '_' + ajaxplorer.repositoryId + '@scoutsengidsenvlaanderen.org']);
+          params.set('emails[]', [get_email()]);
           params.set('link', link);
 
           var connexion = new Connexion();
@@ -519,53 +517,6 @@
                     <serverCallback methodName="switchAction" restParams="/node+" developerComment="For an item located inside the recycle bin, tries to find its original location and move it there.">
                         <input_param description="Path of the node inside the recycle bin" name="node" type="path" mandatory="true"/>
                     </serverCallback>
-        </processing>
-    </action>
-    <action name="rename">
-      <gui text="6" title="158" src="applix.png" accessKey="rename_access_key" iconClass="icon-pencil" hasAccessKey="true">
-        <context selection="true" dir="" recycle="hidden"
-          actionBar="true" contextMenu="true" infoPanel="false"
-          actionBarGroup="change_main" inZip="false">
-        </context>
-        <selectionContext dir="true" file="true" recycle="false" unique="true" image="false" editable="false"/></gui>
-      <rightsContext noUser="true" userLogged="only" read="true" write="true" adminOnly=""/>
-      <processing>
-        <clientCallback prepareModal="true"><![CDATA[
-            if(ajaxplorer.getUserSelection()){
-                var orig = ajaxplorer.getUserSelection().getSelectionSource();
-            }
-          var callback = function(node, newValue){
-            if(!node) node = ajaxplorer.getUserSelection().getUniqueNode();
-            var filename = node.getPath();
-            var conn = new Connexion();
-            conn.addParameter('get_action', 'rename');
-            if (filename === '/' + newValue) {
-              return;
-            }
-            conn.addParameter('file', filename);
-            conn.addParameter('filename_new', newValue);
-            conn.onComplete = function(transport){
-              PydioApi.getClient().parseXmlMessage(transport.responseXML);
-              if(orig && ajaxplorer.getUserSelection()){
-                ajaxplorer.getUserSelection().setSelectionSource(orig);
-              }
-            };
-            conn.sendAsync();
-          };
-          if(ajaxplorer.getUserSelection() && ajaxplorer.getUserSelection().getSelectionSource() && ajaxplorer.getUserSelection().getSelectionSource().switchCurrentLabelToEdition) {
-              ajaxplorer.getUserSelection().getSelectionSource().switchCurrentLabelToEdition(callback);
-          }else{
-              var test = ajaxplorer._focusables.detect(function(obj){return obj.hasFocus;});
-              if (test && test.switchCurrentLabelToEdition){
-                  test.switchCurrentLabelToEdition(callback);
-              }
-          }
-        ]]></clientCallback>
-        <serverCallback methodName="switchAction" restParams="/" developerComment="Rename a resource, file or folder.">
-                    <input_param description="Full path to the resource that will be renamed" name="file" type="path" mandatory="true"/>
-                    <input_param description="New basename of the resource, in that case the new fullname will be the parent folder of source plus this filename_new." name="filename_new" type="string"/>
-                    <input_param description="Full path to the new resource. Can be used instead of filename_new parameter." name="dest" type="path"/>
-                </serverCallback>
         </processing>
     </action>
     <action name="move" dragndropDefault="true">
@@ -698,7 +649,54 @@
                 </serverCallback>
         </processing>
     </action>
-  </actions>
+    <action name="rename">
+      <gui text="6" title="158" src="applix.png" accessKey="rename_access_key" iconClass="icon-pencil" hasAccessKey="true">
+        <context selection="true" dir="" recycle="hidden"
+          actionBar="false" contextMenu="true" infoPanel="true"
+          actionBarGroup="change_main" inZip="false">
+        </context>
+        <selectionContext dir="true" file="true" recycle="false" unique="true" image="false" editable="false"/></gui>
+      <rightsContext noUser="true" userLogged="only" read="true" write="true" adminOnly=""/>
+      <processing>
+        <clientCallback prepareModal="true"><![CDATA[
+            if(ajaxplorer.getUserSelection()){
+                var orig = ajaxplorer.getUserSelection().getSelectionSource();
+            }
+          var callback = function(node, newValue){
+            if(!node) node = ajaxplorer.getUserSelection().getUniqueNode();
+            var filename = node.getPath();
+            var conn = new Connexion();
+            conn.addParameter('get_action', 'rename');
+            if (filename === '/' + newValue) {
+              return;
+            }
+            conn.addParameter('file', filename);
+            conn.addParameter('filename_new', newValue);
+            conn.onComplete = function(transport){
+              ajaxplorer.actionBar.parseXmlMessage(transport.responseXML);
+            };
+            conn.sendSync();
+            if(orig && ajaxplorer.getUserSelection()){
+                ajaxplorer.getUserSelection().setSelectionSource(orig);
+            }
+          };
+          if(ajaxplorer.getUserSelection() && ajaxplorer.getUserSelection().getSelectionSource() && ajaxplorer.getUserSelection().getSelectionSource().switchCurrentLabelToEdition) {
+              ajaxplorer.getUserSelection().getSelectionSource().switchCurrentLabelToEdition(callback);
+          }else{
+              var test = ajaxplorer._focusables.detect(function(obj){return obj.hasFocus;});
+              if (test && test.switchCurrentLabelToEdition){
+                  test.switchCurrentLabelToEdition(callback);
+              }
+          }
+        ]]></clientCallback>
+        <serverCallback methodName="switchAction" restParams="/" developerComment="Rename a resource, file or folder.">
+                    <input_param description="Full path to the resource that will be renamed" name="file" type="path" mandatory="true"/>
+                    <input_param description="New basename of the resource, in that case the new fullname will be the parent folder of source plus this filename_new." name="filename_new" type="string"/>
+                    <input_param description="Full path to the new resource. Can be used instead of filename_new parameter." name="dest" type="path"/>
+                </serverCallback>
+        </processing>
+      </action>
+    </actions>
   <client_configs>
     <component_config className="InfoPanel">
       <infoPanel mime="no_selection" attributes="">

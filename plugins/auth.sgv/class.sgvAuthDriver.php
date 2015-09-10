@@ -105,9 +105,9 @@ class sgvAuthDriver extends AbstractAuthDriver
             if ($gebruikersgroepen !== null) {
                 foreach ($gebruikersgroepen as $gebruikersgroep) {
                     if (preg_match('/^[A-Z][0-9]{4}[A-Z]/', $gebruikersgroep->id)) {
-                        $naam = $gebruikersgroep->naam;
+                        $naam = str_replace('_', ' ', $gebruikersgroep->naam);
                         if ($naam === strtoupper($naam) || $naam === strtolower($naam)) {
-                            $naam = ucwords(strtolower(str_replace('_', ' ', $naam)));
+                            $naam = ucwords(strtolower($naam));
                         }
                         $enabled = $this->updateWorkspace($gebruikersgroep->id, $naam);
                         if ($enabled) {

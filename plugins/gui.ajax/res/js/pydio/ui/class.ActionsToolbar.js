@@ -175,15 +175,21 @@ Class.create("ActionsToolbar", AjxpPane, {
     }.bind(this));
     this.element.select('a').each(disableTextSelection);
 
-    if (this.element.id === 'buttons_bar' && !ajaxplorer.user.canWrite()) {
-        var div = document.createElement("div");
+    if (this.element.id === 'buttons_bar') {
+      var div = document.createElement("div");
+      div.style.display = 'inline-block';
+      div.style.position = 'relative';
+      div.style.top = '7px';
+      div.style.left = '13px';
+      if (ajaxplorer.user.canWrite()) {
+        div.id = 'emailadres';
+        var email = get_email();
+        div.innerHTML = 'E-mailadres: <a class="plain email" href="def">abc</a>';
+      } else {
         div.id = 'leesrechten';
-        div.style.display = 'inline-block';
-        div.style.position = 'relative';
-        div.style.top = '7px';
-        div.style.left = '13px';
         div.innerHTML = 'Je hebt enkel leesrechten op deze bestanden.';
-        this.element.appendChild(div);
+      }
+      this.element.appendChild(div);
     }
   },
   /**

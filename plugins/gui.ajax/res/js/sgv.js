@@ -40,4 +40,22 @@ function update_vertical_splitter() {
   }
 }
 
-setInterval(update_vertical_splitter, 300);
+function update_toolbar() {
+    update_vertical_splitter();
+    var a_email = document.querySelector('#buttons_bar a.email');
+    if (a_email) {
+        a_email.innerHTML = get_email();
+    }
+}
+
+setInterval(update_toolbar, 300);
+
+/* utility */
+
+function get_email() {
+    if (ajaxplorer && ajaxplorer.user && ajaxplorer.user.repositories && ajaxplorer.repositoryId) {
+        var repoName = ajaxplorer.user.repositories.get(ajaxplorer.repositoryId).label;
+        var mailRepoName = repoName.toLowerCase().replace(/[\$#@~!&*()\[\];.,:?^ `'\\\/ ]+/g, '_').replace('_gouw_', '_');
+        return mailRepoName + '_' + ajaxplorer.repositoryId.toLowerCase() + '@scoutsengidsenvlaanderen.org';
+    }
+}
