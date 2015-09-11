@@ -21,6 +21,7 @@
  * Description : main access point of the application, this script is called by any Ajax query.
  * Will dispatch the actions on the plugins.
  */
+
 include_once("base.conf.php");
 
 if( !isSet($_GET["action"]) && !isSet($_GET["get_action"])
@@ -45,6 +46,22 @@ header("Pragma: no-cache");
 if (is_file(TESTS_RESULT_FILE)) {
     set_error_handler(array("AJXP_XMLWriter", "catchError"), E_ALL & ~E_NOTICE & ~E_STRICT );
     set_exception_handler(array("AJXP_XMLWriter", "catchException"));
+}
+
+if (strpos($_SERVER['HTTP_USER_AGENT'], 'facebook') === 0) {
+
+    print('<!DOCTYPE html>'."\n");
+    print('<html>'."\n");
+    print('  <head>'."\n");
+    print('    <meta charset="utf-8">'."\n");
+    print('    <meta property="og:title" content=".Org" />'."\n");
+    print('    <meta property="og:type" content="website" />'."\n");
+    print('    <meta property="og:url" content="https://www.scoutsengidsenvlaanderen.org/" />'."\n");
+    print('    <meta property="og:image" content="https://www.scoutsengidsenvlaanderen.org/plugins/gui.ajax/res/themes/orbit/images/hires-photos/04.jpg" />'."\n");
+    print('  </head>'."\n");
+    print('</html>'."\n");
+
+    return;
 }
 
 $pServ = AJXP_PluginsService::getInstance();
