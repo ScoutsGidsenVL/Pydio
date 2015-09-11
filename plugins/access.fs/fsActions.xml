@@ -409,6 +409,15 @@
           var repo = ajaxplorer.user.repositories.get(repoId);
           var link = url + '?goto=' + repoId + encodeURIComponent(selected.getPath());
 
+          // Copied from plugins/gui.ajax/res/js/sgv.js, because this code is using 'eval'. Please keep both versions in sync.
+          function get_email() {
+            if (ajaxplorer && ajaxplorer.user && ajaxplorer.user.repositories && ajaxplorer.repositoryId) {
+              var repoName = ajaxplorer.user.repositories.get(ajaxplorer.repositoryId).label;
+              var mailRepoName = repoName.toLowerCase().replace(/[\$#@~!&*()\[\];.,:?^ `'\\\/ ]+/g, '_').replace('_gouw_', '_');
+              return mailRepoName + '_' + ajaxplorer.repositoryId.toLowerCase() + '@scoutsengidsenvlaanderen.org';
+            }
+          }
+
           var params = $H({get_action:"send_mail"});
           params.set('subject', '[.Org - ' + repo.label + '] ' + selected.getLabel());
           params.set('message', CKEDITOR.instances.email_area.getData() + '<p>' + ajaxplorer.user.getPreference('USER_DISPLAY_NAME') + ' heeft <a href=' + link + '>' + selected.getLabel() + '</a> gedeeld met ' + repo.label + '.</p>');

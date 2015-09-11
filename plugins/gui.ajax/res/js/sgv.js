@@ -52,6 +52,7 @@ setInterval(update_toolbar, 300);
 
 /* utility */
 
+// Copied to plugins/access.fs/fsActions.xml, because that code is using 'eval'. Please keep both versions in sync.
 function get_email() {
     if (ajaxplorer && ajaxplorer.user && ajaxplorer.user.repositories && ajaxplorer.repositoryId) {
         var repoName = ajaxplorer.user.repositories.get(ajaxplorer.repositoryId).label;
