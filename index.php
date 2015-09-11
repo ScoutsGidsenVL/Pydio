@@ -57,7 +57,7 @@ if (strpos($_SERVER['HTTP_USER_AGENT'], 'facebook') === 0) {
     print('    <meta property="og:title" content=".Org" />'."\n");
     print('    <meta property="og:type" content="website" />'."\n");
     print('    <meta property="og:url" content="https://www.scoutsengidsenvlaanderen.org/" />'."\n");
-    print('    <meta property="og:image" content="https://www.scoutsengidsenvlaanderen.org/plugins/gui.ajax/res/themes/orbit/images/hires-photos/04.jpg" />'."\n");
+    print('    <meta property="og:image" content="https://www.scoutsengidsenvlaanderen.org/plugins/gui.ajax/res/themes/orbit/images/open_graph_image.png" />'."\n");
     print('  </head>'."\n");
     print('</html>'."\n");
 
