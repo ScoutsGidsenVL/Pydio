@@ -46,9 +46,7 @@ class CoreIndexer extends AJXP_Plugin {
             }
             $nodes = $userSelection->buildNodes();
 
-            if (isSet($httpVars["verbose"]) && $httpVars["verbose"] == "true") {
-                $this->verboseIndexation = true;
-            }
+            $this->verboseIndexation = true;
 
             if (ConfService::backgroundActionsSupported() && !ConfService::currentContextIsCommandLine()) {
                 AJXP_Controller::applyActionInBackground($repositoryId, "index", $httpVars);
@@ -248,4 +246,4 @@ class CoreIndexer extends AJXP_Plugin {
         return ($status == "INTERRUPT");
     }
 
-} 
+}
