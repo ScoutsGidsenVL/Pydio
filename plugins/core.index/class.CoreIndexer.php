@@ -146,7 +146,7 @@ class CoreIndexer extends AJXP_Plugin {
                     $this->recursiveIndexation($childNode, $depth + 1);
                 }else{
                     try {
-                        $this->debug("Indexing Node ".$childUrl);
+                        $this->debug(date('[H:i:s]') . " Indexing Node ".$childUrl);
                         AJXP_Controller::applyHook("node.index", array($childNode));
                     } catch (Exception $e) {
                         $this->debug("Error Indexing Node ".$childUrl." (".$e->getMessage().")");
