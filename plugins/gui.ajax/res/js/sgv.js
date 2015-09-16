@@ -44,7 +44,9 @@ function update_toolbar() {
     update_vertical_splitter();
     var a_email = document.querySelector('#buttons_bar a.email');
     if (a_email) {
-        a_email.innerHTML = get_email();
+        var email = get_email();
+        a_email.innerHTML = email;
+        a_email.setAttribute('href', 'mailto:' + email);
     }
 }
 

@@ -184,7 +184,7 @@ Class.create("ActionsToolbar", AjxpPane, {
       if (ajaxplorer.user.canWrite()) {
         div.id = 'emailadres';
         var email = get_email();
-        div.innerHTML = 'E-mailadres: <a class="plain email" href="def">abc</a>';
+        div.innerHTML = 'E-mailadres: <a class="plain email" href=" "> </a>';
       } else {
         div.id = 'leesrechten';
         div.innerHTML = 'Je hebt enkel leesrechten op deze bestanden.';
