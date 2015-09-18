@@ -89,7 +89,8 @@ img.custom_logo_image.linked {
 }
 
 .item_home a,
-.item_afmelden a {
+.item_help a,
+.item_afmelden a {git
     display: inline-block;
     position: relative;
     top: -4px;
@@ -104,12 +105,12 @@ img.custom_logo_image.linked {
     background-position: -20px -20px;
 }
 
-.item_afmelden a {
-    background-position: -40px -20px;
+.item_help a {
+    background-position: 0 -20px;
 }
 
-.account li:nth-child(n+2) {
-    display: none;
+.item_afmelden a {
+    background-position: -40px -20px;
 }
 
 @media screen and (max-width: 1150px) {
