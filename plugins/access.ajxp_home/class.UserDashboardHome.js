@@ -223,8 +223,7 @@ Class.create("UserDashboardHome", AjxpPane, {
         if(ajaxplorer.getPluginConfigs('access.ajxp_home').get("ENABLE_GETTING_STARTED")){
             var obj = oFormObject.down("#welcome");
             if(oFormObject.down("#welcome > small")) obj = oFormObject.down("#welcome > small");
-            var span = new Element('span').update('<br>' + MessageHash["user_home.55"]);
-            span.down('a').observe('click', function(){ pydio.getController().fireAction("open_tutorial_pane"); });
+            var span = new Element('span').update('<br><a href="https://wiki.scoutsengidsenvlaanderen.be/doku.php?id=handleidingen:org_website:start" target="_blank">' + MessageHash["user_home.55"] + '</a>');
             obj.insert(span);
         }
 

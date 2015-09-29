@@ -277,8 +277,8 @@ div.legend_visible div#ws_legend{
 
 #home_account_pane a{
     cursor: pointer;
-    text-decoration: underline;
 }
+
 #home_account_pane a:hover{
     color: #fff;
 }
