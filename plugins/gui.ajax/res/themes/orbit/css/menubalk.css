@@ -58,7 +58,7 @@
     background: url("https://www.scoutsengidsenvlaanderen.be/files/algemeen/menubalk/balk_sprites_sgv.png") no-repeat;
 }
 
-a.org {
+li.org a {
     /* 'font-weight: bold;' doesn't make it stand out. */
     font-weight: 800;
 }
