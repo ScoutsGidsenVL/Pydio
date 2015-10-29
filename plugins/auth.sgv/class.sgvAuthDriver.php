@@ -75,7 +75,7 @@ class sgvAuthDriver extends AbstractAuthDriver
 
         if ($userObject->id === 'admin') {
             $userObject->personalRole->setParameterValue("core.conf", "USER_DISPLAY_NAME", 'Admin');
-            $userObject->personalRole->setParameterValue("core.conf", "email", 'informatica@scoutsengidsenvlaanderen.be');
+            $userObject->personalRole->setParameterValue("core.conf", "email", 'info@scoutsengidsenvlaanderen.be');
             $userObject->save("superuser"); // save to the database (in ajxp_roles, not in ajxp_users)
 
             return;

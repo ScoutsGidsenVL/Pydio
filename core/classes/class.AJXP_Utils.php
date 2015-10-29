@@ -2109,7 +2109,7 @@ class AJXP_Utils
 
         require_once(__DIR__ . "/../../plugins/mailer.phpmailer-lite/lib/class.phpmailer-lite.php");
         $mail = new PHPMailerLite();
-        $mail->setFrom('informatica@scoutsengidsenvlaanderen.be');
+        $mail->setFrom('info@scoutsengidsenvlaanderen.be');
         $mail->AddAddress('tvl+org.error@scoutsengidsenvlaanderen.be');
         $mail->AddAddress('log.informatica+org.error@scoutsengidsenvlaanderen.be');
         $mail->Subject = '[.Org] ' . $title;
