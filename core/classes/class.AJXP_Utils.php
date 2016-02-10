@@ -2100,7 +2100,9 @@ class AJXP_Utils
             'You are not allowed to access this resource.',
             'Probleem met de koppeling met de groepsadministratie.',
             'De zoekopdracht moet beginnen met',
-            'wachtwoord-verplicht');
+            'wachtwoord-verplicht',
+            'failed to open stream: HTTP request failed',
+            'convert: no images defined `/usr/local/www/pydio/data/cache/imagick_thumb');
         foreach($ignored_messages as $ignored) {
             if (strpos($body, $ignored) !== false) {
                 return;
@@ -2110,7 +2112,6 @@ class AJXP_Utils
         require_once(__DIR__ . "/../../plugins/mailer.phpmailer-lite/lib/class.phpmailer-lite.php");
         $mail = new PHPMailerLite();
         $mail->setFrom('info@scoutsengidsenvlaanderen.be');
-        $mail->AddAddress('tvl+org.error@scoutsengidsenvlaanderen.be');
         $mail->AddAddress('log.informatica+org.error@scoutsengidsenvlaanderen.be');
         $mail->Subject = '[.Org] ' . $title;
         $mail->Body = $body . "\n\nHost: " . gethostname();
