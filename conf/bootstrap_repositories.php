@@ -176,3 +176,17 @@ $REPOSITORIES["fs_template"] = array(
     ),
 
 );
+
+if(!is_file(AJXP_PLUGINS_REPOSITORIES_CACHE)){
+    $content = "<?php \n";
+    $boots = glob(AJXP_INSTALL_PATH."/".AJXP_PLUGINS_FOLDER."/*/repositories.php");
+    if($boots !== false){
+        foreach($boots as $b){
+            $content .= 'require_once("'.$b.'");'."\n";
+        }
+    }
+    $resWriteRepoCache = @file_put_contents(AJXP_PLUGINS_REPOSITORIES_CACHE, $content);
+}
+if(!isSet($resWriteRepoCache) || $resWriteRepoCache === true){
+    include_once(AJXP_PLUGINS_REPOSITORIES_CACHE);
+}

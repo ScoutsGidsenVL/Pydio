@@ -48,8 +48,6 @@ class IMagickPreviewer extends AJXP_Plugin
 
     public function switchAction($action, $httpVars, $filesVars)
     {
-        if(!isSet($this->actions[$action])) return false;
-
         $repository = ConfService::getRepository();
         if (!$repository->detectStreamWrapper(true)) {
             return false;
@@ -58,21 +56,22 @@ class IMagickPreviewer extends AJXP_Plugin
         if (empty($convert)) {
             return false;
         }
-        $streamData = $repository->streamData;
-        $destStreamURL = $streamData["protocol"]."://".$repository->getId();
-        $flyThreshold = 1024*1024*intval($this->getFilteredOption("ONTHEFLY_THRESHOLD", $repository->getId()));
-        $selection = new UserSelection($repository);
-        $selection->initFromHttpVars($httpVars);
+        $flyThreshold = 1024*1024*intval($this->getFilteredOption("ONTHEFLY_THRESHOLD", $repository));
+        $selection = new UserSelection($repository, $httpVars);
+        $destStreamURL = $selection->currentBaseUrl();
 
         if ($action == "imagick_data_proxy") {
             $this->extractAll = false;
-            $file = $selection->getUniqueFile();
+            $file = $selection->getUniqueNode()->getUrl();
+            if(!file_exists($file) || !is_readable($file)){
+                throw new Exception("Cannot find file");
+            }
             if(isSet($httpVars["all"])) {
-                $this->logInfo('Preview', 'Preview content of '.$file);
+                $this->logInfo('Preview', 'Preview content of '.$file, array("files" => $file));
                 $this->extractAll = true;
             }
 
-            if (($size = filesize($destStreamURL.$file)) === false) {
+            if (($size = filesize($file)) === false) {
                 return false;
             } else {
                 if($size > $flyThreshold) $this->useOnTheFly = true;
@@ -80,24 +79,24 @@ class IMagickPreviewer extends AJXP_Plugin
             }
 
             if ($this->extractAll) {
-                $node = new AJXP_Node($destStreamURL.$file);
+                $node = new AJXP_Node($file);
                 AJXP_Controller::applyHook("node.read", array($node));
             }
 
-            $cache = AJXP_Cache::getItem("imagick_".($this->extractAll?"full":"thumb"), $destStreamURL.$file, array($this, "generateJpegsCallback"));
+            $cache = AJXP_Cache::getItem("imagick_".($this->extractAll?"full":"thumb"), $file, array($this, "generateJpegsCallback"));
             $cacheData = $cache->getData();
 
             if (!$this->useOnTheFly && $this->extractAll) { // extract all on first view
                 $ext = pathinfo($file, PATHINFO_EXTENSION);
                 $prefix = str_replace(".$ext", "", $cache->getId());
-                $files = $this->listExtractedJpg($destStreamURL.$file, $prefix);
+                $files = $this->listExtractedJpg($file, $prefix);
                 header("Content-Type: application/json");
                 print(json_encode($files));
                 return false;
             } else if ($this->extractAll) { // on the fly extract mode
                 $ext = pathinfo($file, PATHINFO_EXTENSION);
                 $prefix = str_replace(".$ext", "", $cache->getId());
-                $files = $this->listPreviewFiles($destStreamURL.$file, $prefix);
+                $files = $this->listPreviewFiles($file, $prefix);
                 header("Content-Type: application/json");
                 print(json_encode($files));
                 return false;
@@ -276,12 +275,13 @@ class IMagickPreviewer extends AJXP_Plugin
         chdir($workingDir);
         if ($unoconv !== false && in_array(strtolower($extension), $officeExt)) {
             $unoDoc = preg_replace("/(-[0-9]+)?\\.jpg/", "_unoconv.pdf", $tmpFileThumb);
-            if (!is_file($unoDoc)) {
+            if (!is_file($unoDoc)  || (is_file($unoDoc) && (filesize($unoDoc) == 0))) {
                 if (stripos(PHP_OS, "win") === 0) {
                     $unoconv = $this->pluginConf["UNOCONV"]." -o ".escapeshellarg(basename($unoDoc))." -f pdf ".escapeshellarg($masterFile);
                 } else {
-                    $unoconv =  "HOME=/tmp ".$unoconv." --stdout -f pdf ".escapeshellarg($masterFile)." > ".escapeshellarg(basename($unoDoc));
+                    $unoconv =  "HOME=".AJXP_Utils::getAjxpTmpDir()." ".$unoconv." --stdout -f pdf ".escapeshellarg($masterFile)." > ".escapeshellarg(basename($unoDoc));
                 }
+                putenv('LC_CTYPE='.AJXP_LOCALE);
                 exec($unoconv, $out, $return);
             }
             if (is_file($unoDoc)) {
@@ -314,12 +314,15 @@ class IMagickPreviewer extends AJXP_Plugin
             putenv("PATH=".getenv("PATH").":".$customEnvPath);
         }
         $params = $customOptions." ".( $this->extractAll? $viewerQuality : $thumbQuality );
-        $cmd = $this->getFilteredOption("IMAGE_MAGICK_CONVERT")." ".escapeshellarg(($masterFile).$pageLimit)." ".$params." ".escapeshellarg($tmpFileThumb);
+        $cmd = $this->getFilteredOption("IMAGE_MAGICK_CONVERT")." ".$params." ".escapeshellarg(($masterFile).$pageLimit)." ".escapeshellarg($tmpFileThumb);
         $this->logDebug("IMagick Command : $cmd");
         session_write_close(); // Be sure to give the hand back
         exec($cmd, $out, $return);
         if (is_array($out) && count($out)) {
             throw new AJXP_Exception(implode("\n", $out));
+        }
+        if(!is_file($tmpFileThumb)){
+            throw new AJXP_Exception("Error while converting PDF file to JPG thumbnail. Return code '$return'. Command used '".$this->getFilteredOption("IMAGE_MAGICK_CONVERT")."': is the binary at the correct location? Is the server allowed to use it?");
         }
         if (!$this->extractAll) {
             rename($tmpFileThumb, $targetFile);
@@ -355,7 +358,7 @@ class IMagickPreviewer extends AJXP_Plugin
 
     protected function handleMime($filename)
     {
-        $mimesAtt = explode(",", $this->xPath->query("@mimes")->item(0)->nodeValue);
+        $mimesAtt = explode(",", $this->getXPath()->query("@mimes")->item(0)->nodeValue);
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         return in_array($ext, $mimesAtt);
     }

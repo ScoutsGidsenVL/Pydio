@@ -241,7 +241,10 @@ class MetaWatchRegister extends AJXP_AbstractMetaSource
             $usersMeta = isSet($nodeMeta[self::$META_WATCH_USERS_NAMESPACE]) ? $nodeMeta[self::$META_WATCH_USERS_NAMESPACE] : false;
             $ids = $this->loadWatchesFromMeta($watchType, $currentUserId, $source, $watchMeta, $usersMeta);
             foreach($ids as $id){
-                $result["ancestors"][] = array("node" => $source, "id" => $id);
+                // Do not send notification to myself!
+                if($id !== $currentUserId){
+                    $result["ancestors"][] = array("node" => $source, "id" => $id);
+                }
             }
         }
 
@@ -331,7 +334,8 @@ class MetaWatchRegister extends AJXP_AbstractMetaSource
                     // Make sure the user is still authorized on this node, otherwise remove it.
                     $uObject = ConfService::getConfStorageImpl()->createUserObject($id);
                     $acl = $uObject->mergedRole->getAcl($node->getRepositoryId());
-                    if(empty($acl) || strpos($acl, "r") === FALSE){
+                    $isOwner = ($node->getRepository()->getOwner() == $uObject->getId());
+                    if(!$isOwner && (empty($acl) || strpos($acl, "r") === FALSE)){
                         unset($IDS[$index]);
                         if(is_array($watchMeta)){
                             $changes = true;
@@ -358,9 +362,8 @@ class MetaWatchRegister extends AJXP_AbstractMetaSource
 
             case "toggle_watch":
 
-                $us = new UserSelection();
-                $us->initFromHttpVars($httpVars);
-                $node = $us->getUniqueNode($this->accessDriver);
+                $us = new UserSelection($this->accessDriver->repository, $httpVars);
+                $node = $us->getUniqueNode();
                 $node->loadNodeInfo();
                 $cmd = $httpVars["watch_action"];
 

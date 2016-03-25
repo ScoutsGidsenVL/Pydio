@@ -22,13 +22,13 @@ defined('AJXP_EXEC') or die( 'Access not allowed');
 require_once('../classes/class.AbstractTest.php');
 
 /**
- * Check that DOMXml is enabled
+ * Check that output buffering is enabled
  * @package AjaXplorer
  * @subpackage Tests
  */
 class PHP_OB extends AbstractTest
 {
-    public function PHP_OB() { parent::AbstractTest("PHP Output Buffer disabled", "You should disable php output_buffering parameter for better performances with Pydio."); }
+    public function __construct() { parent::__construct("PHP Output Buffer disabled", "You should disable php output_buffering parameter for better performances with Pydio."); }
     public function doTest()
     {
         $this->failedLevel = "warning";
@@ -44,4 +44,4 @@ class PHP_OB extends AbstractTest
         $this->testedParams["PHP Output Buffer disabled"] = "Yes";
         return TRUE;
     }
-};
+}

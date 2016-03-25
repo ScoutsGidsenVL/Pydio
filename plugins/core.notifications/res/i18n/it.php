@@ -30,4 +30,6 @@ $mess=array(
 "9" => "Attività Workspace",
 "10"=> "Attività Cartella",
 "11"=> "Attività File",
+"12" => "A seconda del browser utilizzato, potrebbe essere richiesto un permesso speciale. Per disabilitare, accedere alle preferenze del browser in uso. Se questa funzionalità è già stata attivata, probabilmente non accadrà nulla.",
+"13" => "Sembra che il tuo browser non supporti ancora le Notifiche Desktop."
 );

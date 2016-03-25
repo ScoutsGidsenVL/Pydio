@@ -48,7 +48,6 @@ class UserDashboardDriver extends AbstractAccessDriver
 
     public function switchAction($action, $httpVars, $fileVars)
     {
-        if(!isSet($this->actions[$action])) return;
         parent::accessPreprocess($action, $httpVars, $fileVars);
         $loggedUser = AuthService::getLoggedUser();
         if(!AuthService::usersEnabled()) return ;
@@ -264,15 +263,20 @@ class UserDashboardDriver extends AbstractAccessDriver
         if(!method_exists($conf, "listUserTeams")) return;
         AJXP_XMLWriter::sendFilesListComponentConfig('<columns switchDisplayMode="detail" switchGridMode="filelist">
             <column messageId="ajxp_conf.6" attributeName="ajxp_label" sortType="String"/>
-            <column messageId="user_dash.10" attributeName="users" sortType="String"/>
+            <column messageId="user_dash.10" attributeName="users_labels" sortType="String"/>
         </columns>');
         $teams = $conf->listUserTeams();
         foreach ($teams as $teamId => $team) {
             if(empty($team["LABEL"])) continue;
+            $team["USERS_LABELS"] = array();
+            foreach(array_values($team["USERS"]) as $userId){
+                $team["USERS_LABELS"][] = ConfService::getUserPersonalParameter("USER_DISPLAY_NAME", $userId, "core.conf", $userId);
+            }
             AJXP_XMLWriter::renderNode("/teams/".$teamId, $team["LABEL"], true, array(
                     "icon"      => "users-folder.png",
                     "ajxp_mime" => "ajxp_team",
-                    "users"     => "<span class='icon-groups'></span> ".implode(", ", array_values($team["USERS"]))
+                    "users"     => "<span class='icon-groups'></span> ".implode(",", array_values($team["USERS"])),
+                    "users_labels"     => "<span class='icon-groups'></span> ".implode(", ", $team["USERS_LABELS"])
                 ), true, true);
         }
     }
@@ -284,9 +288,10 @@ class UserDashboardDriver extends AbstractAccessDriver
         $loggedUser = AuthService::getLoggedUser();
         $users = ConfService::getConfStorageImpl()->getUserChildren($loggedUser->getId()); // AuthService::listUsers();
         $mess = ConfService::getMessages();
-        $repoList = ConfService::getConfStorageImpl()->listRepositoriesWithCriteria(array(
+        $count = 0;
+        $repoList = ConfService::listRepositoriesWithCriteria(array(
             "owner_user_id" => $loggedUser->getId()
-        ));
+        ), $count);
         $userArray = array();
         foreach ($users as $userIndex => $userObject) {
             $label = $userObject->getId();
@@ -298,8 +303,7 @@ class UserDashboardDriver extends AbstractAccessDriver
         }
         ksort($userArray);
         foreach ($userArray as $userObject) {
-            //$userObject = new AJXP_SerialUser();
-            $label = $userObject->personalRole->filterParameterValue("core.conf", "USER_DISPLAY_NAME", AJXP_REPO_SCOPE_ALL, "");
+            $label = ConfService::getUserPersonalParameter("USER_DISPLAY_NAME", $userObject);
             $isAdmin = $userObject->isAdmin();
             $userId = $userObject->getId();
             $repoAccesses = array();
@@ -330,9 +334,10 @@ class UserDashboardDriver extends AbstractAccessDriver
         AJXP_XMLWriter::sendFilesListComponentConfig('<columns switchGridMode="filelist"><column messageId="ajxp_conf.8" attributeName="ajxp_label" sortType="String"/><column messageId="user_dash.9" attributeName="parent_label" sortType="String"/><column messageId="user_dash.9" attributeName="repo_accesses" sortType="String"/></columns>');
         $repoArray = array();
         $loggedUser = AuthService::getLoggedUser();
-        $repos = ConfService::getConfStorageImpl()->listRepositoriesWithCriteria(array(
+        $count = 0;
+        $repos = ConfService::listRepositoriesWithCriteria(array(
             "owner_user_id" => $loggedUser->getId()
-        ));
+        ), $count);
 
         $searchAll = ConfService::getCoreConf("CROSSUSERS_ALLGROUPS", "conf");
         $displayAll = ConfService::getCoreConf("CROSSUSERS_ALLGROUPS_DISPLAY", "conf");
@@ -362,8 +367,7 @@ class UserDashboardDriver extends AbstractAccessDriver
             $repoAccesses = array();
             foreach ($users as $userId => $userObject) {
                 if($userObject->getId() == $loggedUser->getId()) continue;
-                $label = $userObject->personalRole->filterParameterValue("core.conf", "USER_DISPLAY_NAME", AJXP_REPO_SCOPE_ALL, $userId);
-                if(empty($label)) $label = $userId;
+                $label = ConfService::getUserPersonalParameter("USER_DISPLAY_NAME", $userObject, "core.conf", $userId);
                 $acl = $userObject->mergedRole->getAcl($repoObject->getId());
                 if(!empty($acl)) $repoAccesses[] = $label. " (".$acl.")";
             }

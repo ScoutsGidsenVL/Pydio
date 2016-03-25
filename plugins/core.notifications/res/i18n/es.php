@@ -18,16 +18,20 @@
 *
 * The latest code can be found at <http://pyd.io/>.
 */
+// spanish translation: Salva Gómez <salva.gomez at gmail.com>, 2015
 $mess=array(
 "1" => "Notificaciones",
 "2" => "Fuente de Notificaciones",
 "3" => "Alertas",
 "4" => "Notificaciones",
-"5" => "Todos los Eventos",
-"6" => "Go to ...",
-"7" => "Dismiss",
-"8" => "No alerts",
-"9" => "Workspace Activity",
-"10" => "Folder Activity",
-"11" => "File Activity",
+"5" => "Todos los eventos",
+"6" => "Ir a ...",
+"7" => "Omitir",
+"8" => "No hay alertas",
+"9" => "Actividad del repositorio",
+"10" => "Actividad de la carpeta",
+"11" => "Actividad del archivo",
+"12" => "Dependiendo de su navegador, esto va a pedir un permiso específico. Para desactivar, ir a través de las preferencias del navegador y excepciones. Si ya ha activado esta función, probablemente no pasará nada.",
+"13" => "Su navegador parece no soportar de momento las notificaciones de escritorio."
+
 );

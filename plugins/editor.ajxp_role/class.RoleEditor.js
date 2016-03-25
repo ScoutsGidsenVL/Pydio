@@ -146,7 +146,7 @@ Class.create("RoleEditor", AbstractEditor, {
             this.roleData.USER.PROFILE = this.element.down("#account_infos").down("select[name='profile']").getValue();
             this.roleData.USER.ROLES = this.element.down("#account_infos").down("select[name='roles']").getValue();
             fullPostData["USER"] = this.roleData.USER;
-        }else if(this.roleData.GROUP){
+        }else if(this.roleData.GROUP && this.element.down("#account_infos").down("input[name='groupLabel']")){
             this.roleData.GROUP.LABEL = this.element.down("#account_infos").down("input[name='groupLabel']").getValue();
             fullPostData["GROUP_LABEL"] = this.roleData.GROUP.LABEL;
         }
@@ -334,9 +334,9 @@ Class.create("RoleEditor", AbstractEditor, {
                 pane.insert(passEl2);
                 pane.insert('<div class="SF_element" id="pwd_strength_container"></div>');
                 pane.select('input').invoke('observe', 'focus', function(){
-                    ajaxplorer.disableAllKeyBindings();
+                    pydio.UI.disableAllKeyBindings();
                 }).invoke('observe', 'blur', function(){
-                    ajaxplorer.enableAllKeyBindings();
+                    pydio.UI.enableAllKeyBindings();
                 });
                 modal.showSimpleModal(this.element.down("#pane-infos"),pane, function(){
                     var p1 = passEl1.down("input").getValue();
@@ -417,6 +417,9 @@ Class.create("RoleEditor", AbstractEditor, {
                 this.roleWrite.APPLIES = appliesSelect.getValue();
             }.bind(this) );
             new Chosen(appliesSelect, {placeholder_text_multiple:MessageHash["ajxp_role_editor.43"]});
+            if(getBaseName(node.getPath()) == "AJXP_GRP_"){
+                this.element.down("#pane-infos").down("#account_infos").down('div.SF_element.form-element-applies').setStyle({display:'none'});
+            }
 
         }else if(scope == "group"){
             // MAIN INFO
@@ -942,7 +945,7 @@ Class.create("RoleEditor", AbstractEditor, {
    		sync.sendSync();
    		var encoded;
    		if(seed != '-1'){
-   			encoded = hex_md5(password);
+   			encoded = HasherUtils.hex_md5(password);
    		}else{
    			encoded = password;
    		}

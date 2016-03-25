@@ -78,7 +78,7 @@ class AjxpScheduler extends AJXP_Plugin
         if(!$paramList->length) return;
         $paramNode = $paramList->item(0);
         $sVals = array();
-        $repos = ConfService::getRepositoriesList();
+        $repos = ConfService::getRepositoriesList("all");
         foreach ($repos as $repoId => $repoObject) {
             $sVals[] = $repoId."|". AJXP_Utils::xmlEntities($repoObject->getDisplay());
         }
@@ -189,7 +189,11 @@ class AjxpScheduler extends AJXP_Plugin
                 $data["user_id"] = "queue:".$tmpQueue;
             }
             if ($data["repository_id"] == "*") {
-                $data["repository_id"] = implode(",", array_keys(ConfService::getRepositoriesList()));
+                $criteria = array();
+                $criteria["isTemplate"] = false;
+                $count = 0;
+                $listRepos = ConfService::listRepositoriesWithCriteria($criteria, $count);
+                $data["repository_id"] = implode(",", array_keys($listRepos));
             }
             $process = AJXP_Controller::applyActionInBackground(
                 $data["repository_id"],
@@ -270,7 +274,7 @@ class AjxpScheduler extends AJXP_Plugin
                     AJXP_XMLWriter::close();
                 }
 
-            break;
+                break;
 
             case "scheduler_runTask":
 
@@ -280,7 +284,7 @@ class AjxpScheduler extends AJXP_Plugin
                 AJXP_XMLWriter::reloadDataNode();
                 AJXP_XMLWriter::close();
 
-            break;
+                break;
 
             case "scheduler_generateCronExpression":
 
@@ -291,10 +295,10 @@ class AjxpScheduler extends AJXP_Plugin
                 HTMLWriter::charsetHeader("text/plain", "UTF-8");
                 print "$cronTiming $phpCmd $rootInstall -r=ajxp_conf -u=".AuthService::getLoggedUser()->getId()." -p=YOUR_PASSWORD_HERE -a=scheduler_runAll >> $logFile";
 
-            break;
+                break;
 
             default:
-            break;
+                break;
         }
 
     }
@@ -302,7 +306,21 @@ class AjxpScheduler extends AJXP_Plugin
     public function placeConfigNode(&$configTree)
     {
         $mess = ConfService::getMessages();
-        if (isSet($configTree["admin"])) {
+        if (isSet($configTree["parameters"])){
+
+            $configTree["parameters"]["CHILDREN"]["scheduler"] = array(
+                "AJXP_MIME" => "scheduler_zone",
+                "LABEL" => "action.scheduler.18",
+                "DESCRIPTION" => "action.scheduler.22",
+                "ICON" => "preferences_desktop.png",
+                "METADATA" => array(
+                    "icon_class" => "icon-time",
+                    "component"  => "Scheduler.Board"
+                ),
+                "LIST"          => array($this, "listTasks")
+            );
+
+        }else if (isSet($configTree["admin"])) {
             $configTree["admin"]["CHILDREN"]["scheduler"] = array(
                 "LABEL"         => $mess["action.scheduler.18"],
                 "AJXP_MIME"     => "scheduler_zone",
@@ -312,10 +330,10 @@ class AjxpScheduler extends AJXP_Plugin
         }
     }
 
-    public function listTasks($action, $httpVars, $postProcessData)
+    public function listTasks($nodeName, $baseDir)
     {
-        $mess =ConfService::getMessages();
-        AJXP_XMLWriter::renderHeaderNode("/admin/scheduler", "Scheduler", false, array("icon" => "scheduler/ICON_SIZE/player_time.png"));
+        $mess = ConfService::getMessages();
+        AJXP_XMLWriter::renderHeaderNode("/$baseDir/$nodeName", "Scheduler", false, array("icon" => "scheduler/ICON_SIZE/player_time.png"));
         AJXP_XMLWriter::sendFilesListComponentConfig('<columns switchGridMode="filelist" switchDisplayMode="list"  template_name="action.scheduler_list">
                  <column messageId="action.scheduler.12" attributeName="ajxp_label" sortType="String"/>
                  <column messageId="action.scheduler.2" attributeName="schedule" sortType="String"/>
@@ -331,26 +349,26 @@ class AjxpScheduler extends AJXP_Plugin
 
             $timeArray = $this->getTimeArray($task["schedule"]);
             $res = $this->getNextExecutionTimeForScript(time(), $timeArray);
-                $task["NEXT_EXECUTION"] = date($mess["date_format"], $res);
-                $task["PARAMS"] = implode(", ", $task["PARAMS"]);
-                $task["icon"] = "scheduler/ICON_SIZE/task.png";
-                $task["ajxp_mime"] = "scheduler_task";
-                $sFile = AJXP_CACHE_DIR."/cmd_outputs/task_".$task["task_id"].".status";
-                if (is_file($sFile)) {
-                    $s = $this->getTaskStatus($task["task_id"]);
-                    $task["STATUS"] = implode(":", $s);
-                    $task["LAST_EXECUTION"] = date($mess["date_format"], filemtime($sFile));
-                } else {
-                    $task["STATUS"] = "n/a";
-                    $task["LAST_EXECUTION"] = "n/a";
-                }
-
-                AJXP_XMLWriter::renderNode("/admin/scheduler/".$task["task_id"],
-                    (isSet($task["label"])?$task["label"]:"Action ".$task["action_name"]),
-                    true,
-                    $task
-                );
+            $task["NEXT_EXECUTION"] = date($mess["date_format"], $res);
+            $task["PARAMS"] = implode(", ", $task["PARAMS"]);
+            $task["icon"] = "scheduler/ICON_SIZE/task.png";
+            $task["ajxp_mime"] = "scheduler_task";
+            $sFile = AJXP_CACHE_DIR."/cmd_outputs/task_".$task["task_id"].".status";
+            if (is_file($sFile)) {
+                $s = $this->getTaskStatus($task["task_id"]);
+                $task["STATUS"] = implode(":", $s);
+                $task["LAST_EXECUTION"] = date($mess["date_format"], filemtime($sFile));
+            } else {
+                $task["STATUS"] = "n/a";
+                $task["LAST_EXECUTION"] = "n/a";
             }
+
+            AJXP_XMLWriter::renderNode("/admin/scheduler/".$task["task_id"],
+                (isSet($task["label"])?$task["label"]:"Action ".$task["action_name"]),
+                true,
+                $task
+            );
+        }
         AJXP_XMLWriter::close();
 
     }
@@ -457,7 +475,7 @@ class AjxpScheduler extends AJXP_Plugin
                 AJXP_XMLWriter::reloadDataNode();
                 AJXP_XMLWriter::close();
 
-            break;
+                break;
 
             case "scheduler_removeTask" :
 
@@ -467,7 +485,7 @@ class AjxpScheduler extends AJXP_Plugin
                 AJXP_XMLWriter::reloadDataNode();
                 AJXP_XMLWriter::close();
 
-            break;
+                break;
 
             case "scheduler_loadTask":
 
@@ -502,10 +520,10 @@ class AjxpScheduler extends AJXP_Plugin
                     echo json_encode($task);
                 }
 
-            break;
+                break;
 
             default:
-            break;
+                break;
         }
         //var_dump($tasks);
 

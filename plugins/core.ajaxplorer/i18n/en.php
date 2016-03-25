@@ -31,7 +31,7 @@ $mess=array(
 "date_relative_tomorrow" => "tomorrow at TIME",
 "date_relative_days_ago" => "%s days ago",
 "date_relative_days_ahead" => "in %s days",
-"byte_unit_symbol" => "b",
+"byte_unit_symbol" => "B",
 "0" => "Last version",
 "1" => "Filename",
 "2" => "Size",
@@ -634,4 +634,6 @@ $mess=array(
 "540" => "Upload error: cannot find the temporary directory",
 "541" => "Upload error: cannot write into the temporary directory",
 "542" => "Upload error: a PHP extension stopped the upload process.",
+"543" => "Results limited to 100 out of %s.",
+"544" => "Show All",
 ); 

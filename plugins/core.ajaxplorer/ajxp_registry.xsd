@@ -46,6 +46,7 @@
             <xs:attribute name="name" use="required" type="xs:NCName"/>
             <xs:attribute name="skipSecureToken" type="xs:boolean"/>
             <xs:attribute name="contentTypedProvider" type="xs:boolean"/>
+            <xs:attribute name="forbidOverride" type="xs:boolean"/>
         </xs:complexType>
     </xs:element>
     <xs:element name="gui">
@@ -507,9 +508,9 @@
     </xs:element>
     <xs:element name="extension">
         <xs:complexType>
-            <xs:attribute name="icon" use="required"/>
-            <xs:attribute name="messageId" use="required" type="xs:NCName"/>
             <xs:attribute name="mime" use="required" type="xs:NCName"/>
+            <xs:attribute name="messageId" use="required" type="xs:all"/>
+            <xs:attribute name="icon" use="required"/>
         </xs:complexType>
     </xs:element>
     <xs:element name="processing">
@@ -587,6 +588,8 @@
                 <xs:element ref="resources"/>
                 <xs:element minOccurs="0" ref="node_provider"/>
             </xs:sequence>
+            <xs:attribute name="iconClass"/>
+            <xs:attribute name="description_template"/>
             <xs:attribute name="icon"/>
             <xs:attribute name="icon_tpl_id"/>
         </xs:complexType>
@@ -612,6 +615,8 @@
         <xs:complexType>
             <xs:attribute name="autoload" type="xs:boolean"/>
             <xs:attribute name="file" use="required"/>
+            <xs:attribute name="fallbackCondition"/>
+            <xs:attribute name="fallbackFile"/>
         </xs:complexType>
     </xs:element>
     <xs:element name="i18n">
@@ -632,6 +637,9 @@
             <xs:attribute name="autoload" type="xs:boolean"/>
             <xs:attribute name="className" use="required" type="xs:NCName"/>
             <xs:attribute name="file" use="required"/>
+            <xs:attribute name="depends"/>
+            <xs:attribute name="fallbackCondition"/>
+            <xs:attribute name="fallbackFile"/>
         </xs:complexType>
     </xs:element>
     <xs:element name="node_provider">

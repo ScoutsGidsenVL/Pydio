@@ -27,7 +27,7 @@ defined('AJXP_EXEC') or die( 'Access not allowed');
  * @package AjaXplorer_Plugins
  * @subpackage Log
  */
-class sqlLogDriver extends AbstractLogDriver
+class sqlLogDriver extends AbstractLogDriver implements SqlTableProvider
 {
     /**
      * @var Array
@@ -65,6 +65,12 @@ class sqlLogDriver extends AbstractLogDriver
         }
     }
 
+    public function usersLastConnection($userIds){
+        $res = dibi::query("SELECT [user], MAX([logdate]) AS date_max FROM [ajxp_log] WHERE [user] IN (%s) GROUP BY [user]", $userIds);
+        $all = $res->fetchPairs("user", "date_max");
+        return $all;
+    }
+
     public function exposeQueries($actionName, &$httpVars, &$fileVars){
 
         header('Content-type: application/json');
@@ -79,18 +85,13 @@ class sqlLogDriver extends AbstractLogDriver
         return false;
     }
 
-    public function processQuery($actionName, &$httpVars, &$fileVars){
+    protected function processOneQuery($queryName, $start, $count, $frequency="auto", $additionalFilters=array()){
 
-        $query_name = AJXP_Utils::sanitize($httpVars["query_name"], AJXP_SANITIZE_ALPHANUM);
-        $query = $this->getQuery($query_name);
+        $query = $this->getQuery($queryName);
         if($query === false){
-            throw new Exception("Cannot find query ".$query_name);
+            throw new Exception("Cannot find query ".$queryName);
         }
         $pg = ($this->sqlDriver["driver"] == "postgre");
-        $start = 0;
-        $count = 30;
-        if(isSet($httpVars["start"])) $start = intval($httpVars["start"]);
-        if(isSet($httpVars["count"])) $count = intval($httpVars["count"]);
 
         $mess = ConfService::getMessages();
 
@@ -102,6 +103,10 @@ class sqlLogDriver extends AbstractLogDriver
         $startDate = date($format, strtotime("-$last day", $ref));
         $endDate =  date($endFormat, strtotime("-$start day", $ref));
         $dateCursor = "logdate > '$startDate' AND logdate <= '$endDate'";
+        foreach($additionalFilters as $filterField => $filterValue){
+            $comparator = (strpos($filterValue, "%") !== false ? "LIKE" : "=");
+            $dateCursor .= " AND [".AJXP_Utils::sanitize($filterField, AJXP_SANITIZE_ALPHANUM)."] $comparator '".AJXP_Utils::sanitize($filterValue, AJXP_SANITIZE_EMAILCHARS)."'";
+        }
 
         $q = $query["SQL"];
         $q = str_replace("AJXP_CURSOR_DATE", $dateCursor, $q);
@@ -113,12 +118,31 @@ class sqlLogDriver extends AbstractLogDriver
         $res = dibi::query($q);
         $all = $res->fetchAll();
         $allDates = array();
+
+        if(isSet($query["AXIS"]) && $query["AXIS"]["x"] == "Date"){
+            if($frequency == "auto"){
+                if($count > 70) $frequency = "month";
+                else if($count > 21) $frequency = "week";
+            }
+            $groupedSums = array();
+            if($frequency == "week"){
+                $groupByFormat = "W";
+            } else if ($frequency == "month"){
+                $groupByFormat = "n";
+            }
+        }
+
         foreach($all as $row => &$data){
             // PG: Recapitalize keys
             if($pg){
+                $newData = array();
                 foreach($data as $k => $v){
-                    $data[ucfirst($k)] = $v;
+                    $newData[ucfirst($k)] = $v;
                 }
+                $data = $newData;
+            }
+            if(isSet($data["File"])){
+                $data["File"] = AJXP_Utils::safeBasename($data["File"]);
             }
             if(isSet($data["Date"])){
                 if(is_a($data["Date"], "DibiDateTime")){
@@ -130,9 +154,15 @@ class sqlLogDriver extends AbstractLogDriver
                 $data["Date_sortable"] = $tStamp;
                 $data["Date"] = $key;
                 $allDates[$key] = true;
-            }
-            if(isSet($data["File"])){
-                $data["File"] = AJXP_Utils::safeBasename($data["File"]);
+                if(isSet($groupByFormat)){
+                    $newKey = date($groupByFormat, $tStamp);
+                    if(!isSet($groupedSums[$newKey])){
+                        $groupedSums[$newKey] = $data;
+                    }else{
+                        $valueKey = $query["AXIS"]["y"];
+                        $groupedSums[$newKey][$valueKey] += $data[$valueKey];
+                    }
+                }
             }
         }
 
@@ -141,8 +171,15 @@ class sqlLogDriver extends AbstractLogDriver
                 $dateCurs = $start + $i;
                 $timeDate = strtotime("-$dateCurs day", $ref);
                 $dateK = date($dKeyFormat, $timeDate);
-                if(!isSet($dKeyFormat[$dateK])){
-                    array_push($all, array("Date" => $dateK, "Date_sortable" => $timeDate));
+                if(isSet($groupByFormat)){
+                    $newKey = date($groupByFormat, $timeDate);
+                    if(!isSet($groupedSums[$newKey])){
+                        array_push($all, array("Date" => $dateK, "Date_sortable" => $timeDate));
+                    }
+                }else{
+                    if(!isSet($allDates[$dateK])){
+                        array_push($all, array("Date" => $dateK, "Date_sortable" => $timeDate));
+                    }
                 }
             }
         }
@@ -153,6 +190,56 @@ class sqlLogDriver extends AbstractLogDriver
             $all[0] = array($query["FIGURE"] => $f);
         }
 
+        if(isSet($groupByFormat) && isSet($groupedSums)){
+            return array_values($groupedSums);
+        }else{
+            return $all;
+        }
+
+    }
+
+    public function processQuery($actionName, &$httpVars, &$fileVars){
+
+        session_write_close();
+        $query_name = $httpVars["query_name"];
+        $start = 0;
+        $count = 30;
+        $frequency = (isSet($httpVars["frequency"])?AJXP_Utils::sanitize($httpVars["frequency"], AJXP_SANITIZE_ALPHANUM):"auto");
+        if(isSet($httpVars["start"])) $start = intval($httpVars["start"]);
+        if(isSet($httpVars["count"])) $count = intval($httpVars["count"]);
+        $additionalFilters = array();
+        if(isSet($httpVars["user"])) $additionalFilters["user"] = AJXP_Utils::sanitize($httpVars["user"], AJXP_SANITIZE_EMAILCHARS);
+        if(isSet($httpVars["ws_id"])) $additionalFilters["repository_id"] = AJXP_Utils::sanitize($httpVars["ws_id"], AJXP_SANITIZE_ALPHANUM);
+        if(isSet($httpVars["filename_filter"])){
+            $additionalFilters["basename"] = str_replace("*", "%", AJXP_Utils::sanitize($httpVars["filename_filter"], AJXP_SANITIZE_FILENAME));
+        }
+        if(isSet($httpVars["dirname_filter"])){
+            $additionalFilters["dirname"] = str_replace("*", "%", AJXP_Utils::sanitize($httpVars["dirname_filter"], AJXP_SANITIZE_DIRNAME));
+        }
+
+
+        $queries = explode(",", $query_name);
+        $meta = array();
+        if(count($queries) == 1){
+            $qName = AJXP_Utils::sanitize($query_name, AJXP_SANITIZE_ALPHANUM);
+            $all = $this->processOneQuery($qName, $start, $count, $frequency, $additionalFilters);
+            $qDef = $this->getQuery($qName);
+            if($qDef !== false && isSet($qDef['AXIS'])) {
+                unset($qDef["SQL"]);
+                $meta[$qName] = $qDef;
+            }
+        }else{
+            $all = array();
+            foreach($queries as $qName){
+                $qName = AJXP_Utils::sanitize($qName, AJXP_SANITIZE_ALPHANUM);
+                $all[$qName] = $this->processOneQuery($qName, $start, $count, $frequency, $additionalFilters);
+                $qDef = $this->getQuery($qName);
+                if($qDef !== false && isSet($qDef['AXIS'])) {
+                    unset($qDef["SQL"]);
+                    $meta[$qName] = $qDef;
+                }
+            }
+        }
 
         //$qry = "SELECT FOUND_ROWS() AS NbRows";
         //$res = dibi::query($qry);
@@ -182,7 +269,7 @@ class sqlLogDriver extends AbstractLogDriver
         }
         header('Link: '.implode(",", $hLinks));
 
-        $envelope = array("links" => $links, "data" => $all);
+        $envelope = array("links" => $links, "data" => $all, "meta" => $meta);
         echo json_encode($envelope);
 
     }
@@ -216,13 +303,15 @@ class sqlLogDriver extends AbstractLogDriver
      * @param String $remote_ip Client IP that was logged
      * @param String $log_level Log level of the item
      * @param String $user User who was logged in
+     * @param $source
      * @param String $action The action the user performed.
      * @param String $params Parameters to the action
-     * @param Integer $is_file 0|1 to indicate whether this list item is a file or not.
-     *
+     * @param string $rootPath
+     * @param null $rowId
      * @return String Formatted XML node for insertion into the log reader
+     *
      */
-    public function formatXmlLogItem($node, $icon, $dateattrib, $filename, $remote_ip, $log_level, $user, $source, $action, $params, $rootPath = "/logs")
+    public function formatXmlLogItem($node, $icon, $dateattrib, $filename, $remote_ip, $log_level, $user, $source, $action, $params, $rootPath = "/logs", $rowId=null)
     {
         $remote_ip = $this->inet_dtop($remote_ip);
         $log_unixtime = strtotime($dateattrib);
@@ -235,8 +324,12 @@ class sqlLogDriver extends AbstractLogDriver
         $action = AJXP_Utils::xmlEntities($action);
         $params = AJXP_Utils::xmlEntities($params);
         $source = AJXP_Utils::xmlEntities($source);
+        $rowIdString = "";
+        if($rowId !== null){
+            $rowIdString = "cursor=\"{$rowId}\"";
+        }
 
-        return "<$node icon=\"{$icon}\" date=\"{$log_datetime}\" ajxp_modiftime=\"{$log_unixtime}\" is_file=\"true\" filename=\"{$rootPath}/{$log_year}/{$log_month}/{$log_date}/{$log_datetime}\" ajxp_mime=\"log\" ip=\"{$remote_ip}\" level=\"{$log_level}\" user=\"{$user}\" action=\"{$action}\" source=\"{$source}\" params=\"{$params}\"/>";
+        return "<$node $rowIdString icon=\"{$icon}\" date=\"{$log_datetime}\" ajxp_modiftime=\"{$log_unixtime}\" is_file=\"true\" filename=\"{$rootPath}/{$log_year}/{$log_month}/{$log_date}/{$log_datetime}\" ajxp_mime=\"log\" ip=\"{$remote_ip}\" level=\"{$log_level}\" user=\"{$user}\" action=\"{$action}\" source=\"{$source}\" params=\"{$params}\"/>";
     }
 
     /**
@@ -246,13 +339,13 @@ class sqlLogDriver extends AbstractLogDriver
      * @param String $ip The client ip
      * @param String $user The user login
      * @param String $source The source of the message
-     * @param String $prefix  The prefix of the message
+     * @param String $prefix The prefix of the message
      * @param String $message The message to log
-     *
+     * @param array $nodesPathes
      */
-    public function write2($level, $ip, $user, $source, $prefix, $message)
+    public function write2($level, $ip, $user, $source, $prefix, $message, $nodesPathes = array())
     {
-        if($prefix == "Log In" && $message="context=API"){
+        if($prefix == "Log In" && $message=="context=API"){
             // Limit the number of logs
             $test = dibi::query('SELECT [logdate] FROM [ajxp_log] WHERE [user]=%s AND [message]=%s AND [params]=%s ORDER BY [logdate] DESC %lmt %ofs', $user, $prefix, $message, 1, 0);
             $lastInsert = $test->fetchSingle();
@@ -267,20 +360,33 @@ class sqlLogDriver extends AbstractLogDriver
                 return;
             }
         }
+        $files = array(array("dirname"=>"", "basename"=>""));
         if(AJXP_Utils::detectXSS($message)){
             $message = "XSS Detected in Message!";
+        }else if(count($nodesPathes)){
+            $files = array();
+            foreach($nodesPathes as $path){
+                $parts = pathinfo($path);
+                $files[] = array("dirname"=>$parts["dirname"], "basename"=>$parts["basename"]);
+            }
         }
-        $log_row = Array(
-            'logdate'   => new DateTime('NOW'),
-            'remote_ip' => $this->inet_ptod($ip),
-            'severity'  => strtoupper((string) $level),
-            'user'      => $user,
-            'source'    => $source,
-            'message'   => $prefix,
-            'params'    => $message
-        );
-        //we already handle exception for write2 in core.log
-        dibi::query('INSERT INTO [ajxp_log]', $log_row);
+        foreach($files as $fileDef){
+            $log_row = Array(
+                'logdate'       => new DateTime('NOW'),
+                'remote_ip'     => $this->inet_ptod($ip),
+                'severity'      => strtoupper((string) $level),
+                'user'          => $user,
+                'source'        => $source,
+                'message'       => $prefix,
+                'params'        => $message,
+                'repository_id' => ConfService::getInstance()->getContextRepositoryId(),
+                'device'        => $_SERVER['HTTP_USER_AGENT'],
+                'dirname'       => $fileDef["dirname"],
+                'basename'      => $fileDef["basename"]
+            );
+            //we already handle exception for write2 in core.log
+            dibi::query('INSERT INTO [ajxp_log]', $log_row);
+        }
     }
 
     /**
@@ -425,19 +531,24 @@ class sqlLogDriver extends AbstractLogDriver
      * @param String $date Assumed to be m-d-y format.
      * @param String [optional] $nodeName
      */
-    public function xmlLogs($parentDir, $date, $nodeName = "log", $rootPath = "/logs")
+    public function xmlLogs($parentDir, $date, $nodeName = "log", $rootPath = "/logs", $cursor = -1)
     {
         $start_time = strtotime($date);
         $end_time = mktime(0,0,0,date('m', $start_time), date('d', $start_time) + 1, date('Y', $start_time));
 
         try {
-            $q = 'SELECT * FROM [ajxp_log] WHERE [logdate] BETWEEN %t AND %t';
-            $result = dibi::query($q, $start_time, $end_time);
+            if($cursor != -1){
+                $q = 'SELECT * FROM [ajxp_log] WHERE [id] > %i ORDER BY [logdate] DESC';
+                $result = dibi::query($q, $cursor);
+            }else{
+                $q = 'SELECT * FROM [ajxp_log] WHERE [logdate] BETWEEN %t AND %t ORDER BY [logdate] DESC';
+                $result = dibi::query($q, $start_time, $end_time);
+            }
             $log_items = "";
             $currentCount = 1;
             foreach ($result as $r) {
 
-                if(isSet($buffer) && $buffer["user"] == $r["user"] && $buffer["message"] == $r["message"]){
+                if(isSet($buffer) && $buffer["user"] == $r["user"] && $buffer["message"] == $r["message"] && $buffer["params"] == $r["params"]){
                     $currentCount ++;
                     continue;
                 }
@@ -453,7 +564,10 @@ class sqlLogDriver extends AbstractLogDriver
                         $buffer['source'],
                         $buffer['message'].($currentCount > 1?" (".$currentCount.")":""),
                         $buffer['params'],
-                        $rootPath));
+                        $rootPath,
+                        $buffer['id']
+                        )
+                    );
                 }
                 $log_items .= SystemTextEncoding::toUTF8($this->formatXmlLogItem(
                     $nodeName,
@@ -466,7 +580,9 @@ class sqlLogDriver extends AbstractLogDriver
                     $r['source'],
                     $r['message'],
                     $r['params'],
-                    $rootPath));
+                    $rootPath,
+                    $r['id'])
+                    );
 
                 $currentCount = 1;
 

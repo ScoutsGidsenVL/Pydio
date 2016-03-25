@@ -18,18 +18,32 @@
  *
  * The latest code can be found at <https://pyd.io/>.
  *
- * Generate a Swagger file for Rest APIs documentation
+ *
  */
+
+/**
+ * Class PydioSdkGenerator
+ * Generate a Swagger file for Rest APIs documentation
+ * @package Pydio
+ * @subpackage Core
+ */
+
+define("JSON_DIR", AJXP_INSTALL_PATH."/../api");
+define("JSON_URL", "https://pydio.com/static-docs/api");
+
 class PydioSdkGenerator
 {
     public static function analyzeRegistry($versionString)
     {
-        if(!AJXP_SERVER_DEBUG) return;
+        if(!AJXP_SERVER_DEBUG) {
+            echo "Please switch the server to debug mode to use this API.";
+            return;
+        }
 
         $pServ = AJXP_PluginsService::getInstance();
         $nodes = $pServ->searchAllManifests('//actions/*/processing/serverCallback[@developerComment]', 'node', false, false, true);
         $jsFile = AJXP_DATA_PATH."/public/sdkMethods.js";
-        $swaggerJsonDir = AJXP_INSTALL_PATH."/core/doc/api";
+        $swaggerJsonDir = JSON_DIR."/".$versionString;
         $swaggerAPIs = array();
         $methods = array();
         $alreadyParsed = array();
@@ -43,10 +57,12 @@ class PydioSdkGenerator
                 $methodName = $actionName;
             }
             $outputType = 'xml';
+            /*
             if(in_array($actionName, $alreadyParsed)){
                 continue;
             }
             $alreadyParsed[] = $actionName;
+            */
             if(!isset($swaggerAPIs[$pluginName])) $swaggerAPIs[$pluginName] = array();
 
             foreach ($callbackNode->childNodes as $child) {
@@ -110,12 +126,12 @@ class PydioSdkGenerator
         );
         foreach($swaggerAPIs as $pluginName => $apis){
 
-            var_dump("Writing file for $pluginName");
+            echo("Writing file for $pluginName");
 
             $swaggerJson = array(
                 "apiVersion" => $versionString,
                 "swaggerVersion" => 1.2,
-                "basePath" => "https://pyd.io/resources/serverapi/$versionString/api",
+                "basePath" => JSON_URL."/$versionString",
                 "resourcePath" => "/api",
                 "produces" => array("application/xml"),
                 "apis" => $apis
@@ -123,7 +139,7 @@ class PydioSdkGenerator
             file_put_contents($swaggerJsonDir."/".$pluginName, json_encode($swaggerJson, JSON_PRETTY_PRINT));
             $p = $pServ->findPluginById($pluginName);
             $apidocs["apis"][] = array(
-                "path" => "https://pyd.io/resources/serverapi/$versionString/api/".$pluginName,
+                "path" => JSON_URL."/$versionString/".$pluginName,
                 "description" => substr($p->getManifestDescription(), 0, 40)."..."
             );
 

@@ -57,7 +57,6 @@ class AJXP_NotificationCenter extends AJXP_Plugin
            // DISABLE STUFF
            if (empty($this->pluginConf["USER_EVENTS"])) {
                if($contribNode->nodeName == "actions"){
-                   unset($this->actions["get_my_feed"]);
                    $actionXpath=new DOMXPath($contribNode->ownerDocument);
                    $publicUrlNodeList = $actionXpath->query('action[@name="get_my_feed"]', $contribNode);
                    $publicUrlNode = $publicUrlNodeList->item(0);
@@ -137,7 +136,7 @@ class AJXP_NotificationCenter extends AJXP_Plugin
         if(!$this->eventStore) return array();
         $u = AuthService::getLoggedUser();
         if ($u == null) {
-            if($httpVars["format"] == "html") return array();
+            if($httpVars["format"] == "html" || $httpVars["format"] == "array") return array();
             AJXP_XMLWriter::header();
             AJXP_XMLWriter::close();
             return array();
@@ -203,7 +202,7 @@ class AJXP_NotificationCenter extends AJXP_Plugin
                         continue;
                     }
                     try {
-                        $node->loadNodeInfo();
+                        @$node->loadNodeInfo();
                     } catch (Exception $e) {
                         continue;
                     }
@@ -333,6 +332,7 @@ class AJXP_NotificationCenter extends AJXP_Plugin
                     $parentNodeURL = $node->getScheme()."://".$repositoryFilter.$relative;
                     $this->logDebug("action.share", "Recompute alert to ".$parentNodeURL);
                     $node = new AJXP_Node($parentNodeURL);
+                    $path = $node->getPath();
                 }
 
 
@@ -374,10 +374,18 @@ class AJXP_NotificationCenter extends AJXP_Plugin
                 if(isSet($httpVars["description_as_label"]) && $httpVars["description_as_label"] == "true"){
                     $nodeToSend->setLabel($nodeToSend->event_description." ". $nodeOcc." ".$nodeToSend->event_date);
                 }else{
-                    $nodeToSend->setLabel(basename($nodeToSend->getPath())." ". $nodeOcc." "." <small class='notif_desc'>".$nodeToSend->event_description." ".$nodeToSend->event_date."</small>");
+                    $baseName = basename($nodeToSend->getPath());
+                    if(empty($baseName) && $nodeToSend->getRepository() != null){
+                        $baseName = $nodeToSend->getRepository()->getDisplay();
+                    }
+                    $nodeToSend->setLabel($baseName." ". $nodeOcc." "." <small class='notif_desc'>".$nodeToSend->event_description." ".$nodeToSend->event_date."</small>");
                 }
             }else{
-                $nodeToSend->setLabel(basename($nodeToSend->getPath()) . $nodeOcc);
+                $baseName = basename($nodeToSend->getPath());
+                if(empty($baseName) && $nodeToSend->getRepository() != null){
+                    $baseName = $nodeToSend->getRepository()->getDisplay();
+                }
+                $nodeToSend->setLabel($baseName . $nodeOcc);
             }
             // Replace PATH
             $nodeToSend->real_path = $path;

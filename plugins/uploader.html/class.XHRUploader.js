@@ -201,7 +201,7 @@ Class.create("XHRUploader", {
         var closeButton = this.mainForm.down('#uploadCloseButton');
         this.sendButton.observe("click", function(){
             if(!this.hasClassName("disabled")){
-                ajaxplorer.actionBar.multi_selector.submit();
+                pydio.getController().multi_selector.submit();
             }
         }.bind(this.sendButton) );
         this.sendButton.observerSet = true;
@@ -270,8 +270,8 @@ Class.create("XHRUploader", {
             height		: 4										// Height of the progressbar - don't forget to adjust your image too!!!
         };
         this.mainForm.down('#clear_list_button').observe("click", function(e){
-            ajaxplorer.actionBar.multi_selector.clearList();
-            ajaxplorer.actionBar.multi_selector.updateTotalData();
+            pydio.getController().multi_selector.clearList();
+            pydio.getController().multi_selector.updateTotalData();
         });
         this.optionPane = this.createOptionsPane();
         this.optionPane.loadData();
@@ -297,7 +297,7 @@ Class.create("XHRUploader", {
 			<b>'+MessageHash[339]+'</b> <input type="radio" name="uploader_existing" id="uploader_existing_overwrite" value="overwrite"> '+MessageHash[263]+' \
 			<input type="radio" name="uploader_existing" id="uploader_existing_rename" value="rename"> '+MessageHash[6]+' \
 			<input type="radio" name="uploader_existing" id="uploader_existing_alert" value="alert"> '+MessageHash[340]+' <br>\
-			<b>Options</b> <input type="checkbox" style="width:20px;" id="uploader_auto_send"> '+MessageHash[337]+'&nbsp; &nbsp; \
+			<b>'+MessageHash[312]+'</b> <input type="checkbox" style="width:20px;" id="uploader_auto_send"> '+MessageHash[337]+'&nbsp; &nbsp; \
 			<input type="checkbox" style="width:20px;" id="uploader_auto_close"> '+MessageHash[338]+'\
 			</div>');
 		optionPane.hide();
@@ -737,7 +737,7 @@ Class.create("XHRUploader", {
 				item.updateStatus('loaded');
 
                 if (xhr.responseXML){
-                    var result = ajaxplorer.actionBar.parseXmlMessage(xhr.responseXML);
+                    var result = PydioApi.getClient().parseXmlMessage(xhr.responseXML);
                     if(!result) item.updateStatus("error");
                 }else if (xhr.responseText && xhr.responseText != 'OK') {
 					alert(xhr.responseText); // display response.

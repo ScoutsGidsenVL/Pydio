@@ -115,7 +115,7 @@ class dropboxWrapper implements AjxpWrapper
         return true;
     }
 
-    public static function getRealFSReference($path)
+    public static function getRealFSReference($path, $persistent = false)
     {
         $tmpFile = AJXP_Utils::getAjxpTmpDir()."/".rand();
         $path = self::staticInitPath($path);
@@ -286,6 +286,16 @@ class dropboxWrapper implements AjxpWrapper
             self::$crtWritePath = $path;
         }
         self::$crtHandle = fopen(self::$crtTmpFile, $mode);
+        return true;
+    }
+
+    /**
+     * Describe whether the current wrapper can rewind a stream or not.
+     * @static
+     * @return boolean
+     */
+    public static function isSeekable($url)
+    {
         return true;
     }
 }

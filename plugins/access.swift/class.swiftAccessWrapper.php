@@ -42,7 +42,7 @@ class swiftAccessWrapper extends fsAccessWrapper
      */
     protected static function initPath($path, $streamType, $storeOpenContext = false, $skipZip = false)
     {
-        $url = parse_url($path);
+        $url = AJXP_Utils::safeParseUrl($path);
         $repoId = $url["host"];
         $repoObject = ConfService::getRepositoryById($repoId);
         if (!isSet($repoObject)) {
@@ -235,6 +235,11 @@ class swiftAccessWrapper extends fsAccessWrapper
     public static function isRemote()
     {
         return true;
+    }
+
+    public static function isSeekable($url)
+    {
+        return false;
     }
 
     public static function copyFileInStream($path, $stream)

@@ -250,13 +250,13 @@ class ldapAuthDriver extends AbstractAuthDriver
             }
 
             if(isset($searchAttrArray)){
-               if(count($searchAttrArray) > 1){
-                   $searchAttrFilter = "(|";
-                   foreach($searchAttrArray as $attr){
-                       $searchAttrFilter .= "(". $attr . "=" . $login . ")";
+                if(count($searchAttrArray) > 1){
+                    $searchAttrFilter = "(|";
+                    foreach($searchAttrArray as $attr){
+                        $searchAttrFilter .= "(". $attr . "=" . $login . ")";
                     }
-                   $searchAttrFilter .= ")";
-               }
+                    $searchAttrFilter .= ")";
+                }
                 else{
                     $searchAttrFilter = "(" . $searchAttrArray[0] . "=" . $login . ")";
                 }
@@ -510,8 +510,9 @@ class ldapAuthDriver extends AbstractAuthDriver
                 if (count($branch)) {
                     $parent = "/" . implode("/", array_reverse($branch));
                 }
-                AuthService::createGroup($parent, $dn, $login);
-
+                if(!ConfService::getConfStorageImpl()->groupExists(rtrim(AuthService::filterBaseGroup($parent), "/")."/".$dn)) {
+                    AuthService::createGroup($parent, $dn, $login);
+                }
             }
             $this->ldapDN = $origUsersDN;
             $this->ldapFilter = $origUsersFilter;
@@ -748,14 +749,15 @@ class ldapAuthDriver extends AbstractAuthDriver
                                     $valueFilters = array_map("trim", explode(",", $filter));
                                 }
                                 if ($key == "memberof") {
-
+                                    if (empty($valueFilters)) {
+                                        $valueFilters = $this->getLdapGroupListFromDN();
+                                    }
                                     if ($this->mappedRolePrefix) {
                                         $rolePrefix = $this->mappedRolePrefix;
                                     } else {
                                         $rolePrefix = "";
                                     }
 
-                                    /*
                                     $userroles = $userObject->getRoles();
                                     //remove all mapped roles before
 
@@ -767,7 +769,6 @@ class ldapAuthDriver extends AbstractAuthDriver
                                         }
                                     }
                                     $userObject->recomputeMergedRole();
-                                    */
 
                                     foreach ($memberValues as $uniqValue => $fullDN) {
                                         $uniqValueWithPrefix = $rolePrefix . $uniqValue;
@@ -811,7 +812,9 @@ class ldapAuthDriver extends AbstractAuthDriver
                                         if (count($branch)) {
                                             $parent = "/" . implode("/", array_reverse($branch));
                                         }
-                                        AuthService::createGroup($parent, $fullDN, $humanName);
+                                        if(!ConfService::getConfStorageImpl()->groupExists(rtrim(AuthService::filterBaseGroup($parent), "/")."/".$fullDN)) {
+                                            AuthService::createGroup($parent, $fullDN, $humanName);
+                                        }
                                         $userObject->setGroupPath(rtrim($parent, "/") . "/" . $fullDN, true);
                                         // Update Roles from groupPath
                                         $b = array_reverse($branch);
@@ -913,5 +916,45 @@ class ldapAuthDriver extends AbstractAuthDriver
             }
             file_put_contents($this->getPluginCacheDir() . DIRECTORY_SEPARATOR . $fileName, serialize($fileContent));
         }
+    }
+
+    public static $allowedGroupList;
+
+    /***
+     * @return array : list of groups according to ldap group filter string
+     */
+    public function getLdapGroupListFromDN()
+    {
+        if (isset(self::$allowedGroupList) && !(empty(self::$allowedGroupList)) && count(self::$allowedGroupList) > 0)
+            return self::$allowedGroupList;
+
+        $origUsersDN = $this->ldapDN;
+        $origUsersFilter = $this->ldapFilter;
+        $origUsersAttr = $this->ldapUserAttr;
+        $this->ldapDN = $this->ldapGDN;
+        $this->ldapFilter = $this->ldapGFilter;
+        $this->ldapUserAttr = $this->ldapGroupAttr;
+
+        $entries = $this->getUserEntries();
+        $returnArray = array();
+        if (is_array($entries) && $entries["count"] > 0) {
+            unset($entries["count"]);
+            foreach ($entries as $key => $entry) {
+                if(isset($this->mappedRolePrefix)){
+                    $returnArray[$this->mappedRolePrefix . $entry[$this->ldapGroupAttr][0]] = $this->mappedRolePrefix . $entry[$this->ldapGroupAttr][0];
+                }
+                else{
+                    $returnArray[$entry[$this->ldapGroupAttr][0]] = $entry[$this->ldapGroupAttr][0];
+                }
+            }
+        }
+
+        $this->dynamicFilter = null;
+        $this->ldapDN = $origUsersDN;
+        $this->ldapFilter = $origUsersFilter;
+        $this->ldapUserAttr = $origUsersAttr;
+
+        self::$allowedGroupList = $returnArray;
+        return $returnArray;
     }
 }

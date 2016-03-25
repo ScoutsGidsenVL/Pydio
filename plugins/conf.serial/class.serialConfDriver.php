@@ -128,9 +128,10 @@ class serialConfDriver extends AbstractConfDriver
     /**
      * Returns a list of available repositories (dynamic ones only, not the ones defined in the config file).
      * @param Array $criteria
+     * @param $count
      * @return Array
      */
-    public function listRepositoriesWithCriteria($criteria){
+    public function listRepositoriesWithCriteria($criteria, &$count = null){
 
         $all = AJXP_Utils::loadSerialFile($this->repoSerialFile);
         if ($criteria != null) {
@@ -383,9 +384,10 @@ class serialConfDriver extends AbstractConfDriver
     /**
      * @param string $repositoryId
      * @param boolean $details
-     * @return array('internal' => count, 'external' => count)
+     * @param bool $admin
+     * @return array
      */
-    public function countUsersForRepository($repositoryId, $details = false){
+    public function countUsersForRepository($repositoryId, $details = false, $admin=false){
         $c = count($this->getUsersForRepository($repositoryId));
         if($details) return array("internal" => $c);
         else return $c;
@@ -696,5 +698,20 @@ class serialConfDriver extends AbstractConfDriver
         AJXP_Utils::saveSerialFile($storage, $list);
     }
 
+    /**
+     * Check if group already exists
+     * @param string $groupPath
+     * @return boolean
+     */
+    public function groupExists($groupPath)
+    {
+        $groups = AJXP_Utils::loadSerialFile(AJXP_VarsFilter::filter($this->getOption("USERS_DIRPATH"))."/groups.ser");
+        $reverse = array_flip($groups);
+        if (isSet($reverse[$groupPath])) {
+            return true;
+        }
+
+        return false;
+    }
 
 }

@@ -1,7 +1,9 @@
 <?php
+
 $mess = array(
 // will be replaced by the application title
 "1" => "%s öffentlicher Download",
+// will be replaced by the filename to download
 "2" => "Klicken Sie auf das Bild, um <b>%s</b> auf Ihre Festplatte zu speichern",
 "3" => "falsches Passwort",
 "4" => "Geben Sie das erforderliche Passwort ein und klicken Sie auf das Bild um <b>%s</b> auf Ihre Festplatte zu speichern",
@@ -21,7 +23,7 @@ $mess = array(
 "18"=> "Ordner ist als neue Arbeitsumgebung freigegeben",
 "19"=> "Optionen der freigegebene Arbeitsumgebung wurden erfolgreich geändert",
 "20"=> "Ooops, die gesuchte Datei konnte nicht gefunden werden! Möglicherweise wurde die Datei bereits entfernt oder ist nicht mehr freigegeben.",
-"21"=> "Ungültig (Tagen): ",
+"21"=> "Gültigkeit (Tage): ",
 "22"=> "Erlaubte Downloads: ",
 "23"=> "Optionales Passwort: ",
 "24"=> "Setze eine Ablaufzeit und ein Passwort für den Dateizugriff. Klicke danach auf das <span class=\"icon-plus-sign\"></span> Zeichen um ein Weblink zu generieren. Es können mehrere Links generiert werden, um diese zu unterschiedlichen Nutzern zu senden.",
@@ -32,7 +34,7 @@ $mess = array(
 "29"=> "Freigabe",
 "30"=> "Benutzerzugang",
 "31"=> "Lesen",
-"32"=> "Upload",
+"32"=> "Schreiben",
 "33"=> "Sehen",
 "34"=> "Existierende oder neuer Benutzer",
 "35"=> "Bezeichnung",
@@ -47,6 +49,8 @@ $mess = array(
 "44"=> "%s teilt",
 "45"=> "Einladung senden",
 "46"=> "Öffne Arbeitsumgebung %s1 direkt in %s2",
+"46_mini" => "Öffne Vorschau %s1",
+"46_file" => "Öffne Datei %s1",
 "47"=> "Beobachtungsstatus erfolgreich geändert ",
 "48"=> "Sie sind nicht berechtigt auf diese Daten zuzugreifen.",
 "49"=> "Benutzer erstellen",
@@ -74,9 +78,9 @@ $mess = array(
 "69r"=>"Miniseite Konfigurieren",
 "70r"=> "Kennzeichnung und Berechtigungen der Benutzer dieser Miniseite",
 "71" => "Berechtigungen",
-"72" => "Anschauen",
-"73" => "Downloaden",
-"74" => "Uploaden",
+"72" => "Ansehen",
+"73" => "Herunterladen",
+"74" => "Hochladen",
 "75"=> "Bitte verwenden Sie eine positive Zahl für die Verfall- und Downloadbegrenzung.",
 "76"=> "Bitte Cookies aktivieren um auf diese Anwendung zuzugreifen",
 "77"=> "Bitte JavaScript aktivieren um auf diese Anwendung zuzugreifen",
@@ -162,8 +166,6 @@ $mess = array(
 "154" => "Filmstreifen (gut für Bildergalerien)",
 "155" => "Eingebettet (kleinere Kopfzeile, für Widgets)",
 "156" => "Erfolgreich veröffentliche Links %s",
-"46_mini" => "Öffne Vorschau %s1",
-"46_file" => "Öffne Datei %s1",
 "157" => "Dieser Ordner ist momentan freigegeben. Wenn Sie ihn löschen wird die damit verbunden Freigabe deaktiviert.",
 "158" => "Diese Datei ist momentan freigegeben. Wenn Sie ihn löschen wird die damit verbunden Freigabe deaktiviert. ",
 "159" => "Eigentümer",
@@ -185,6 +187,7 @@ $mess = array(
     "172" => "Dieser Link wird bereits genutzt. Wähle ein anderes Kürzel.",
     "173" => "Wenn Sie ein dauerhaften und ansehlichen Link möchten (z.B. https://.../mein-kuerzel), können Sie dieses Feld nutzen. Ansonsten wird das Kürzel zufällig generiert.",
     "174" => "Deaktiviere Passwort",
-    "175" => "Please set a password and make sure it's long enough!",
-    "176" => "(Mandatory)",
+    "175" => "Bitte ein ausreichend langes Passwort festlegen!",
+    "176" => "(Pflichtfeld)",
+    "177" => "View parameters",
 );

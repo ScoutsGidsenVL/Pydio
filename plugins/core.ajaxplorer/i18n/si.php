@@ -22,7 +22,7 @@
 $mess=array(
 "languageLabel" => "Slovenščina",
 "date_format"  => "d/m/Y H:i",
-"byte_unit_symbol" => "b",
+"byte_unit_symbol" => "B",
 "date_intl_locale" => "sl-SI",
 "0" => "Zadnja različica",
 "1" => "Ime",
@@ -632,8 +632,8 @@ $mess=array(
     "539" => "Upload error: file is partial",
     "540" => "Upload error: cannot find the temporary directory",
     "541" => "Upload error: cannot write into the temporary directory",
-    "542" => "Upload error: a PHP extension stopped the upload process."
+    "542" => "Upload error: a PHP extension stopped the upload process.",
+    "543" => "Results limited to 100 out of %s.",
+    "544" => "Show All",
 /* END SENTENCE */
-/* password strength tester */
-/* quick access keys */
 );

@@ -241,8 +241,9 @@ Class.create("MetaCellRenderer", {
 			var content = element.down('span').innerHTML;
 		}catch(e){
 		}
-		if(content) value = parseInt(content);
-        else{
+		if(content && !!parseInt(content)) {
+            value = parseInt(content);
+        } else {
             content = ajxpNode.getMetadata().get(attributeName);
             if(content) value = parseInt(content);
         }
@@ -315,7 +316,7 @@ Class.create("MetaCellRenderer", {
                     }));
                     conn.addParameter(elementName, note);
                     conn.onComplete = function(transport){
-                        pydio.actionBar.parseXmlMessage(transport.responseXML);
+                        PydioApi.getClient().parseXmlMessage(transport.responseXML);
                     };
                     conn.sendAsync();
                 }, 500);
@@ -347,7 +348,7 @@ Class.create("MetaCellRenderer", {
 
     },
 
-    displayTagsAsBlocks: function(element, value, ajxpNode){
+    displayTagsAsBlocks: function(metaName, element, value, ajxpNode){
         if(!value) return;
         var values = $A(value.split(",")).invoke("strip");
         element.update('');
@@ -359,11 +360,11 @@ Class.create("MetaCellRenderer", {
                 var conn = new Connexion();
                 conn.setParameters($H({
                     get_action:"edit_user_meta",
-                    file: ajxpNode.getPath(),
-                    tags: values.without(v).join(", ")
+                    file: ajxpNode.getPath()
                 }));
+                conn.addParameter(metaName, values.without(v).join(", "));
                 conn.onComplete = function(transport){
-                    pydio.actionBar.parseXmlMessage(transport.responseXML);
+                    PydioApi.getClient().parseXmlMessage(transport.responseXML);
                 };
                 conn.sendAsync();
             });
@@ -413,7 +414,7 @@ Class.create("MetaCellRenderer", {
                 break;
                 case "tags":
                     var value = td.innerHTML.strip();
-                    this.displayTagsAsBlocks(td, value, ajxpNode);
+                    this.displayTagsAsBlocks(metaName, td, value, ajxpNode);
                 break;
                 case "text":
                 case "string":
@@ -459,7 +460,7 @@ Class.create("MetaCellRenderer", {
             conn.addParameter(id, div.textContent);
             conn.onComplete = function(){
                 div.saver.remove();
-                ajaxplorer.enableAllKeyBindings();
+                pydio.UI.enableAllKeyBindings();
                 ajaxplorer.fireNodeRefresh(selectedNode);
             };
             conn.sendAsync();
@@ -469,14 +470,14 @@ Class.create("MetaCellRenderer", {
             var source = event.target;
             var id = source.up("div").id.substring(3);
             source.insert({after:source.saver});
-            ajaxplorer.disableAllKeyBindings();
+            pydio.UI.disableAllKeyBindings();
             window.setTimeout(function(){
                 document.observeOnce("click", function(clickEvent){
                     if(clickEvent.target != source) source.blur();
                 });
             }, 500);
         }).observe("blur", function(event){
-            ajaxplorer.enableAllKeyBindings();
+            pydio.UI.enableAllKeyBindings();
             event.target.saver.removerTimeout = window.setTimeout(function(){
                 event.target.saver.remove();
             }, 500);

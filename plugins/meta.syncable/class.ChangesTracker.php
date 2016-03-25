@@ -26,7 +26,7 @@ defined('AJXP_EXEC') or die('Access not allowed');
  * @package AjaXplorer_Plugins
  * @subpackage Meta
  */
-class ChangesTracker extends AJXP_AbstractMetaSource
+class ChangesTracker extends AJXP_AbstractMetaSource implements SqlTableProvider
 {
     private $sqlDriver;
 
@@ -192,7 +192,9 @@ class ChangesTracker extends AJXP_AbstractMetaSource
             dibi::connect($this->sqlDriver);
         }
         $filter = null;
+        $masks = array();
         $currentRepo = $this->accessDriver->repository;
+        AJXP_Controller::applyHook("role.masks", array($currentRepo->getId(), &$masks, AJXP_Permission::READ));
         $recycle = $currentRepo->getOption("RECYCLE_BIN");
         $recycle = (!empty($recycle)?$recycle:false);
 
@@ -237,26 +239,34 @@ class ChangesTracker extends AJXP_AbstractMetaSource
         }
 
 
-        if(isSet($httpVars["filter"])){
+        $ands = array();
+        $ands[] = array("[ajxp_changes].[repository_identifier] = %s", $this->computeIdentifier($currentRepo));
+        $ands[]= array("[seq] > %i", $seqId);
+        if(isSet($httpVars["filter"])) {
             $filter = AJXP_Utils::decodeSecureMagic($httpVars["filter"]);
-            $res = dibi::query("SELECT
-                [seq] , [ajxp_changes].[repository_identifier] , [ajxp_changes].[node_id] , [type] , [source] ,  [target] , [ajxp_index].[bytesize], [ajxp_index].[md5], [ajxp_index].[mtime], [ajxp_index].[node_path]
-                FROM [ajxp_changes]
-                LEFT JOIN [ajxp_index]
-                    ON [ajxp_changes].[node_id] = [ajxp_index].[node_id]
-                WHERE [ajxp_changes].[repository_identifier] = %s AND ([source] LIKE %like~ OR [target] LIKE %like~ ) AND [seq] > %i
-                ORDER BY [ajxp_changes].[node_id], [seq] ASC",
-                $this->computeIdentifier($currentRepo), rtrim($filter, "/")."/", rtrim($filter, "/")."/", $seqId);
-        }else{
-            $res = dibi::query("SELECT
-                [seq] , [ajxp_changes].[repository_identifier] , [ajxp_changes].[node_id] , [type] , [source] ,  [target] , [ajxp_index].[bytesize], [ajxp_index].[md5], [ajxp_index].[mtime], [ajxp_index].[node_path]
-                FROM [ajxp_changes]
-                LEFT JOIN [ajxp_index]
-                    ON [ajxp_changes].[node_id] = [ajxp_index].[node_id]
-                WHERE [ajxp_changes].[repository_identifier] = %s AND [seq] > %i
-                ORDER BY [ajxp_changes].[node_id], [seq] ASC",
-                $this->computeIdentifier($currentRepo), $seqId);
+            $filterLike = rtrim($filter, "/") . "/";
+            $ands[] = array("[source] LIKE %like~ OR [target] LIKE %like~", $filterLike, $filterLike);
         }
+        if(count($masks)){
+            $ors = array();
+            foreach($masks as $mask){
+                $trimmedMask = rtrim($mask, "/") ;
+                $filterLike = $trimmedMask . "/";
+                $ors[] = array("[source] LIKE %like~ OR [target] LIKE %like~", $filterLike, $filterLike);
+                $ors[] = array("[source] = %s OR [target] = %s", $trimmedMask, $trimmedMask);
+            }
+            if(count($ors)){
+                $ands[] = array("%or", $ors);
+            }
+        }
+        $res = dibi::query("SELECT
+            [seq] , [ajxp_changes].[repository_identifier] , [ajxp_changes].[node_id] , [type] , [source] ,  [target] , [ajxp_index].[bytesize], [ajxp_index].[md5], [ajxp_index].[mtime], [ajxp_index].[node_path]
+            FROM [ajxp_changes]
+            LEFT JOIN [ajxp_index]
+                ON [ajxp_changes].[node_id] = [ajxp_index].[node_id]
+            WHERE %and
+            ORDER BY [ajxp_changes].[node_id], [seq] ASC",
+            $ands);
 
         if(!$stream) echo '{"changes":[';
         $previousNodeId = -1;
@@ -271,9 +281,12 @@ class ChangesTracker extends AJXP_AbstractMetaSource
                 unset($row->$att);
             }
             if(!empty($recycle)) $this->cancelRecycleNodes($row, $recycle);
+            if($this->pathOutOfMask($row->node["node_path"], $masks)){
+                $row->node["node_path"] = false;
+            }
             if(!isSet($httpVars["flatten"]) || $httpVars["flatten"] == "false"){
 
-                if(!$this->filterRow($row, $filter)){
+                if(!$this->filterMasks($row, $masks) && !$this->filterRow($row, $filter)){
                     if ($valuesSent) {
                         echo $separator;
                     }
@@ -286,12 +299,16 @@ class ChangesTracker extends AJXP_AbstractMetaSource
                 if ($row->node_id == $previousNodeId) {
                     $previousRow->target = $row->target;
                     $previousRow->seq = $row->seq;
-                    if ($order[$row->type] > $order[$previousRow->type]) {
+                    // Specific case, maybe linked to recycle bin management
+                    // A create should make a new node ID.
+                    if ($row->type === "create" && $previousRow->type === "delete"){
+                        $previousRow->type = "create";
+                    }else if ($order[$row->type] > $order[$previousRow->type]) {
                         $previousRow->type = $row->type;
                     }
                 } else {
                     if (isSet($previousRow) && ($previousRow->source != $previousRow->target || $previousRow->type == "content")) {
-                        if($this->filterRow($previousRow, $filter)){
+                        if($this->filterMasks($previousRow, $masks) || $this->filterRow($previousRow, $filter)){
                             $previousRow = $row;
                             $previousNodeId = $row->node_id;
                             $lastSeq = $row->seq;
@@ -304,23 +321,24 @@ class ChangesTracker extends AJXP_AbstractMetaSource
                     $previousRow = $row;
                     $previousNodeId = $row->node_id;
                 }
-                $lastSeq = $row->seq;
+                if(!isSet($lastSeq) || $row->seq > $lastSeq){
+                    $lastSeq = $row->seq;
+                }
                 flush();
             }
-	    //CODES HERE HAVE BEEN MOVE OUT OF THE LOOP
         }
 
-        /**********RETURN TO SENDER************/
-        // is 'not NULL' included in isSet()?
-        if ($previousRow && isSet($previousRow) && ($previousRow->source != $previousRow->target || $previousRow->type == "content") && !$this->filterRow($previousRow, $filter)) {
+        // SEND LAST ROW IF THERE IS ONE
+        if (isSet($previousRow) && ($previousRow->source != $previousRow->target || $previousRow->type == "content")
+            && !$this->pathOutOfMask($previousRow->target, $masks) && !$this->filterMasks($previousRow, $masks) && !$this->filterRow($previousRow, $filter)) {
+
             if($valuesSent) echo $separator;
             echo json_encode($previousRow);
-            if ($previousRow->seq > $lastSeq){
+            if (!isSet($lastSeq) || $previousRow->seq > $lastSeq){
                 $lastSeq = $previousRow->seq;
             }
             $valuesSent = true;
         }
-        /*************************************/
 
         if (isSet($lastSeq)) {
             if($stream){
@@ -353,8 +371,8 @@ class ChangesTracker extends AJXP_AbstractMetaSource
 
     protected function filterRow(&$previousRow, $filter = null){
         if($filter == null) return false;
-        $srcInFilter = strpos($previousRow->source, $filter) === 0;
-        $targetInFilter = strpos($previousRow->target, $filter) === 0;
+        $srcInFilter = strpos($previousRow->source, $filter."/") === 0;
+        $targetInFilter = strpos($previousRow->target, $filter."/") === 0;
         if(!$srcInFilter && !$targetInFilter){
             return true;
         }
@@ -377,6 +395,38 @@ class ChangesTracker extends AJXP_AbstractMetaSource
             $previousRow->node['node_path'] = substr($previousRow->node['node_path'], strlen($filter));
         }else if(strpos($previousRow->node['node_path'], $filter) !== 0){
             $previousRow->node['node_path'] = false;
+        }
+        return false;
+    }
+
+    protected function pathOutOfMask($testPath, $masks = array()){
+        if(!count($masks)) return false;
+        $regexps = array();
+        foreach($masks as $path){
+            $regexps[] = '^'.preg_quote($path.'/', '/');
+        }
+        $regexp = '/'.implode("|", $regexps).'/';
+        $inMask = ($testPath == 'NULL') || $testPath === false || in_array($testPath, $masks) || preg_match($regexp, $testPath);
+        return !$inMask;
+    }
+
+    protected function filterMasks(&$previousRow, $masks = array()){
+        if(!count($masks)) return false;
+
+        $srcInFilter = !$this->pathOutOfMask($previousRow->source, $masks);
+        $targetInFilter = !$this->pathOutOfMask($previousRow->target, $masks);
+
+        if(!$srcInFilter && !$targetInFilter){
+            return true;
+        }
+        if($previousRow->type == 'path'){
+            if(!$srcInFilter){
+                $previousRow->type = 'create';
+                $previousRow->source = 'NULL';
+            }else if(!$targetInFilter){
+                $previousRow->type = 'delete';
+                $previousRow->target = 'NULL';
+            }
         }
         return false;
     }
@@ -454,19 +504,23 @@ class ChangesTracker extends AJXP_AbstractMetaSource
                 $repoId = $this->computeIdentifier($oldNode->getRepository(), $oldNode->getUser());
                 // DELETE
                 $this->logDebug('DELETE', $oldNode->getUrl());
-                dibi::query("DELETE FROM [ajxp_index] WHERE [node_path] LIKE %like~ AND [repository_identifier] = %s", $oldNode->getPath(), $repoId);
+                dibi::query("DELETE FROM [ajxp_index] WHERE [node_path] LIKE %like~ AND [repository_identifier] = %s", SystemTextEncoding::toUTF8($oldNode->getPath()), $repoId);
             } else if ($oldNode == null || $copy) {
                 // CREATE
                 $stat = stat($newNode->getUrl());
                 $newNode->setLeaf(!($stat['mode'] & 040000));
                 $this->logDebug('INSERT', $newNode->getUrl());
                 dibi::query("INSERT INTO [ajxp_index]", array(
-                    "node_path" => $newNode->getPath(),
+                    "node_path" => SystemTextEncoding::toUTF8($newNode->getPath()),
                     "bytesize"  => $stat["size"],
                     "mtime"     => $stat["mtime"],
                     "md5"       => $newNode->isLeaf()? md5_file($newNode->getUrl()):"directory",
                     "repository_identifier" => $repoId = $this->computeIdentifier($newNode->getRepository(), $newNode->getUser())
                 ));
+                if($copy && !$newNode->isLeaf()){
+                    // Make sure to index the content of this file
+                    AJXP_Controller::findActionAndApply("index", array("file" => $newNode->getPath()), array());
+                }
             } else {
                 $repoId = $this->computeIdentifier($oldNode->getRepository(), $oldNode->getUser());
                 if ($oldNode->getPath() == $newNode->getPath()) {
@@ -479,7 +533,7 @@ class ChangesTracker extends AJXP_AbstractMetaSource
                         "bytesize"  => $stat["size"],
                         "mtime"     => $stat["mtime"],
                         "md5"       => md5_file($newNode->getUrl())
-                    ), "WHERE [node_path] = %s AND [repository_identifier] = %s", $oldNode->getPath(), $repoId);
+                    ), "WHERE [node_path] = %s AND [repository_identifier] = %s", SystemTextEncoding::toUTF8($oldNode->getPath()), $repoId);
                     try{
                         $rowCount = dibi::getAffectedRows();
                         if($rowCount === 0){
@@ -494,8 +548,8 @@ class ChangesTracker extends AJXP_AbstractMetaSource
                     if ($newNode->isLeaf()) {
                         $this->logDebug('UPDATE LEAF PATH', $newNode->getUrl());
                         dibi::query("UPDATE [ajxp_index] SET ", array(
-                            "node_path"  => $newNode->getPath(),
-                        ), "WHERE [node_path] = %s AND [repository_identifier] = %s", $oldNode->getPath(), $repoId);
+                            "node_path"  => SystemTextEncoding::toUTF8($newNode->getPath()),
+                        ), "WHERE [node_path] = %s AND [repository_identifier] = %s", SystemTextEncoding::toUTF8($oldNode->getPath()), $repoId);
                         try{
                             $rowCount = dibi::getAffectedRows();
                             if($rowCount === 0){
@@ -506,9 +560,9 @@ class ChangesTracker extends AJXP_AbstractMetaSource
                     } else {
                         $this->logDebug('UPDATE FOLDER PATH', $newNode->getUrl());
                         dibi::query("UPDATE [ajxp_index] SET [node_path]=REPLACE( REPLACE(CONCAT('$$$',[node_path]), CONCAT('$$$', %s), CONCAT('$$$', %s)) , '$$$', '') ",
-                            $oldNode->getPath(),
-                            $newNode->getPath()
-                            , "WHERE [node_path] LIKE %like~ AND [repository_identifier] = %s", $oldNode->getPath(), $repoId);
+                            SystemTextEncoding::toUTF8($oldNode->getPath()),
+                            SystemTextEncoding::toUTF8($newNode->getPath())
+                            , "WHERE [node_path] LIKE %like~ AND [repository_identifier] = %s", SystemTextEncoding::toUTF8($oldNode->getPath()), $repoId);
                         try{
                             $rowCount = dibi::getAffectedRows();
                             if($rowCount === 0){

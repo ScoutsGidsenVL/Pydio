@@ -25,6 +25,7 @@ define('AJXP_SANITIZE_HTML_STRICT', 2);
 define('AJXP_SANITIZE_ALPHANUM', 3);
 define('AJXP_SANITIZE_EMAILCHARS', 4);
 define('AJXP_SANITIZE_FILENAME', 5);
+define('AJXP_SANITIZE_DIRNAME', 6);
 
 // THESE ARE DEFINED IN bootstrap_context.php
 // REPEAT HERE FOR BACKWARD COMPATIBILITY.
@@ -76,7 +77,7 @@ class AJXP_Utils
      */
     public static function natkrsort(&$array)
     {
-        natksort($array);
+        AJXP_Utils::natksort($array);
         $array = array_reverse($array, TRUE);
         return true;
     }
@@ -159,7 +160,7 @@ class AJXP_Utils
             '#(<[^>]+[\x00-\x20\"\'\/])style=[^>]*>?#iUu',
 
             // Match unneeded tags
-            '#</*(applet|meta|xml|blink|link|style|script|embed|object|iframe|frame|frameset|ilayer|layer|bgsound|title|base)[^>]*>?#i'
+            '#</*(applet|meta|xml|blink|link|style|script|embed|object|iframe|frame|frameset|ilayer|layer|bgsound|title|base|svg)[^>]*>?#i'
         );
 
         foreach($patterns as $pattern) {
@@ -189,7 +190,7 @@ class AJXP_Utils
             return preg_replace("/[^a-zA-Z0-9_\-\.]/", "", $s);
         } else if ($level == AJXP_SANITIZE_EMAILCHARS) {
             return preg_replace("/[^a-zA-Z0-9_\-\.@!%\+=|~\?]/", "", $s);
-        } else if ($level == AJXP_SANITIZE_FILENAME) {
+        } else if ($level == AJXP_SANITIZE_FILENAME || $level == AJXP_SANITIZE_DIRNAME) {
             // Convert Hexadecimals
             $s = preg_replace_callback('!(&#|\\\)[xX]([0-9a-fA-F]+);?!', array('AJXP_Utils', 'clearHexaCallback'), $s);
             // Clean up entities
@@ -197,11 +198,13 @@ class AJXP_Utils
             // Decode entities
             $s = html_entity_decode($s, ENT_NOQUOTES, 'UTF-8');
             // Strip whitespace characters
-            $s = trim($s);
+            $s = ltrim($s);
             $s = str_replace(chr(0), "", $s);
-            $s = preg_replace("/[\"\/\|\?\\\]/", "", $s);
+            if($level == AJXP_SANITIZE_FILENAME) $s = preg_replace("/[\"\/\|\?\\\]/", "", $s);
+            else $s = preg_replace("/[\"\|\?\\\]/", "", $s);
             if(self::detectXSS($s)){
-                $s = "XSS Detected - Rename Me";
+                if(strpos($s, "/") === 0) $s = "/XSS Detected - Rename Me";
+                else $s = "XSS Detected - Rename Me";
             }
             return $s;
         }
@@ -337,7 +340,7 @@ class AJXP_Utils
             $errorsArray[UPLOAD_ERR_EXTENSION] = array(410, $mess[542]);
             if ($userfile_error == UPLOAD_ERR_NO_FILE) {
                 // OPERA HACK, do not display "no file found error"
-                if (!ereg('Opera', $_SERVER['HTTP_USER_AGENT'])) {
+                if (strpos($_SERVER['HTTP_USER_AGENT'], 'Opera') === false) {
                     $data = $errorsArray[$userfile_error];
                     if($throwException) throw new Exception($data[1], $data[0]);
                     return $data;
@@ -375,7 +378,8 @@ class AJXP_Utils
 
         if (isSet($parameters["repository_id"]) && isSet($parameters["folder"]) || isSet($parameters["goto"])) {
             if (isSet($parameters["goto"])) {
-                $repoId = array_shift(explode("/", ltrim($parameters["goto"], "/")));
+                $explode = explode("/", ltrim($parameters["goto"], "/"));
+                $repoId = array_shift($explode);
                 $parameters["folder"] = str_replace($repoId, "", ltrim($parameters["goto"], "/"));
             } else {
                 $repoId = $parameters["repository_id"];
@@ -607,6 +611,7 @@ class AJXP_Utils
         } else if (preg_match("/\.gif$/i", $fileName)) {
             return "image/gif";
         }
+        return "";
     }
     /**
      * Headers to send when streaming
@@ -754,7 +759,7 @@ class AJXP_Utils
 
         }
         $finalDate = date($messages["date_relative_date_format"], $time ? $time : time());
-        if(strpos($messages["date_relative_date_format"], "F") !== false && isSet($messages["date_intl_locale"]) && class_exists("IntlDateFormatter")){
+        if(strpos($messages["date_relative_date_format"], "F") !== false && isSet($messages["date_intl_locale"]) && extension_loaded("intl")){
             $intl = IntlDateFormatter::create($messages["date_intl_locale"], IntlDateFormatter::FULL, IntlDateFormatter::FULL, null, null, "MMMM");
             $localizedMonth = $intl->format($time ? $time : time());
             $dateFuncMonth = date("F", $time ? $time : time());
@@ -858,7 +863,6 @@ class AJXP_Utils
     /**
      * Build the current server URL
      * @param bool $withURI
-     * @internal param bool $witchURI
      * @static
      * @return string
      */
@@ -882,10 +886,26 @@ class AJXP_Utils
             $api = ConfService::currentContextIsRestAPI();
             if(!empty($api)){
                 // Keep only before api base
-                $uri = array_shift(explode("/".$api."/", $uri));
+                $explode = explode("/".$api."/", $uri);
+                $uri = array_shift($explode);
             }
             return "$protocol://$name$port".$uri;
         }
+    }
+
+    /**
+     * @param Repository $repository
+     * @return string
+     */
+    public static function getWorkspaceShortcutURL($repository){
+        $repoSlug = $repository->getSlug();
+        $skipHistory = ConfService::getCoreConf("SKIP_USER_HISTORY", "conf");
+        if($skipHistory){
+            $prefix = "/ws-";
+        }else{
+            $prefix = "?goto=";
+        }
+        return trim(self::detectServerURL(true), "/").$prefix.$repoSlug;
     }
 
     /**
@@ -986,7 +1006,7 @@ class AJXP_Utils
      *
      * @return string Indented version of the original JSON string.
      */
-    public function prettyPrintJSON($json)
+    public static function prettyPrintJSON($json)
     {
         $result      = '';
         $pos         = 0;
@@ -1045,7 +1065,9 @@ class AJXP_Utils
     public static function extractConfStringsFromManifests()
     {
         $plugins = AJXP_PluginsService::getInstance()->getDetectedPlugins();
-        $plug = new AJXP_Plugin("", "");
+        /**
+         * @var AJXP_Plugin $plug
+         */
         foreach ($plugins as $pType => $plugs) {
             foreach ($plugs as $plug) {
                 $lib = $plug->getManifestRawContent("//i18n", "nodes");
@@ -1108,7 +1130,6 @@ class AJXP_Utils
      * @param $baseDir
      * @param bool $detectLanguages
      * @param string $createLanguage
-     * @return
      */
     public static function updateI18nFiles($baseDir, $detectLanguages = true, $createLanguage = "")
     {
@@ -1126,6 +1147,7 @@ class AJXP_Utils
             $filenames = glob($baseDir . "/*.php");
         }
 
+        $mess = array();
         include($baseDir . "/en.php");
         $reference = $mess;
 
@@ -1139,11 +1161,11 @@ class AJXP_Utils
      * @static
      * @param $filename
      * @param $reference
-     * @return
      */
     public static function updateI18nFromRef($filename, $reference)
     {
         if (!is_file($filename)) return;
+        $mess = array();
         include($filename);
         $missing = array();
         foreach ($reference as $messKey => $message) {
@@ -1251,6 +1273,7 @@ class AJXP_Utils
         }
         // PREPARE REPOSITORY LISTS
         $repoList = array();
+        $REPOSITORIES = array();
         require_once("../classes/class.ConfService.php");
         require_once("../classes/class.Repository.php");
         include(AJXP_CONF_PATH . "/bootstrap_repositories.php");
@@ -1328,6 +1351,7 @@ class AJXP_Utils
      *
      * @param String $filePath Full path to the file
      * @param Boolean $skipCheck do not test for file existence before opening
+     * @param string $format
      * @return Array
      */
     public static function loadSerialFile($filePath, $skipCheck = false, $format="ser")
@@ -1357,11 +1381,15 @@ class AJXP_Utils
      * @param Array|Object $value The value to store
      * @param Boolean $createDir Whether to create the parent folder or not, if it does not exist.
      * @param bool $silent Silently write the file, are throw an exception on problem.
-     * @param string $format
+     * @param string $format "ser" or "json"
+     * @param bool $jsonPrettyPrint If json, use pretty printing
      * @throws Exception
      */
     public static function saveSerialFile($filePath, $value, $createDir = true, $silent = false, $format="ser", $jsonPrettyPrint = false)
     {
+        if(!in_array($format, array("ser", "json"))){
+            throw new Exception("Unsupported serialization format: ".$format);
+        }
         $filePath = AJXP_VarsFilter::filter($filePath);
         if ($createDir && !is_dir(dirname($filePath))) {
             @mkdir(dirname($filePath), 0755, true);
@@ -1373,8 +1401,9 @@ class AJXP_Utils
         }
         try {
             $fp = fopen($filePath, "w");
-            if($format == "ser") $content = serialize($value);
-            else if ($format == "json") {
+            if($format == "ser") {
+                $content = serialize($value);
+            } else {
                 $content = json_encode($value);
                 if($jsonPrettyPrint) $content = self::prettyPrintJSON($content);
             }
@@ -1393,8 +1422,6 @@ class AJXP_Utils
      */
     public static function userAgentIsMobile()
     {
-        $isMobile = false;
-
         $op = strtolower($_SERVER['HTTP_X_OPERAMINI_PHONE'] OR "");
         $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
         $ac = strtolower($_SERVER['HTTP_ACCEPT']);
@@ -1443,34 +1470,6 @@ class AJXP_Utils
                     || strpos($ua, 'vodafone/') !== false
                     || strpos($ua, 'wap1.') !== false
                     || strpos($ua, 'wap2.') !== false;
-        /*
-                  $isBot = false;
-                  $ip = $_SERVER['REMOTE_ADDR'];
-
-                  $isBot =  $ip == '66.249.65.39'
-                  || strpos($ua, 'googlebot') !== false
-                  || strpos($ua, 'mediapartners') !== false
-                  || strpos($ua, 'yahooysmcm') !== false
-                  || strpos($ua, 'baiduspider') !== false
-                  || strpos($ua, 'msnbot') !== false
-                  || strpos($ua, 'slurp') !== false
-                  || strpos($ua, 'ask') !== false
-                  || strpos($ua, 'teoma') !== false
-                  || strpos($ua, 'spider') !== false
-                  || strpos($ua, 'heritrix') !== false
-                  || strpos($ua, 'attentio') !== false
-                  || strpos($ua, 'twiceler') !== false
-                  || strpos($ua, 'irlbot') !== false
-                  || strpos($ua, 'fast crawler') !== false
-                  || strpos($ua, 'fastmobilecrawl') !== false
-                  || strpos($ua, 'jumpbot') !== false
-                  || strpos($ua, 'googlebot-mobile') !== false
-                  || strpos($ua, 'yahooseeker') !== false
-                  || strpos($ua, 'motionbot') !== false
-                  || strpos($ua, 'mediobot') !== false
-                  || strpos($ua, 'chtml generic') !== false
-                  || strpos($ua, 'nokia6230i/. fast crawler') !== false;
-        */
         return $isMobile;
     }
     /**
@@ -1483,6 +1482,16 @@ class AJXP_Utils
         if (stripos($_SERVER["HTTP_USER_AGENT"], "iphone") !== false) return true;
         if (stripos($_SERVER["HTTP_USER_AGENT"], "ipad") !== false) return true;
         if (stripos($_SERVER["HTTP_USER_AGENT"], "ipod") !== false) return true;
+        return false;
+    }
+    /**
+     * Detect Windows Phone
+     * @static
+     * @return bool
+     */
+    public static function userAgentIsWindowsPhone()
+    {
+        if (stripos($_SERVER["HTTP_USER_AGENT"], "IEMobile") !== false) return true;
         return false;
     }
     /**
@@ -1528,7 +1537,6 @@ class AJXP_Utils
             'Linux' => '(linux)|(x11)',
             'Mac OSX Beta (Kodiak)' => 'mac os x beta',
             'Mac OSX Cheetah' => 'mac os x 10.0',
-            'Mac OSX Puma' => 'mac os x 10.1',
             'Mac OSX Jaguar' => 'mac os x 10.2',
             'Mac OSX Panther' => 'mac os x 10.3',
             'Mac OSX Tiger' => 'mac os x 10.4',
@@ -1538,13 +1546,18 @@ class AJXP_Utils
             'Mac OSX Mountain Lion' => 'mac os x 10.8',
             'Mac OSX Mavericks' => 'mac os x 10.9',
             'Mac OSX Yosemite' => 'mac os x 10.10',
+            'Mac OSX El Capitan' => 'mac os x 10.11',
+            'Mac OSX Puma' => 'mac os x 10.1',
             'Mac OS (classic)' => '(mac_powerpc)|(macintosh)',
             'QNX' => 'QNX',
             'BeOS' => 'beos',
             'Apple iPad' => 'iPad',
             'Apple iPhone' => 'iPhone',
             'OS2' => 'os\/2',
-            'SearchBot'=>'(nuhk)|(googlebot)|(yammybot)|(openbot)|(slurp)|(msnbot)|(ask jeeves\/teoma)|(ia_archiver)'
+            'SearchBot'=>'(nuhk)|(googlebot)|(yammybot)|(openbot)|(slurp)|(msnbot)|(ask jeeves\/teoma)|(ia_archiver)',
+            'Pydio iOS Native Application' => 'ajaxplorer-ios',
+            'Pydio Android Native Application' => 'Apache-HttpClient',
+            'Pydio Sync Client' => 'python-requests'
         );
 
         if($useragent == null){
@@ -1637,6 +1650,36 @@ class AJXP_Utils
         return $password;
     }
 
+    public static function filterFormElementsFromMeta($metadata, &$nestedData, $userId=null, $binariesContext=null, $cypheredPassPrefix=""){
+        foreach($metadata as $key => $level){
+            if(!array_key_exists($key, $nestedData)) continue;
+            if(!is_array($level)) continue;
+            if(isSet($level["ajxp_form_element"])){
+                // filter now
+                $type = $level["type"];
+                if($type == "binary" && $binariesContext != null){
+                    $value = $nestedData[$key];
+                    if ($value == "ajxp-remove-original") {
+                        if (!empty($level["original_binary"])) {
+                            ConfService::getConfStorageImpl()->deleteBinary($binariesContext, $level["original_binary"]);
+                        }
+                        $value = "";
+                    } else {
+                        $file = AJXP_Utils::getAjxpTmpDir()."/".$value;
+                        if (file_exists($file)) {
+                            $id= !empty($level["original_binary"]) ? $level["original_binary"] : null;
+                            $id=ConfService::getConfStorageImpl()->saveBinary($binariesContext, $file, $id);
+                            $value = $id;
+                        }
+                    }
+                    $nestedData[$key] = $value;
+                }
+            }else{
+                self::filterFormElementsFromMeta($level, $nestedData[$key], $userId, $binariesContext, $cypheredPassPrefix);
+            }
+        }
+    }
+
     public static function parseStandardFormParameters(&$repDef, &$options, $userId = null, $prefix = "DRIVER_OPTION_", $binariesContext = null, $cypheredPassPrefix = "")
     {
         if ($binariesContext === null) {
@@ -1711,6 +1754,7 @@ class AJXP_Utils
         }
         // DO SOMETHING WITH REPLICATED PARAMETERS?
         if (count($switchesGroups)) {
+            $gValues = array();
             foreach ($switchesGroups as $fieldName => $groupName) {
                 if (isSet($options[$fieldName])) {
                     $gValues = array();
@@ -1749,7 +1793,8 @@ class AJXP_Utils
                 unset($params["group_switch_value"]);
             }
             foreach ($params as $k => $v) {
-                $params[array_pop(explode("_", $k, 2))] = AJXP_VarsFilter::filter($v);
+                $explode = explode("_", $k, 2);
+                $params[array_pop($explode)] = AJXP_VarsFilter::filter($v);
                 unset($params[$k]);
             }
         }
@@ -1795,7 +1840,8 @@ class AJXP_Utils
         $allParts = array();
 
         foreach($separators as $sep){
-            $firstLine = array_shift(explode("\n", trim($sep)));
+            $explode = explode("\n", trim($sep));
+            $firstLine = array_shift($explode);
             if($firstLine == "/** BLOCK **/"){
                 $allParts[] = $sep;
             }else{
@@ -2037,11 +2083,11 @@ class AJXP_Utils
         }
         return $left.$regexp.$right;
     }
+
     /**
      * Hide file or folder for Windows OS
      * @static
-     * @param $path
-     * @return void
+     * @param $file
      */
     public static function winSetHidden($file)
     {

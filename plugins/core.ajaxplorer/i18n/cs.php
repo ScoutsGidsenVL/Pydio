@@ -31,7 +31,7 @@ $mess=array(
 "date_relative_tomorrow" => "zítra v TIME",
 "date_relative_days_ago" => "před %s dny",
 "date_relative_days_ahead" => "během %s dnů",
-"byte_unit_symbol" => "b",
+"byte_unit_symbol" => "B",
 "0" => "Poslední verze",
 "1" => "Jméno souboru",
 "2" => "Velkost",
@@ -633,5 +633,7 @@ $mess=array(
     "539" => "Upload error: file is partial",
     "540" => "Upload error: cannot find the temporary directory",
     "541" => "Upload error: cannot write into the temporary directory",
-    "542" => "Upload error: a PHP extension stopped the upload process."
+    "542" => "Upload error: a PHP extension stopped the upload process.",
+    "543" => "Results limited to 100 out of %s.",
+    "544" => "Show All",
 );

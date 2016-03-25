@@ -31,7 +31,7 @@
  */
 //define("AJXP_LOCALE", "en_EN.UTF-8");
 //define("AJXP_LOCALE", "");
-define("AJXP_LOCALE", "nl_BE.UTF-8");
+
 
 /*
  * If you encounter problems writing to the standard php tmp directory, you can

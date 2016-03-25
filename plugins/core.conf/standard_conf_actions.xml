@@ -21,6 +21,7 @@
 			</processing>
 		</action>
 		<action name="load_repository_info">
+            <rightsContext adminOnly="false" noUser="true" read="false" userLogged="only" write="false"/>
 			<processing>
 				<serverCallback methodName="switchAction" restParams="/" developerComment="Retrieve some plugins-contributed info about the workspace (e.g. Quota, Sharing status, etc).">
                     <output type="JSON" description="Array of plugins informations"/>
@@ -126,7 +127,7 @@
                             var conn = new Connexion();
                             conn.setParameters(params);
                             conn.onComplete = function(transport){
-                                ajaxplorer.actionBar.parseXmlMessage(transport.responseXML);
+                                PydioApi.getClient().parseXmlMessage(transport.responseXML);
                             }
                             conn.sendAsync();
 					]]></dialogOnComplete>
@@ -149,6 +150,7 @@
             </processing>
         </action>
 		<action name="get_user_templates_definition">
+            <rightsContext adminOnly="false" noUser="true" read="false" userLogged="only" write="false"/>
 			<processing>
 				<serverCallback methodName="switchAction"/>
 			</processing>
@@ -159,11 +161,13 @@
 			</processing>
 		</action>
 		<action name="user_delete_repository">
+            <rightsContext adminOnly="false" noUser="true" read="false" userLogged="only" write="false"/>
 			<processing>
 				<serverCallback methodName="switchAction"/>
 			</processing>
 		</action>
 		<action name="user_delete_user">
+            <rightsContext adminOnly="false" noUser="true" read="false" userLogged="only" write="false"/>
 			<processing>
 				<serverCallback methodName="switchAction"/>
 			</processing>
@@ -183,6 +187,7 @@
                         if(!ajaxplorer.bookmarkBar) ajaxplorer.bookmarkBar = new BookmarksBar(null, {});
                         return;
                     }
+                    if(!window.BookmarksBar) return;
                     var bmBar = new BookmarksBar($('get_bookmarks_button'), {bookmarksMenuOptions:{
                         className: 'menu desktop toolbarmenu panelHeaderMenu bmbarMenu',
                         mouseClick:'over',
@@ -190,7 +195,7 @@
                         leftOffset:0,
                         position:'bottom right'
                     }});
-                    var bmAction = ajaxplorer.actionBar.actions.get('bookmark');
+                    var bmAction = pydio.getController().actions.get('bookmark');
                     bmBar.addBookmarkObject = {
                         name:bmAction.getKeyedText(),
                         alt:bmAction.options.title,
@@ -210,6 +215,12 @@
                 <serverCallback methodName="switchAction"/>
 			</processing>
 		</action>
+        <action name="get_permissions_mask">
+            <rightsContext adminOnly="false" noUser="true" read="false" userLogged="only" write="false"/>
+            <processing>
+                <serverCallback methodName="publishPermissionsMask" restParams="/" developerComment="Send the permissions mask for the current workspace, if defined."/>
+            </processing>
+        </action>
 		<action name="save_user_pref">
 			<processing>
 				<serverCallback methodName="switchAction"/>
@@ -226,11 +237,13 @@
 			</processing>
 		</action>
 		<action name="store_binary_temp">
+            <rightsContext adminOnly="false" noUser="true" read="false" userLogged="only" write="false"/>
 			<processing>
 				<serverCallback methodName="switchAction"/>
 			</processing>
 		</action>
         <action name="user_list_authorized_users">
+            <rightsContext adminOnly="false" noUser="true" read="false" userLogged="only" write="false"/>
             <processing>
                 <serverCallback methodName="switchAction" restParams="/value" developerComment="List users that are visible to the currently logged users">
                     <input_param name="value" type="string" description="Search string: users will be searched starting with this value. Can be empty."/>
@@ -241,10 +254,10 @@
             </processing>
         </action>
         <action name="custom_data_edit">
-      			<gui text="442" title="443" src="edit_user.png" iconClass="icon-reorder" accessKey="" hasAccessKey="false">
-      				<context selection="false" dir="" recycle="true" actionBar="false" actionBarGroup="utils" contextMenu="false" infoPanel="false"/>
-      			</gui>
-                <rightsContext adminOnly="false" noUser="false" read="false" userLogged="only" write="false"/>
+            <gui text="442" title="443" src="edit_user.png" iconClass="icon-reorder" accessKey="" hasAccessKey="false">
+                <context selection="false" dir="" recycle="true" actionBar="false" actionBarGroup="utils" contextMenu="false" infoPanel="false"/>
+            </gui>
+            <rightsContext adminOnly="false" noUser="false" read="false" userLogged="only" write="false"/>
             <processing>
                 <clientCallback prepareModal="true" dialogOpenForm="custom_data_edit" dialogOkButtonOnly="false" dialogSkipButtons="false">
                     <dialogOnOpen><![CDATA[
@@ -262,10 +275,10 @@
                           conn.setParameters(params);
                           conn.setMethod("POST");
                           conn.onComplete = function(transport){
-                              ajaxplorer.actionBar.parseXmlMessage(transport.responseXML);
+                              PydioApi.getClient().parseXmlMessage(transport.responseXML);
                               document.observeOnce("ajaxplorer:registry_part_loaded", function(event){
                                   if(event.memo != "user/preferences") return;
-                                  ajaxplorer.logXmlUser(ajaxplorer.getXmlRegistry());
+                                  pydio.Registry.logXmlUser();
                               });
                               ajaxplorer.loadXmlRegistry(false, "user/preferences");
                           };
@@ -277,7 +290,7 @@
                     <div id="custom_data_edit" action="custom_data_edit" box_width="320">
                     </div>
                 ]]></clientForm>
-                <serverCallback methodName="switchAction"></serverCallback>
+                <serverCallback methodName="switchAction"/>
             </processing>
         </action>
         <action name="user_update_user">
@@ -354,7 +367,7 @@
                     ]]></dialogOnComplete>
                     <dialogOnCancel><![CDATA[]]></dialogOnCancel>
                 </clientCallback>
-                <serverCallback methodName="switchAction"></serverCallback>
+                <serverCallback methodName="switchAction"/>
             </processing>
         </action>
         <action name="user_create_user">
@@ -414,12 +427,12 @@
                     <div id="user_create_user" action="custom_data_edit" box_width="320">
                     </div>
                 ]]></clientForm>
-                <serverCallback methodName="switchAction"></serverCallback>
+                <serverCallback methodName="switchAction"/>
             </processing>
         </action>
 		<action name="switch_language">
 			<gui text="190" title="190" src="flag.png" accessKey="" hasAccessKey="false" iconClass="icon-flag">
-				<context selection="false" dir="" recycle="true" actionBar="false" actionBarGroup="utils" contextMenu="false" infoPanel="false"></context>
+				<context selection="false" dir="" recycle="true" actionBar="false" actionBarGroup="utils" contextMenu="false" infoPanel="false"/>
 			</gui>
 			<processing>
 				<clientCallback prepareModal="true" dialogOpenForm="switch_language_form" dialogOkButtonOnly="false" dialogSkipButtons="false">
@@ -468,7 +481,7 @@
 						<select id="language_selector" style="margin-left:50px; margin-bottom: 20px;"></select>
 					</div>
 				]]></clientForm>
-				<serverCallback methodName="switchAction"></serverCallback>
+				<serverCallback methodName="switchAction"/>
 			</processing>
 		</action>
 		<action name="webdav_preferences">
@@ -492,7 +505,7 @@
 						    && !ajaxplorer.webdavCurrentPreferences.webdav_force_basic) {
 						    $('webdav_password_form').show();
 						}
-                        ajaxplorer.user.getRepositoriesList().each(function(pair){
+                        ProtoCompat.map2hash(ajaxplorer.user.getRepositoriesList()).each(function(pair){
                             if(ajaxplorer.webdavCurrentPreferences.webdav_repositories[pair.key]){
                                 var div = new Element('div', {className:(even?'even':'')});
                                 div.update('<span>'+pair.value.label+'</span><input readonly type="text" value="'+ ajaxplorer.webdavCurrentPreferences.webdav_repositories[pair.key] +'">' );
@@ -577,7 +590,7 @@
 						<input type="hidden" name="get_action" value="webdav_preferences">
 					</div>
 				]]></clientForm>
-				<serverCallback methodName="switchAction"></serverCallback>
+				<serverCallback methodName="switchAction"/>
 			</processing>
 		</action>
         <action name="switch_to_user_dashboard">
@@ -648,9 +661,11 @@
                                     return;
                                 }
                                 if(!ajaxplorer.user) return;
+                                $("ajxp_workspace_info_panel").addClassName("infopanel_loading");
                                 var conn = new Connexion();
                                 conn.setParameters({get_action:'load_repository_info'});
                                 conn.onComplete = function(transport){
+                                    $("ajxp_workspace_info_panel").addClassName("infopanel_loading_finished");
                                     if(transport.responseJSON && $('ajxp_workspace_info_panel_content')){
                                         var data = transport.responseJSON;
                                         if(!data['core.users']['external']){

@@ -90,7 +90,7 @@ class multiShortener extends AJXP_Plugin
                     )
                 );
 
-                $goourl = 'https://www.googleapis.com/urlshortener/v1/url';
+                $goourl = 'https://www.googleapis.com/urlshortener/v1/url?key='.$type["GOOGL_APIKEY"];
                 $context  = stream_context_create( $options );
                 $result = file_get_contents( $goourl, false, $context );
                 $json = (array) json_decode( $result );
@@ -159,9 +159,8 @@ class multiShortener extends AJXP_Plugin
     }
     protected function updateMetaShort($file, $elementId, $shortUrl)
     {
-        $driver = AJXP_PluginsService::getInstance()->getUniqueActivePluginForType("access");
-        $streamData = $driver->detectStreamWrapper(false);
-        $baseUrl = $streamData["protocol"]."://".ConfService::getRepository()->getId();
+        $context = new UserSelection(ConfService::getRepository());
+        $baseUrl = $context->currentBaseUrl();
         $node = new AJXP_Node($baseUrl.$file);
         if ($node->hasMetaStore()) {
             $metadata = $node->retrieveMetadata(

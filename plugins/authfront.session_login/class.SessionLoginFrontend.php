@@ -41,7 +41,7 @@ class SessionLoginFrontend extends AbstractAuthFrontend {
         if (AuthService::suspectBruteForceLogin() && (!isSet($httpVars["captcha_code"]) || !CaptchaProvider::checkCaptchaResult($httpVars["captcha_code"]))) {
             $loggingResult = -4;
         } else {
-            $userId = (isSet($httpVars["userid"])?trim($httpVars["userid"]):null);
+            $userId = (isSet($httpVars["userid"])?AJXP_Utils::sanitize($httpVars["userid"], AJXP_SANITIZE_EMAILCHARS):null);
             $userPass = (isSet($httpVars["password"])?trim($httpVars["password"]):null);
             $rememberMe = ((isSet($httpVars["remember_me"]) && $httpVars["remember_me"] == "true")?true:false);
             $cookieLogin = (isSet($httpVars["cookie_login"])?true:false);
@@ -89,8 +89,6 @@ class SessionLoginFrontend extends AbstractAuthFrontend {
 
     public function switchAction($action, $httpVars, $fileVars)
     {
-        if(!isSet($this->actions[$action])) return;
-
         switch ($action) {
 
             case "logout" :
